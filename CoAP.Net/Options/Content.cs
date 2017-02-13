@@ -19,53 +19,30 @@ namespace CoAP.Net.Options
 
     public class ContentFormat : Option
     {
-
         public ContentFormatType MediaType { get; set; }
 
-        public ContentFormat() : base(optionNumber: 12, maxLength: 2, type: OptionType.UInt)
+        public ContentFormat() : base(optionNumber: RegisteredOptionNumber.ContentFormat, maxLength: 2, type: OptionType.UInt)
         {
             MediaType = ContentFormatType.TextPlain;
-        }
-
-        public override uint GetDefaultUInt()
-        {
-            return 0;
         }
     }
 
     public class Accept : Option
     {
-
         public ContentFormatType MediaType { get; set; }
 
-        public Accept() : base(optionNumber: 17, maxLength: 2, type: OptionType.UInt) { }
-
-        public override uint GetDefaultUInt()
-        {
-            return 0;
-        }
+        public Accept() : base(optionNumber: RegisteredOptionNumber.Accept, maxLength: 2, type: OptionType.UInt) { }
     }
 
     public class MaxAge : Option
     {
-
-        public MaxAge() : base(optionNumber: 14, maxLength: 4, type: OptionType.UInt) { }
-
-        public override uint GetDefaultUInt()
-        {
-            return 60;
-        }
+        public MaxAge() : base(optionNumber: RegisteredOptionNumber.MaxAge, maxLength: 4, type: OptionType.UInt, defaultValue: 60u) { }
     }
 
     /// Todo: Implement ETag request/response semantics as descripbed in section 5.10.6.1 and 5.10.6.2 of [RFC7252]
     public class ETag : Option
     {
-        public ETag() : base(optionNumber: 4, minLength: 1, maxLength: 8, isRepeatable: true, type: OptionType.Opaque) { }
-
-        public override byte[] GetDefaultOpaque()
-        {
-            return null;
-        }
+        public ETag() : base(optionNumber: RegisteredOptionNumber.ETag, minLength: 1, maxLength: 8, isRepeatable: true, type: OptionType.Opaque) { }
     }
 
     /// <summary>
@@ -79,11 +56,6 @@ namespace CoAP.Net.Options
     /// </summary>
     public class Size1 : Option
     {
-        public Size1(): base(optionNumber: 60, maxLength: 4, type: OptionType.UInt) { }
-
-        public override uint GetDefaultUInt()
-        {
-            return 0;
-        }
+        public Size1(): base(optionNumber: RegisteredOptionNumber.Size1, maxLength: 4, type: OptionType.UInt) { }
     }
 }

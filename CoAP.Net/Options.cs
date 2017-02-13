@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace CoAP.Net
 {
@@ -26,7 +25,7 @@ namespace CoAP.Net
 
     // Todo: Caching (Section 5.6 of [RFC7252])
     // Todo: Proxying (Section 5.7 of [RFC7252])
-    public abstract class Option
+    public class Option
     {
         private readonly int _optionNumber;
         /// <summary>
@@ -98,31 +97,121 @@ namespace CoAP.Net
         /// </summary>
         public OptionType Type { get=>_type; }
 
-        public virtual uint GetDefaultUInt()
+        protected readonly object _default;
+
+        protected object _value;
+
+        public uint DefaultUInt
         {
-            /// Must be overridden by sub class and return a default value if <see cref="Type"/> == <see cref="OptionType.UInt"/>
-            throw new InvalidCastException();
+            get
+            {
+                if (_type != OptionType.UInt)
+                    throw new InvalidCastException();
+                return _default == null ? 0 : (uint)_default;
+            }
         }
 
-        public virtual byte[] GetDefaultOpaque()
+        public uint ValueUInt
         {
-            /// Must be overridden by sub class and return a default value if <see cref="Type"/> == <see cref="OptionType.String"/>
-            throw new InvalidCastException();
+            get
+            {
+                if (_type != OptionType.UInt)
+                    throw new InvalidCastException();
+                return (uint)_value;
+            }
+            set
+            {
+                if (_type != OptionType.UInt)
+                    throw new InvalidCastException();
+                _value = value;
+            }
         }
 
-        public virtual string GetDefaultString()
+        public byte[] DefaultOpaque
         {
-            /// Must be overridden by sub class and return a default value if <see cref="Type"/> == <see cref="OptionType.String"/>
-            throw new InvalidCastException();
+            get
+            {
+                if (_type != OptionType.Opaque)
+                    throw new InvalidCastException();
+                return (byte[])_default;
+            }
         }
 
-        protected Option(int optionNumber, int minLength = 0, int maxLength = 0, bool isRepeatable = false, OptionType type = OptionType.Empty)
+        public byte[] ValueOpaque
+        {
+            get
+            {
+                if (_type != OptionType.Opaque)
+                    throw new InvalidCastException();
+                return (byte[])_value;
+            }
+            set
+            {
+                if (_type != OptionType.Opaque)
+                    throw new InvalidCastException();
+                _value = value;
+            }
+        }
+
+        public string DefaultString
+        {
+            get
+            {
+                if (_type != OptionType.String)
+                    throw new InvalidCastException();
+                return (string)_default;
+            }
+        }
+
+        public string ValueString
+        {
+            get
+            {
+                if (_type != OptionType.String)
+                    throw new InvalidCastException();
+                return (string)_value;
+            }
+            set
+            {
+                if (_type != OptionType.String)
+                    throw new InvalidCastException();
+                _value = value;
+            }
+        }
+
+        protected Option(int optionNumber, int minLength = 0, int maxLength = 0, bool isRepeatable = false, OptionType type = OptionType.Empty, object defaultValue = null)
         {
             _optionNumber = optionNumber;
             _type = type;
             _minLength = minLength;
             _maxLength = maxLength;
             _isRepeatable = isRepeatable;
+            _default = defaultValue;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var option = obj as Option;
+            if (option == null)
+                return base.Equals(obj);
+
+            if (option._optionNumber != _optionNumber)
+                return false;
+            // Asume all other parameters of the option match; Only focus on the value
+
+            switch (_type)
+            {
+                case OptionType.Empty:
+                    return true;
+                case OptionType.UInt:
+                    return (uint)option._value == (uint)_value;
+                case OptionType.Opaque:
+                    return ((byte[])option._value).SequenceEqual((byte[])_value);
+                case OptionType.String:
+                    return ((string)option._value).Equals((string)_value, StringComparison.Ordinal);
+                default:
+                    throw new InvalidOperationException();
+            }
         }
     }
 }

@@ -24,7 +24,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(8, option.MaxLength, "MaxLength is incorrect");
 
             Assert.AreEqual(OptionType.Opaque, option.Type, "Type is incorrect");
-            Assert.AreEqual(null, option.GetDefaultOpaque(), "Default value is incorrect");
+            Assert.AreEqual(null, option.DefaultOpaque, "Default value is incorrect");
         }
 
         [TestMethod]
@@ -45,7 +45,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(255, option.MaxLength, "MaxLength is incorrect");
 
             Assert.AreEqual(OptionType.String, option.Type, "Type is incorrect");
-            Assert.AreEqual(null, option.GetDefaultString(), "Default value is incorrect");
+            Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(8, option.MaxLength, "MaxLength is incorrect");
 
             Assert.AreEqual(OptionType.Opaque, option.Type, "Type is incorrect");
-            Assert.AreEqual(null, option.GetDefaultOpaque(), "Default value is incorrect");
+            Assert.AreEqual(null, option.DefaultOpaque, "Default value is incorrect");
         }
 
         [TestMethod]
@@ -107,7 +107,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(2, option.MaxLength, "MaxLength is incorrect");
 
             Assert.AreEqual(OptionType.UInt, option.Type, "Type is incorrect");
-            Assert.AreEqual(0u, option.GetDefaultUInt(), "Default value is incorrect");
+            Assert.AreEqual(0u, option.DefaultUInt, "Default value is incorrect");
         }
 
         [TestMethod]
@@ -128,7 +128,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(255, option.MaxLength, "MaxLength is incorrect");
 
             Assert.AreEqual(OptionType.String, option.Type, "Type is incorrect");
-            Assert.AreEqual(null, option.GetDefaultString(), "Default value is incorrect");
+            Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
         [TestMethod]
@@ -149,7 +149,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(255, option.MaxLength, "MaxLength is incorrect");
 
             Assert.AreEqual(OptionType.String, option.Type, "Type is incorrect");
-            Assert.AreEqual(null, option.GetDefaultString(), "Default value is incorrect");
+            Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
         
         [TestMethod]
@@ -170,7 +170,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(2, option.MaxLength, "MaxLength is incorrect");
 
             Assert.AreEqual(OptionType.UInt, option.Type, "Type is incorrect");
-            Assert.AreEqual(0u, option.GetDefaultUInt(), "Default value is incorrect");
+            Assert.AreEqual(0u, option.DefaultUInt, "Default value is incorrect");
         }
 
         [TestMethod]
@@ -191,7 +191,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(4, option.MaxLength, "MaxLength is incorrect");
 
             Assert.AreEqual(OptionType.UInt, option.Type, "Type is incorrect");
-            Assert.AreEqual(60u, option.GetDefaultUInt(), "Default value is incorrect");
+            Assert.AreEqual(60u, option.DefaultUInt, "Default value is incorrect");
         }
 
         [TestMethod]
@@ -212,7 +212,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(255, option.MaxLength, "MaxLength is incorrect");
 
             Assert.AreEqual(OptionType.String, option.Type, "Type is incorrect");
-            Assert.AreEqual(null, option.GetDefaultString(), "Default value is incorrect");
+            Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
         [TestMethod]
@@ -233,7 +233,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(2, option.MaxLength, "MaxLength is incorrect");
 
             Assert.AreEqual(OptionType.UInt, option.Type, "Type is incorrect");
-            Assert.AreEqual(0u, option.GetDefaultUInt(), "Default value is incorrect");
+            Assert.AreEqual(0u, option.DefaultUInt, "Default value is incorrect");
         }
 
         [TestMethod]
@@ -254,7 +254,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(255, option.MaxLength, "MaxLength is incorrect");
 
             Assert.AreEqual(OptionType.String, option.Type, "Type is incorrect");
-            Assert.AreEqual(null, option.GetDefaultString(), "Default value is incorrect");
+            Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
         [TestMethod]
@@ -275,7 +275,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(1034, option.MaxLength, "MaxLength is incorrect");
 
             Assert.AreEqual(OptionType.String, option.Type, "Type is incorrect");
-            Assert.AreEqual(null, option.GetDefaultString(), "Default value is incorrect");
+            Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
         [TestMethod]
@@ -296,7 +296,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(255, option.MaxLength, "MaxLength is incorrect");
 
             Assert.AreEqual(OptionType.String, option.Type, "Type is incorrect");
-            Assert.AreEqual(null, option.GetDefaultString(), "Default value is incorrect");
+            Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
         [TestMethod]
@@ -317,7 +317,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(4, option.MaxLength, "MaxLength is incorrect");
 
             Assert.AreEqual(OptionType.UInt, option.Type, "Type is incorrect");
-            Assert.AreEqual(0u, option.GetDefaultUInt(), "Default value is incorrect");
+            Assert.AreEqual(0u, option.DefaultUInt, "Default value is incorrect");
         }
     }
 }

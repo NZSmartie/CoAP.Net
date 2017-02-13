@@ -9,12 +9,7 @@ namespace CoAP.Net.Options
     /// </summary>
     public class LocationPath : Option
     {
-        public LocationPath() : base(optionNumber: 8, maxLength: 255, isRepeatable: true, type: OptionType.String) { }
-
-        public override string GetDefaultString()
-        {
-            return null;
-        }
+        public LocationPath() : base(optionNumber: RegisteredOptionNumber.LocationPath, maxLength: 255, isRepeatable: true, type: OptionType.String) { }
     }
 
     /// <summary>
@@ -22,11 +17,6 @@ namespace CoAP.Net.Options
     /// </summary>
     public class LocationQuery : Option
     {
-        public LocationQuery() : base(optionNumber: 20, maxLength: 255, isRepeatable: true, type: OptionType.String){ }
-
-        public override string GetDefaultString()
-        {
-            return null;
-        }
+        public LocationQuery() : base(optionNumber: RegisteredOptionNumber.LocationQuery, maxLength: 255, isRepeatable: true, type: OptionType.String){ }
     }
 }

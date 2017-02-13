@@ -15,12 +15,7 @@ namespace CoAP.Net.Options
     /// </summary>
     public class IfMatch : Option
     {
-        public IfMatch() : base(optionNumber: 1, maxLength: 8, isRepeatable: true, type: OptionType.Opaque) { }
-
-        public override byte[] GetDefaultOpaque()
-        {
-            return null;
-        }
+        public IfMatch() : base(optionNumber: RegisteredOptionNumber.IfMatch, maxLength: 8, isRepeatable: true, type: OptionType.Opaque) { }
     }
 
     /// <summary>
@@ -34,6 +29,6 @@ namespace CoAP.Net.Options
     /// </summary>
     public class IfNoneMatch : Option
     {
-        public IfNoneMatch() : base(optionNumber: 5) { }
+        public IfNoneMatch() : base(optionNumber: RegisteredOptionNumber.IfNoneMatch) { }
     }
 }
