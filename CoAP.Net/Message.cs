@@ -8,21 +8,13 @@ namespace CoAP.Net
     {
         Confirmable = 0,
         Nonnonfirmable = 1,
-        Acknowlledgemetn = 2,
-        Reset = 3
-    }
-
-    public enum Method
-    {
-        Get,
-        Post,
-        Put,
-        Delete
+        Acknowlledgement = 2,
+        Reset = 3,
     }
 
     public enum ResponseCodeClass
     {
-        None = 0,
+        Request = 0,
         Success = 200,
         ClientError = 400,
         ServerError = 500
@@ -30,16 +22,23 @@ namespace CoAP.Net
 
     /// <summary>
     /// Response Codes
-    /// <para>See section 5.9 of [RFC7252]</para>
+    /// <para>See section 5.9 of [RFC7252] and section 12.1 of [RFC7252]</para>
     /// </summary>
-    public enum ResponseCode
+    public enum MessageCode
     {
         None = 0,
+        // 0.xx Request
+        Get = 1,
+        Post = 2,
+        Put = 3,
+        Delete = 4,
+        // 2.xx Success
         Created = 201,
         Deleted = 202,
         Valid = 203,
         Changed = 204,
         Content = 205,
+        // 4.xx Client Error
         BadRequest = 400,
         Unauthorized = 401,
         BadOption = 402,
@@ -50,6 +49,7 @@ namespace CoAP.Net
         PreconditionFailed = 412,
         RequestEntityTooLarge = 413,
         UnsupportedContentFormat = 415,
+        // 5.xx Server Error
         InternalServerError = 500,
         NotImplemented = 501,
         BadGateway = 502,
@@ -60,12 +60,35 @@ namespace CoAP.Net
 
     public class Message
     {
-        private byte[] _header;
 
-        public int Version { get; set; }
+        private int _version = 1;
+        public int Version
+        {
+            get { return _version; }
+            set
+            {
+                if (value != 1)
+                    throw new ArgumentException("Only version 1 is supported");
+                _version = value;
+            }
+        }
+
         public MessageType Type { get; set; }
-        public byte[] Token { get; set; }
-        public int Id { get; set; }
+        public MessageCode Code { get; set; }
+
+        private byte[] _token = new byte[0];
+        public byte[] Token
+        {
+            get { return _token; }
+            set
+            {
+                if (value.Length > 8)
+                    throw new ArgumentException("Token length is too long");
+                _token = value;
+            }
+        }
+
+        public ushort Id { get; set; }
 
         private List<Option> _options = new List<Option>();
 
@@ -76,6 +99,95 @@ namespace CoAP.Net
         }
 
         public Message() { }
+
+        public byte[] Serialise()
+        {
+            var result = new List<byte>();
+            // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            // |Ver| T |  TKL  |      Code     |           Message ID          |
+            // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+            var type = (byte)Type;
+            result.Add((byte)(0x40 | ((type << 4) & 0x30) | _token.Length)); // Ver | T | TKL
+
+            result.Add((byte)Code); // Code
+
+            result.Add((byte)((Id >> 8) & 0xFF)); // Message ID (upper byte)
+            result.Add((byte)(Id & 0xFF));        // Message ID (lower byte)
+
+            // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            // | Token (if any, TKL bytes) ...
+            // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            foreach (var tb in _token)
+                result.Add(tb);
+
+            // Todo: encode Options in *ORDER* 
+            var currentOptionDelta = 0;
+            byte optCode = 0;
+            foreach (var option in _options)
+            {
+                var optionHeader = new List<byte>();
+                int optionDelta = option.OptionNumber - currentOptionDelta;
+                currentOptionDelta += optionDelta;
+
+                if (optionDelta >= 269)
+                {
+                    optCode = 0xE0;
+                    optionDelta -= 269;
+                    optionHeader.Add((byte)((optionDelta & 0xFF00u) >> 8));
+                    optionHeader.Add((byte)(optionDelta & 0xFFu));
+                }
+                else if (optionDelta >= 13)
+                {
+                    optCode = 0xD0;
+                    optionDelta -= 13;
+                    optionHeader.Add((byte)(optionDelta & 0xFFu));
+                }
+                else
+                {
+                    optCode = (byte)(optionDelta << 4);
+                }
+
+                optionDelta = option.Length;
+                if (optionDelta >= 269)
+                {
+                    result.Add((byte)(optCode | 0x0E));
+                    optionDelta -= 269;
+
+                    result.AddRange(optionHeader);
+                    result.Add((byte)((optionDelta & 0xFF00u) >> 8));
+                    result.Add((byte)(optionDelta & 0xFFu));
+                }
+                else if (optionDelta >= 13)
+                {
+                    result.Add((byte)(optCode | 0x0D));
+                    optionDelta -= 13;
+
+                    result.AddRange(optionHeader);
+                    result.Add((byte)(optionDelta & 0xFFu));
+                }
+                else
+                {
+                    result.Add((byte)(optCode | optionDelta));
+                    result.AddRange(optionHeader);
+                }
+
+                result.AddRange(option.GetBytes());
+            }
+
+            // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            // |1 1 1 1 1 1 1 1| Payload (if any) ...
+            // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+            //if (_payload.Length > 0)
+            //    result.Add(0xFF);
+            //
+            //foreach (var pb in _payload)
+            //    result.Add(pb);
+
+            return result.ToArray();
+
+        }
 
         public void FromUri(string input)
         {
@@ -110,12 +222,12 @@ namespace CoAP.Net
 
             if ((uri.Scheme == "coap" && !uri.IsDefaultPort && uri.Port != 5683) ||
                 (uri.Scheme == "coaps" && !uri.IsDefaultPort && uri.Port != 5684))
-                _options.Add(new Options.UriPort { ValueUInt = (ushort)uri.Port });
+                _options.Add(new Options.UriPort((ushort)uri.Port));
 
-            _options.AddRange(uri.AbsolutePath.Substring(1).Split(new[] { '/' }).Select(p => new Options.UriPath { ValueString = Uri.UnescapeDataString(p) }));
+            _options.AddRange(uri.AbsolutePath.Substring(1).Split(new[] { '/' }).Select(p => new Options.UriPath(Uri.UnescapeDataString(p))));
 
             if (uri.Query.Length > 0)
-                _options.AddRange(uri.Query.Substring(1).Split(new[] { '&' }).Select(p => new Options.UriQuery { ValueString = Uri.UnescapeDataString(p) }));
+                _options.AddRange(uri.Query.Substring(1).Split(new[] { '&' }).Select(p => new Options.UriQuery(Uri.UnescapeDataString(p))));
         }
     }
 }

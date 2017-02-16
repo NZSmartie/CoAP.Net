@@ -6,6 +6,7 @@ namespace CoAP.Net.Tests
     [TestClass]
     public class OptionsTest
     {
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionIfMatch()
         {
@@ -27,6 +28,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultOpaque, "Default value is incorrect");
         }
 
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionUriHost()
         {
@@ -48,6 +50,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionETag()
         {
@@ -69,6 +72,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultOpaque, "Default value is incorrect");
         }
 
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionIfNoneMatch()
         {
@@ -89,6 +93,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(OptionType.Empty, option.Type, "Type is incorrect");
         }
 
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionUriPort()
         {
@@ -110,6 +115,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(0u, option.DefaultUInt, "Default value is incorrect");
         }
 
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionLocationPath()
         {
@@ -131,6 +137,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionUriPath()
         {
@@ -152,6 +159,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
         
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionContentFormat()
         {
@@ -173,6 +181,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(0u, option.DefaultUInt, "Default value is incorrect");
         }
 
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionMaxAge()
         {
@@ -194,6 +203,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(60u, option.DefaultUInt, "Default value is incorrect");
         }
 
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionUriQuery()
         {
@@ -215,6 +225,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionAccept()
         {
@@ -236,6 +247,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(0u, option.DefaultUInt, "Default value is incorrect");
         }
 
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionLocationQuery()
         {
@@ -257,6 +269,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionProxyUri()
         {
@@ -278,6 +291,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionProxyScheme()
         {
@@ -299,6 +313,7 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
+        [TestCategory("Options")]
         [TestMethod]
         public void TestOptionSize1()
         {

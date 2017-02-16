@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Linq;
 
 namespace CoAP.Net
@@ -32,7 +33,8 @@ namespace CoAP.Net
         /// Gets whether the option should fail if not supported by the CoAP endpoint
         /// <para>See Section 5.4.1 of [RFC7252]</para>
         /// </summary>
-        public bool IsCritical {
+        public bool IsCritical
+        {
             get
             {
                 return (_optionNumber & 0x01) > 0;
@@ -70,36 +72,37 @@ namespace CoAP.Net
         public int OptionNumber { get => _optionNumber; }
 
         private readonly int _minLength;
-        
+
         /// <summary>
         /// Gets the minimum length supported by this option. 
         /// </summary>
-        public int MinLength { get=>_minLength; }
+        public int MinLength { get => _minLength; }
 
         private readonly int _maxLength;
 
         /// <summary>
         /// Gets the maximum length supported by this option. 
         /// </summary>
-        public int MaxLength { get=>_maxLength; }
+        public int MaxLength { get => _maxLength; }
 
         private bool _isRepeatable;
 
         /// <summary>
         /// Gets whether this option is allowed to be sent multiple times in a single CoAP message
         /// </summary>
-        public bool IsRepeatable { get=>_isRepeatable; }
+        public bool IsRepeatable { get => _isRepeatable; }
 
         private readonly OptionType _type;
 
         /// <summary>
         /// Gets the <see cref="OptionType"/> of this option.
         /// </summary>
-        public OptionType Type { get=>_type; }
+        public OptionType Type { get => _type; }
 
         protected readonly object _default;
 
-        protected object _value;
+        protected object _value = null;
+        protected int _length = 0;
 
         public uint DefaultUInt
         {
@@ -124,6 +127,16 @@ namespace CoAP.Net
                 if (_type != OptionType.UInt)
                     throw new InvalidCastException();
                 _value = value;
+                if (value > 0xFFFFFFu)
+                    _length = 4;
+                else if (value > 0xFFFFu)
+                    _length = 3;
+                else if (value > 0xFFu)
+                    _length = 2;
+                else if (value > 0u)
+                    _length = 1;
+                else
+                    _length = 0;
             }
         }
 
@@ -150,6 +163,7 @@ namespace CoAP.Net
                 if (_type != OptionType.Opaque)
                     throw new InvalidCastException();
                 _value = value;
+                _length = value == null ? 0 : value.Length;
             }
         }
 
@@ -176,7 +190,34 @@ namespace CoAP.Net
                 if (_type != OptionType.String)
                     throw new InvalidCastException();
                 _value = value;
+                _length = value == null ? 0 : Encoding.UTF8.GetByteCount(value);
             }
+        }
+
+        public int Length { get => _length; }
+
+        public byte[] GetBytes()
+        {
+            if (_type == OptionType.Empty)
+                return new byte[0];
+
+            if (_type == OptionType.Opaque)
+                return (byte[])_value;
+
+            if (_type == OptionType.String)
+                return Encoding.UTF8.GetBytes((string)_value);
+
+            var data = new byte[_length];
+            uint i = 0, value = (uint)_value;
+            if (_length == 4)
+                data[i++] = (byte)((value & 0xFF000000u) >> 24);
+            if (_length >= 3)
+                data[i++] = (byte)((value & 0xFF0000u) >> 16);
+            if (_length >= 2)
+                data[i++] = (byte)((value & 0xFF00u) >> 8);
+            if (_length >= 1)
+                data[i++] = (byte)(value & 0xFF0000u);
+            return data;
         }
 
         protected Option(int optionNumber, int minLength = 0, int maxLength = 0, bool isRepeatable = false, OptionType type = OptionType.Empty, object defaultValue = null)
