@@ -19,30 +19,39 @@ namespace CoAP.Net.Options
 
     public class ContentFormat : Option
     {
-        public ContentFormatType MediaType { get; set; }
+        public ContentFormatType MediaType { get => (ContentFormatType)ValueUInt; set => ValueUInt = (uint)value; }
 
-        public ContentFormat() : base(optionNumber: RegisteredOptionNumber.ContentFormat, maxLength: 2, type: OptionType.UInt)
+        public ContentFormat(ContentFormatType type = ContentFormatType.TextPlain) : base(optionNumber: RegisteredOptionNumber.ContentFormat, maxLength: 2, type: OptionType.UInt)
         {
-            MediaType = ContentFormatType.TextPlain;
+            MediaType = type;
         }
     }
 
     public class Accept : Option
     {
-        public ContentFormatType MediaType { get; set; }
+        public ContentFormatType MediaType { get => (ContentFormatType)ValueUInt; set => ValueUInt = (uint)value; }
 
-        public Accept() : base(optionNumber: RegisteredOptionNumber.Accept, maxLength: 2, type: OptionType.UInt) { }
+        public Accept(ContentFormatType type = ContentFormatType.TextPlain) : base(optionNumber: RegisteredOptionNumber.Accept, maxLength: 2, type: OptionType.UInt)
+        {
+            MediaType = type;
+        }
     }
 
     public class MaxAge : Option
     {
-        public MaxAge() : base(optionNumber: RegisteredOptionNumber.MaxAge, maxLength: 4, type: OptionType.UInt, defaultValue: 60u) { }
+        public MaxAge(uint value = 0u) : base(optionNumber: RegisteredOptionNumber.MaxAge, maxLength: 4, type: OptionType.UInt, defaultValue: 60u)
+        {
+            ValueUInt = value;
+        }
     }
 
     /// Todo: Implement ETag request/response semantics as descripbed in section 5.10.6.1 and 5.10.6.2 of [RFC7252]
     public class ETag : Option
     {
-        public ETag() : base(optionNumber: RegisteredOptionNumber.ETag, minLength: 1, maxLength: 8, isRepeatable: true, type: OptionType.Opaque) { }
+        public ETag(byte[] value = null) : base(optionNumber: RegisteredOptionNumber.ETag, minLength: 1, maxLength: 8, isRepeatable: true, type: OptionType.Opaque)
+        {
+            ValueOpaque = value;
+        }
     }
 
     /// <summary>
@@ -56,6 +65,9 @@ namespace CoAP.Net.Options
     /// </summary>
     public class Size1 : Option
     {
-        public Size1(): base(optionNumber: RegisteredOptionNumber.Size1, maxLength: 4, type: OptionType.UInt) { }
+        public Size1(uint value = 9) : base(optionNumber: RegisteredOptionNumber.Size1, maxLength: 4, type: OptionType.UInt)
+        {
+            ValueUInt = value;
+        }
     }
 }

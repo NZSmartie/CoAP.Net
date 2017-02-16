@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -26,7 +27,7 @@ namespace CoAP.Net.Tests
             message.Code = MessageCode.Valid;
             message.Id = 1235;
 
-            expected = new byte[] { 0x60, 0xCB, 0x04, 0xD3 };
+            expected = new byte[] { 0x60, 0x43, 0x04, 0xD3 };
             actual = message.Serialise();
 
             Assert.IsTrue(expected.SequenceEqual(actual));
@@ -48,6 +49,28 @@ namespace CoAP.Net.Tests
             var expected = new byte[] {
                 0x44, 0x01, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xBB, 0x2E, 0x77, 0x65, 0x6C, 0x6C, 0x2D,
                 0x6B, 0x6E, 0x6F, 0x77, 0x6E, 0x04, 0x63, 0x6F, 0x72, 0x65
+            };
+            var actual = message.Serialise();
+
+            Assert.IsTrue(expected.SequenceEqual(actual));
+        }
+
+        [TestCategory("Messages"), TestCategory("Encoding")]
+        [TestMethod]
+        public void TestMessageResponse()
+        {
+            var message = new Message();
+            message.Type = MessageType.Acknowlledgement;
+            message.Code = MessageCode.Content;
+            message.Id = 16962;
+            message.Token = new byte[] { 0xde, 0xad, 0xbe, 0xef };
+            message.Options.Add(new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat));
+
+            message.Payload = Encoding.UTF8.GetBytes("<.well-known/core/>");
+
+            var expected = new byte[] {
+                0x64, 0x45, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc1, 0x28, 0xff, 0x3c, 0x2e, 0x77, 0x65, 0x6c, 0x6c, 0x2d, 0x6b, 0x6e,
+                0x6f, 0x77, 0x6e, 0x2f, 0x63, 0x6f, 0x72, 0x65, 0x2f, 0x3e
             };
             var actual = message.Serialise();
 

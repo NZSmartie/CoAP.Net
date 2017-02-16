@@ -216,7 +216,7 @@ namespace CoAP.Net
             if (_length >= 2)
                 data[i++] = (byte)((value & 0xFF00u) >> 8);
             if (_length >= 1)
-                data[i++] = (byte)(value & 0xFF0000u);
+                data[i++] = (byte)(value & 0xFFu);
             return data;
         }
 

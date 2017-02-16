@@ -98,11 +98,14 @@ namespace CoAP.Net
             set { _options = value; }
         }
 
+        public byte[] Payload { get; set; }
+
         public Message() { }
 
         public byte[] Serialise()
         {
             var result = new List<byte>();
+            byte optCode = 0;
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             // |Ver| T |  TKL  |      Code     |           Message ID          |
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -110,7 +113,9 @@ namespace CoAP.Net
             var type = (byte)Type;
             result.Add((byte)(0x40 | ((type << 4) & 0x30) | _token.Length)); // Ver | T | TKL
 
-            result.Add((byte)Code); // Code
+            optCode = (byte)(((int)Code / 100) << 5); // Series
+            optCode |= (byte)((int)Code % 100); // Series Code
+            result.Add(optCode); // Code
 
             result.Add((byte)((Id >> 8) & 0xFF)); // Message ID (upper byte)
             result.Add((byte)(Id & 0xFF));        // Message ID (lower byte)
@@ -121,9 +126,11 @@ namespace CoAP.Net
             foreach (var tb in _token)
                 result.Add(tb);
 
+            // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            // | Options (if any) ...
+            // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             // Todo: encode Options in *ORDER* 
             var currentOptionDelta = 0;
-            byte optCode = 0;
             foreach (var option in _options)
             {
                 var optionHeader = new List<byte>();
@@ -179,11 +186,11 @@ namespace CoAP.Net
             // |1 1 1 1 1 1 1 1| Payload (if any) ...
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-            //if (_payload.Length > 0)
-            //    result.Add(0xFF);
-            //
-            //foreach (var pb in _payload)
-            //    result.Add(pb);
+            if (Payload != null && Payload.Length > 0)
+            {
+                result.Add(0xFF);
+                result.AddRange(Payload);
+            }
 
             return result.ToArray();
 
