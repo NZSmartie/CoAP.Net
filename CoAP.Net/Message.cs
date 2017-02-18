@@ -246,12 +246,52 @@ namespace CoAP.Net
             if ((data[0] & 0xC0) != 0x40)
                 throw new ArgumentException("Only verison 1 of CoAP protocl is supported");
 
+            var offset = 4;
+
             Type = (MessageType)((data[0] & 0x30) >> 4);
-            Code = (MessageCode)data[1];
+
+            var code = ((data[1] & 0xE0) >> 5) * 100;
+            code += data[1] & 0x1F;
+            Code = (MessageCode)code;
+
             Id = (ushort)((data[2] << 8) | (data[3]));
 
+            offset += data[0] & 0x0F;
             if ((data[0] & 0x0F) > 0)
                 _token = data.Skip(4).Take(data[0] & 0x0F).ToArray();
+
+            var optionDelta = 0;
+            for(var i = offset; i<data.Length; i++)
+            {
+                // check for payload marker
+                if (data[i] == 0xFF)
+                {
+                    Payload = data.Skip(i + 1).ToArray();
+                    return;
+                }
+
+                var optCode = (data[i] & 0xF0) >> 4;
+                var dataLen = (data[i] & 0x0F);
+
+                if (optCode == 13)
+                    optCode = data[i++ + 1] + 13;
+                else if (optCode == 14)
+                {
+                    optCode = data[i++ + 1] << 8;
+                    optCode |= data[i++ + 1] + 269;
+                    
+                }
+                if (dataLen == 13)
+                    dataLen = data[i++ + 1];
+                else if (dataLen == 14)
+                {
+                    dataLen = data[i++ + 1] << 8;
+                    dataLen |= data[i++ + 1] + 269;
+                }
+                Options.Add(Net.Options.Factory.CreateFromOptionNumber(optCode + optionDelta, data.Skip(i+1).Take(dataLen).ToArray()));
+                i += dataLen;
+                optionDelta += optCode;
+            }
 
 
         }

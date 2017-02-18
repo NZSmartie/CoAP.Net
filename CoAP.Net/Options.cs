@@ -220,6 +220,36 @@ namespace CoAP.Net
             return data;
         }
 
+        public void FromBytes(byte[] data)
+        {
+            if (_type == OptionType.Empty && (data == null || data.Length > 0))
+                throw new InvalidCastException("Empty option does not accept any data");
+
+            if (_type == OptionType.Opaque)
+            {
+                ValueOpaque = data;
+                return;
+            }
+
+            if (_type == OptionType.String)
+            {
+                ValueString = Encoding.UTF8.GetString(data);
+                return;
+            }
+
+            
+            uint value = 0;
+            if (data.Length == 4)
+                value = (uint)(data[3] << 24);
+            if (data.Length >= 3)
+                value |= (uint)(data[2] << 16);
+            if (data.Length >= 2)
+                value |= (uint)(data[1] << 8);
+            if (data.Length >= 1)
+                value |= data[0];
+            ValueUInt = value;
+        }
+
         protected Option(int optionNumber, int minLength = 0, int maxLength = 0, bool isRepeatable = false, OptionType type = OptionType.Empty, object defaultValue = null)
         {
             _optionNumber = optionNumber;
