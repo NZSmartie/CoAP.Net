@@ -237,6 +237,25 @@ namespace CoAP.Net
             return result.ToArray();
         }
 
+        public void Deserialise(byte[] data)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
+            if (data.Length < 4)
+                throw new ArgumentException("Message should be atleast 4 bytes long");
+            if ((data[0] & 0xC0) != 0x40)
+                throw new ArgumentException("Only verison 1 of CoAP protocl is supported");
+
+            Type = (MessageType)((data[0] & 0x30) >> 4);
+            Code = (MessageCode)data[1];
+            Id = (ushort)((data[2] << 8) | (data[3]));
+
+            if ((data[0] & 0x0F) > 0)
+                _token = data.Skip(4).Take(data[0] & 0x0F).ToArray();
+
+
+        }
+
         /// <summary>
         /// Shortcut method to create a <see cref="Message"/> with its optinos pre-populated to match the Uri.
         /// </summary>

@@ -92,6 +92,47 @@ namespace CoAP.Net.Tests
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
 
+        [TestCategory("Messages"), TestCategory("Decoding")]
+        [TestMethod]
+        public void TestMessageDecodeRequest()
+        {
+            this._message.Deserialise(new byte[] {
+                0x44, 0x01, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xBB, 0x2E, 0x77, 0x65, 0x6C, 0x6C, 0x2D,
+                0x6B, 0x6E, 0x6F, 0x77, 0x6E, 0x04, 0x63, 0x6F, 0x72, 0x65
+            });
+
+            Assert.AreEqual(MessageType.Confirmable, _message.Type);
+            Assert.AreEqual(MessageCode.Get, _message.Code);
+            Assert.AreEqual(16962, _message.Id);
+
+            Assert.IsTrue(new byte[] { 0xde, 0xad, 0xbe, 0xef }.SequenceEqual(_message.Token));
+
+            Assert.IsTrue(new List<Option> {
+                new Options.UriPath(".well-known"),
+                new Options.UriPath("core"),
+            }.SequenceEqual(_message.Options));
+        }
+
+        [TestCategory("Messages"), TestCategory("Decoding")]
+        [TestMethod]
+        public void TestMessageDecodeResponse()
+        {
+            _message.Deserialise(new byte[] {
+                0x64, 0x45, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc1, 0x28, 0xff, 0x3c, 0x2e, 0x77, 0x65, 0x6c, 0x6c, 0x2d, 0x6b, 0x6e,
+                0x6f, 0x77, 0x6e, 0x2f, 0x63, 0x6f, 0x72, 0x65, 0x2f, 0x3e
+            });
+
+            Assert.AreEqual(MessageType.Acknowledgement, _message.Type);
+            Assert.AreEqual(MessageCode.Content, _message.Code);
+            Assert.AreEqual(16962, _message.Id);
+            Assert.IsTrue(new byte[] { 0xde, 0xad, 0xbe, 0xef }.SequenceEqual(_message.Token));
+            Assert.IsTrue(new List<Option>{
+                new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat),
+            }.SequenceEqual(_message.Options));
+
+            Assert.IsTrue(Encoding.UTF8.GetBytes("<.well-known/core/>").SequenceEqual(_message.Payload));
+        }
+
         [TestCategory("Messages"), TestCategory("Options")]
         [TestMethod]
         public void TestMessageFromUri()
