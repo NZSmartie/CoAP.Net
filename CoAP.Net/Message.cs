@@ -4,15 +4,21 @@ using System.Linq;
 
 namespace CoAP.Net
 {
+    /// <summary>
+    /// <see cref="Message.Type"/>
+    /// </summary>
     public enum MessageType
     {
         Confirmable = 0,
         Nonnonfirmable = 1,
-        Acknowlledgement = 2,
+        Acknowledgement = 2,
         Reset = 3,
     }
 
-    public enum ResponseCodeClass
+    /// <summary>
+    /// Class pages used to indicate if a <see cref="MessageCode"/> value is a Request, or a Response or an error.
+    /// </summary>
+    public enum MessageCodeClass
     {
         Request = 0,
         Success = 200,
@@ -62,9 +68,13 @@ namespace CoAP.Net
     {
 
         private int _version = 1;
+        /// <summary>
+        /// Gets or sets the protocol version. 
+        /// As of [RFC7252], only version 1 is supported. any other value is reserved.
+        /// </summary>
         public int Version
         {
-            get { return _version; }
+            get => _version;
             set
             {
                 if (value != 1)
@@ -73,48 +83,81 @@ namespace CoAP.Net
             }
         }
 
+        /// <summary>
+        /// Gets or Sets if the message should be responded to by the server. 
+        /// <para>When set to <see cref="MessageType.Reset"/>, this message indicates that a <see cref="MessageType.Confirmable"/> message was rejected by the server endpoint.</para>
+        /// <para>When set to <see cref="MessageType.Acknowledgement"/>, this message indicates it was accepted (and responded) by the server enpoint.</para>
+        /// </summary>
         public MessageType Type { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the Message Code. 
+        /// <para>The class indicates if the message is <see cref="MessageCodeClass.Request"/>, <see cref="MessageCodeClass.Success"/>, <see cref="MessageCodeClass.ClientError"/>, or a <see cref="MessageCodeClass.ServerError"/></para>
+        /// <para>See section 2.2 of [RFC7252]</para>
+        /// </summary>
         public MessageCode Code { get; set; }
 
         private byte[] _token = new byte[0];
+        /// <summary>
+        /// Gets or sets a opaque token used to correlate messages over multiple responses (i.e. when a reponse is not piggy-backed to the acknowledgement.
+        /// This token may be any size up to 8 bytes long. When set to a zero length, it will not be serialised as part of the message.
+        /// </summary>
         public byte[] Token
         {
-            get { return _token; }
+            get => _token;
             set
             {
                 if (value.Length > 8)
-                    throw new ArgumentException("Token length is too long");
+                    throw new ArgumentException("Token length can not be more than 8 bytes long");
                 _token = value;
             }
         }
 
+        /// <summary>
+        /// Gets or Sets a Message ID to pair Requests to their immediate Responses.
+        /// </summary>
         public ushort Id { get; set; }
 
         private List<Option> _options = new List<Option>();
-
+        /// <summary>
+        /// Gets or sets the list of options to be encoded into the message header. The order of these options are Critical and spcial care is needed when adding new items.
+        /// <para>Todo: Sort items based on <see cref="Option.OptionNumber"/> and preserve options with identical Optionnumbers</para>
+        /// /// <para>Todo: Throw exception when non-repeatable <see cref="Option"/>s are addedd</para>
+        /// </summary>
         public List<Option> Options
         {
             get { return _options; }
             set { _options = value; }
         }
 
+        /// <summary>
+        /// Gets or Sets The paylaod of the message.
+        /// </summary>
+        /// <remarks>Check (or add) <see cref="Options.ContentFormat"/> in <see cref="Message.Options"/> for the format of the payload.</remarks>
         public byte[] Payload { get; set; }
 
         public Message() { }
 
+        /// <summary>
+        /// Serialises the message into bytes, ready to be encrypted or transported to the destination endpoint.
+        /// </summary>
+        /// <returns></returns>
         public byte[] Serialise()
         {
             var result = new List<byte>();
             byte optCode = 0;
+
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             // |Ver| T |  TKL  |      Code     |           Message ID          |
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
             var type = (byte)Type;
             result.Add((byte)(0x40 | ((type << 4) & 0x30) | _token.Length)); // Ver | T | TKL
 
-            optCode = (byte)(((int)Code / 100) << 5); // Series
-            optCode |= (byte)((int)Code % 100); // Series Code
+            // +-+-+-+-+-+-+-+-+
+            // |class|  detail | (See section 5.2 of [RFC7252])
+            // +-+-+-+-+-+-+-+-+
+            optCode = (byte)(((int)Code / 100) << 5); // Class
+            optCode |= (byte)((int)Code % 100);       // Detail
             result.Add(optCode); // Code
 
             result.Add((byte)((Id >> 8) & 0xFF)); // Message ID (upper byte)
@@ -123,8 +166,7 @@ namespace CoAP.Net
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             // | Token (if any, TKL bytes) ...
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-            foreach (var tb in _token)
-                result.Add(tb);
+            result.AddRange(_token);
 
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             // | Options (if any) ...
@@ -188,14 +230,30 @@ namespace CoAP.Net
 
             if (Payload != null && Payload.Length > 0)
             {
-                result.Add(0xFF);
+                result.Add(0xFF); // Payload marker
                 result.AddRange(Payload);
             }
 
             return result.ToArray();
-
         }
 
+        /// <summary>
+        /// Shortcut method to create a <see cref="Message"/> with its optinos pre-populated to match the Uri.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static Message CreateFromUri(string input)
+        {
+            var message = new Message();
+            message.FromUri(input);
+            return message;
+        }
+
+        /// <summary>
+        /// Popualtes <see cref="Message.Options"/> to match the Uri.
+        /// </summary>
+        /// <remarks>Any potentially conflicting <see cref="Option"/>s are stripped after URI validation and before processing.</remarks>
+        /// <param name="input"></param>
         public void FromUri(string input)
         {
             // Will throw exceptions that the application code can handle
@@ -217,7 +275,7 @@ namespace CoAP.Net
             switch (uri.HostNameType)
             {
                 case UriHostNameType.Dns:
-                    _options.Add(new Options.UriHost { ValueString = uri.IdnHost });
+                    _options.Add(new Options.UriHost(uri.IdnHost));
                     break;
                 case UriHostNameType.IPv4:
                 case UriHostNameType.IPv6:
