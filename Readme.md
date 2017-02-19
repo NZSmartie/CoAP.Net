@@ -1,10 +1,8 @@
 # CoAP.Net
 
-My attempt at writing a CoAP library for .Net Core that is compliant with [RFC7252]
+My attempt at writing a CoAP library for .Net Standard (1.3) that is compliant with [RFC7252]
 
-No attempt will be made to make this library backwards complaint with its drafts
-
-**Note:** This project was created with Visual Studio 2017 RC, thus older versions MSBuild/XBuild doesn't like the .csproj files
+**Note:** This project was created with Visual Studio 2017 RC, thus older versions MSBuild/XBuild will nto accept the .csproj files
 
 ## Motivation
 

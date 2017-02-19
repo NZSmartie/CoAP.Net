@@ -288,7 +288,7 @@ namespace CoAP.Net
                     dataLen = data[i++ + 1] << 8;
                     dataLen |= data[i++ + 1] + 269;
                 }
-                Options.Add(Net.Options.Factory.CreateFromOptionNumber(optCode + optionDelta, data.Skip(i+1).Take(dataLen).ToArray()));
+                Options.Add(Net.Options.Factory.Create(optCode + optionDelta, data.Skip(i+1).Take(dataLen).ToArray()));
                 i += dataLen;
                 optionDelta += optCode;
             }

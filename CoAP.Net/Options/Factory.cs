@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CoAP.Net.Options
 {
@@ -11,63 +10,54 @@ namespace CoAP.Net.Options
 
         static Factory()
         {
-            AddOption<UriHost>();
-            AddOption<UriPort>();
-            AddOption<UriPath>();
-            AddOption<UriQuery>();
+            Register<UriHost>();
+            Register<UriPort>();
+            Register<UriPath>();
+            Register<UriQuery>();
 
-            AddOption<ProxyUri>();
-            AddOption<ProxyScheme>();
+            Register<ProxyUri>();
+            Register<ProxyScheme>();
 
-            AddOption<LocationPath>();
-            AddOption<LocationQuery>();
+            Register<LocationPath>();
+            Register<LocationQuery>();
 
-            AddOption<ContentFormat>();
-            AddOption<Accept>();
-            AddOption<MaxAge>();
-            AddOption<ETag>();
-            AddOption<Size1>();
+            Register<ContentFormat>();
+            Register<Accept>();
+            Register<MaxAge>();
+            Register<ETag>();
+            Register<Size1>();
 
-            AddOption<IfMatch>();
-            AddOption<IfNoneMatch>();
+            Register<IfMatch>();
+            Register<IfNoneMatch>();
         }
 
-        public static void AddOption<T>()
+        public static void Register<T>() where T : Option
         {
             Type type = typeof(T);
-            AddOption(type);
+            Register(type);
         }
 
-        public static void AddOption(Type type)
+        public static void Register(Type type)
         {
             if(!type.GetTypeInfo().IsSubclassOf(typeof(Option)))
                 throw new ArgumentException(string.Format("Type must be a subclass of {0}", typeof(Option).FullName));
 
-            _options.Add(Construct(type).OptionNumber, type);
+            var option = (Option)Activator.CreateInstance(type);
+            _options.Add(option.OptionNumber, type);
         }
 
-        public static Option CreateFromOptionNumber(int number, byte[] data = null)
+        public static Option Create(int number, byte[] data = null)
         {
             // Let the exception get thrown if index is out of range
-            var option = Construct(_options[number]);
+            Type type = null;
+            if (!_options.TryGetValue(number, out type))
+                throw new ArgumentException(string.Format("Unsupported option number {0}", number));
+
+            var option = (Option)Activator.CreateInstance(type);
             if (data != null)
                 option.FromBytes(data);
 
             return option;
         }
-
-        private static Option Construct(Type type) {
-            var constructor = type.GetConstructor(Type.EmptyTypes);
-            if (constructor == null)
-                throw new InvalidOperationException(string.Format("Please provide a default constructor that accepts no parameters for {0}", type.FullName));
-
-            var obj = constructor.Invoke(null);
-
-            Option option = obj as Option;
-            if (option == null)
-                throw new InvalidOperationException();
-            return option;
-        }
-
     }
 }
