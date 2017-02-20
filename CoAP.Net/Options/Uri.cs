@@ -6,7 +6,7 @@ using CoAP;
 
 namespace CoAP.Net.Options
 {
-    public class UriHost : Option
+    public class UriHost : CoapOption
     {
         public UriHost() : base(optionNumber: RegisteredOptionNumber.UriHost, minLength: 1, maxLength: 255, type: OptionType.String)
         {
@@ -20,7 +20,7 @@ namespace CoAP.Net.Options
         }
     }
 
-    public class UriPort : Option
+    public class UriPort : CoapOption
     {
         public UriPort() : base(optionNumber: RegisteredOptionNumber.UriPort, minLength: 0, maxLength: 2, type: OptionType.UInt)
         {
@@ -33,7 +33,7 @@ namespace CoAP.Net.Options
         }
     }
 
-    public class UriPath : Option
+    public class UriPath : CoapOption
     {
         public UriPath() : base(optionNumber: RegisteredOptionNumber.UriPath, minLength: 0, maxLength: 255, isRepeatable: true, type: OptionType.String)
         {
@@ -46,7 +46,7 @@ namespace CoAP.Net.Options
         }
     }
 
-    public class UriQuery : Option
+    public class UriQuery : CoapOption
     {
         public UriQuery() : base(optionNumber: RegisteredOptionNumber.UriQuery, minLength: 0, maxLength: 255, isRepeatable: true, type: OptionType.String)
         {

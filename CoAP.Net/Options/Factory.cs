@@ -31,7 +31,7 @@ namespace CoAP.Net.Options
             Register<IfNoneMatch>();
         }
 
-        public static void Register<T>() where T : Option
+        public static void Register<T>() where T : CoapOption
         {
             Type type = typeof(T);
             Register(type);
@@ -39,21 +39,21 @@ namespace CoAP.Net.Options
 
         public static void Register(Type type)
         {
-            if(!type.GetTypeInfo().IsSubclassOf(typeof(Option)))
-                throw new ArgumentException(string.Format("Type must be a subclass of {0}", typeof(Option).FullName));
+            if(!type.GetTypeInfo().IsSubclassOf(typeof(CoapOption)))
+                throw new ArgumentException(string.Format("Type must be a subclass of {0}", typeof(CoapOption).FullName));
 
-            var option = (Option)Activator.CreateInstance(type);
+            var option = (CoapOption)Activator.CreateInstance(type);
             _options.Add(option.OptionNumber, type);
         }
 
-        public static Option Create(int number, byte[] data = null)
+        public static CoapOption Create(int number, byte[] data = null)
         {
             // Let the exception get thrown if index is out of range
             Type type = null;
             if (!_options.TryGetValue(number, out type))
                 throw new ArgumentException(string.Format("Unsupported option number {0}", number));
 
-            var option = (Option)Activator.CreateInstance(type);
+            var option = (CoapOption)Activator.CreateInstance(type);
             if (data != null)
                 option.FromBytes(data);
 

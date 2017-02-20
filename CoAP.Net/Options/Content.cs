@@ -58,7 +58,7 @@ namespace CoAP.Net.Options
     /// Content-Format identifier that is defined in the "CoAP Content-Formats" registry (Section 12.3 of [RFC7252]). 
     /// <para>See section 5.10.3 of [RFC7252]</para>
     /// </summary>
-    public class ContentFormat : Option
+    public class ContentFormat : CoapOption
     {
         public ContentFormatType MediaType { get => (ContentFormatType)ValueUInt; set => ValueUInt = (uint)value; }
 
@@ -79,7 +79,7 @@ namespace CoAP.Net.Options
     /// "CoAP Content-Formats" registry (Section 12.3 of [RFC7252]).
     /// <para>See section 5.10.4 of [RFC7252]</para>
     /// </summary
-    public class Accept : Option
+    public class Accept : CoapOption
     {
         public ContentFormatType MediaType { get => (ContentFormatType)ValueUInt; set => ValueUInt = (uint)value; }
 
@@ -105,7 +105,7 @@ namespace CoAP.Net.Options
     /// Max-Age SHOULD update the value before each retransmission.  (See also Section 5.7.1. of [RFC7252])</para>
     /// <para>See section 5.10.5 of [RFC7252]</para>
     /// </summary>
-    public class MaxAge : Option
+    public class MaxAge : CoapOption
     {
         public MaxAge() : base(optionNumber: RegisteredOptionNumber.MaxAge, maxLength: 4, type: OptionType.UInt, defaultValue: 60u)
         {
@@ -132,7 +132,7 @@ namespace CoAP.Net.Options
     /// <para>See section 5.10.6 of [RFC7252]</para>
     /// </summary>
     /// Todo: Implement ETag request/response semantics as descripbed in section 5.10.6.1 and 5.10.6.2 of [RFC7252]
-    public class ETag : Option
+    public class ETag : CoapOption
     {
         public ETag() : base(optionNumber: RegisteredOptionNumber.ETag, minLength: 1, maxLength: 8, isRepeatable: true, type: OptionType.Opaque)
         { 
@@ -154,7 +154,7 @@ namespace CoAP.Net.Options
     /// able and willing to handle.
     /// <para>See section 5.10.9 of [RFC7252]</para>
     /// </summary>
-    public class Size1 : Option
+    public class Size1 : CoapOption
     {
         public Size1() : base(optionNumber: RegisteredOptionNumber.Size1, maxLength: 4, type: OptionType.UInt)
         {

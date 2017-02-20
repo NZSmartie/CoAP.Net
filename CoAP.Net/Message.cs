@@ -5,9 +5,9 @@ using System.Linq;
 namespace CoAP.Net
 {
     /// <summary>
-    /// <see cref="Message.Type"/>
+    /// <see cref="CoapMessage.Type"/>
     /// </summary>
-    public enum MessageType
+    public enum CoapMessageType
     {
         Confirmable = 0,
         Nonnonfirmable = 1,
@@ -16,9 +16,9 @@ namespace CoAP.Net
     }
 
     /// <summary>
-    /// Class pages used to indicate if a <see cref="MessageCode"/> value is a Request, or a Response or an error.
+    /// Class pages used to indicate if a <see cref="CoapMessageCode"/> value is a Request, or a Response or an error.
     /// </summary>
-    public enum MessageCodeClass
+    public enum CoapMessageCodeClass
     {
         Request = 0,
         Success = 200,
@@ -30,7 +30,7 @@ namespace CoAP.Net
     /// Response Codes
     /// <para>See section 5.9 of [RFC7252] and section 12.1 of [RFC7252]</para>
     /// </summary>
-    public enum MessageCode
+    public enum CoapMessageCode
     {
         None = 0,
         // 0.xx Request
@@ -64,7 +64,7 @@ namespace CoAP.Net
         ProxyingNotSupported = 505
     }
 
-    public class Message
+    public class CoapMessage
     {
 
         private int _version = 1;
@@ -85,17 +85,17 @@ namespace CoAP.Net
 
         /// <summary>
         /// Gets or Sets if the message should be responded to by the server. 
-        /// <para>When set to <see cref="MessageType.Reset"/>, this message indicates that a <see cref="MessageType.Confirmable"/> message was rejected by the server endpoint.</para>
-        /// <para>When set to <see cref="MessageType.Acknowledgement"/>, this message indicates it was accepted (and responded) by the server enpoint.</para>
+        /// <para>When set to <see cref="CoapMessageType.Reset"/>, this message indicates that a <see cref="CoapMessageType.Confirmable"/> message was rejected by the server endpoint.</para>
+        /// <para>When set to <see cref="CoapMessageType.Acknowledgement"/>, this message indicates it was accepted (and responded) by the server enpoint.</para>
         /// </summary>
-        public MessageType Type { get; set; }
+        public CoapMessageType Type { get; set; }
 
         /// <summary>
         /// Gets or Sets the Message Code. 
-        /// <para>The class indicates if the message is <see cref="MessageCodeClass.Request"/>, <see cref="MessageCodeClass.Success"/>, <see cref="MessageCodeClass.ClientError"/>, or a <see cref="MessageCodeClass.ServerError"/></para>
+        /// <para>The class indicates if the message is <see cref="CoapMessageCodeClass.Request"/>, <see cref="CoapMessageCodeClass.Success"/>, <see cref="CoapMessageCodeClass.ClientError"/>, or a <see cref="CoapMessageCodeClass.ServerError"/></para>
         /// <para>See section 2.2 of [RFC7252]</para>
         /// </summary>
-        public MessageCode Code { get; set; }
+        public CoapMessageCode Code { get; set; }
 
         private byte[] _token = new byte[0];
         /// <summary>
@@ -116,15 +116,15 @@ namespace CoAP.Net
         /// <summary>
         /// Gets or Sets a Message ID to pair Requests to their immediate Responses.
         /// </summary>
-        public ushort Id { get; set; }
+        public int Id { get; set; }
 
-        private List<Option> _options = new List<Option>();
+        private List<CoapOption> _options = new List<CoapOption>();
         /// <summary>
         /// Gets or sets the list of options to be encoded into the message header. The order of these options are Critical and spcial care is needed when adding new items.
-        /// <para>Todo: Sort items based on <see cref="Option.OptionNumber"/> and preserve options with identical Optionnumbers</para>
-        /// /// <para>Todo: Throw exception when non-repeatable <see cref="Option"/>s are addedd</para>
+        /// <para>Todo: Sort items based on <see cref="CoapOption.OptionNumber"/> and preserve options with identical Optionnumbers</para>
+        /// /// <para>Todo: Throw exception when non-repeatable <see cref="CoapOption"/>s are addedd</para>
         /// </summary>
-        public List<Option> Options
+        public List<CoapOption> Options
         {
             get { return _options; }
             set { _options = value; }
@@ -133,10 +133,10 @@ namespace CoAP.Net
         /// <summary>
         /// Gets or Sets The paylaod of the message.
         /// </summary>
-        /// <remarks>Check (or add) <see cref="Options.ContentFormat"/> in <see cref="Message.Options"/> for the format of the payload.</remarks>
+        /// <remarks>Check (or add) <see cref="Options.ContentFormat"/> in <see cref="CoapMessage.Options"/> for the format of the payload.</remarks>
         public byte[] Payload { get; set; }
 
-        public Message() { }
+        public CoapMessage() { }
 
         /// <summary>
         /// Serialises the message into bytes, ready to be encrypted or transported to the destination endpoint.
@@ -248,11 +248,11 @@ namespace CoAP.Net
 
             var offset = 4;
 
-            Type = (MessageType)((data[0] & 0x30) >> 4);
+            Type = (CoapMessageType)((data[0] & 0x30) >> 4);
 
             var code = ((data[1] & 0xE0) >> 5) * 100;
             code += data[1] & 0x1F;
-            Code = (MessageCode)code;
+            Code = (CoapMessageCode)code;
 
             Id = (ushort)((data[2] << 8) | (data[3]));
 
@@ -297,21 +297,21 @@ namespace CoAP.Net
         }
 
         /// <summary>
-        /// Shortcut method to create a <see cref="Message"/> with its optinos pre-populated to match the Uri.
+        /// Shortcut method to create a <see cref="CoapMessage"/> with its optinos pre-populated to match the Uri.
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static Message CreateFromUri(string input)
+        public static CoapMessage CreateFromUri(string input)
         {
-            var message = new Message();
+            var message = new CoapMessage();
             message.FromUri(input);
             return message;
         }
 
         /// <summary>
-        /// Popualtes <see cref="Message.Options"/> to match the Uri.
+        /// Popualtes <see cref="CoapMessage.Options"/> to match the Uri.
         /// </summary>
-        /// <remarks>Any potentially conflicting <see cref="Option"/>s are stripped after URI validation and before processing.</remarks>
+        /// <remarks>Any potentially conflicting <see cref="CoapOption"/>s are stripped after URI validation and before processing.</remarks>
         /// <param name="input"></param>
         public void FromUri(string input)
         {

@@ -7,26 +7,26 @@ namespace CoAP.Net
     public enum OptionType
     {
         /// <summary>
-        /// Defines the <see cref="Option"/> to have no content
+        /// Defines the <see cref="CoapOption"/> to have no content
         /// </summary>
         Empty,
         /// <summary>
-        /// Defines the <see cref="Option"/>'s data is an <see cref="byte[]"/>
+        /// Defines the <see cref="CoapOption"/>'s data is an <see cref="byte[]"/>
         /// </summary>
         Opaque,
         /// <summary>
-        /// Defines the <see cref="Option"/>'s value is an <see cref="uint"/>
+        /// Defines the <see cref="CoapOption"/>'s value is an <see cref="uint"/>
         /// </summary>
         UInt,
         /// <summary>
-        /// Defines the <see cref="Option"/>'s data is a human readable <see cref="String"/>.
+        /// Defines the <see cref="CoapOption"/>'s data is a human readable <see cref="String"/>.
         /// </summary>
         String
     }
 
     // Todo: Caching (Section 5.6 of [RFC7252])
     // Todo: Proxying (Section 5.7 of [RFC7252])
-    public class Option
+    public class CoapOption
     {
         private readonly int _optionNumber;
         /// <summary>
@@ -250,7 +250,7 @@ namespace CoAP.Net
             ValueUInt = value;
         }
 
-        protected Option(int optionNumber, int minLength = 0, int maxLength = 0, bool isRepeatable = false, OptionType type = OptionType.Empty, object defaultValue = null)
+        protected CoapOption(int optionNumber, int minLength = 0, int maxLength = 0, bool isRepeatable = false, OptionType type = OptionType.Empty, object defaultValue = null)
         {
             _optionNumber = optionNumber;
             _type = type;
@@ -262,7 +262,7 @@ namespace CoAP.Net
 
         public override bool Equals(object obj)
         {
-            var option = obj as Option;
+            var option = obj as CoapOption;
             if (option == null)
                 return base.Equals(obj);
 

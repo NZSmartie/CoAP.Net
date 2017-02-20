@@ -10,7 +10,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionIfMatch()
         {
-            Option option = new Options.IfMatch();
+            CoapOption option = new Options.IfMatch();
 
             Assert.AreEqual(1, option.OptionNumber, "OptionNumber is incorrect");
 
@@ -32,7 +32,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionUriHost()
         {
-            Option option = new Options.UriHost();
+            CoapOption option = new Options.UriHost();
 
             Assert.AreEqual(3, option.OptionNumber, "OptionNumber is incorrect");
 
@@ -54,7 +54,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionETag()
         {
-            Option option = new Options.ETag();
+            CoapOption option = new Options.ETag();
 
             Assert.AreEqual(4, option.OptionNumber, "OptionNumber is incorrect");
 
@@ -76,7 +76,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionIfNoneMatch()
         {
-            Option option = new Options.IfNoneMatch();
+            CoapOption option = new Options.IfNoneMatch();
 
             Assert.AreEqual(5, option.OptionNumber, "OptionNumber is incorrect");
 
@@ -97,7 +97,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionUriPort()
         {
-            Option option = new Options.UriPort();
+            CoapOption option = new Options.UriPort();
 
             Assert.AreEqual(7, option.OptionNumber, "OptionNumber is incorrect");
 
@@ -119,7 +119,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionLocationPath()
         {
-            Option option = new Options.LocationPath();
+            CoapOption option = new Options.LocationPath();
 
             Assert.AreEqual(8, option.OptionNumber, "OptionNumber is incorrect");
 
@@ -141,7 +141,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionUriPath()
         {
-            Option option = new Options.UriPath();
+            CoapOption option = new Options.UriPath();
 
             Assert.AreEqual(11, option.OptionNumber, "OptionNumber is incorrect");
 
@@ -163,7 +163,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionContentFormat()
         {
-            Option option = new Options.ContentFormat();
+            CoapOption option = new Options.ContentFormat();
 
             Assert.AreEqual(12, option.OptionNumber, "OptionNumber is incorrect");
 
@@ -185,7 +185,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionMaxAge()
         {
-            Option option = new Options.MaxAge();
+            CoapOption option = new Options.MaxAge();
 
             Assert.AreEqual(14, option.OptionNumber, "OptionNumber is incorrect");
 
@@ -207,7 +207,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionUriQuery()
         {
-            Option option = new Options.UriQuery();
+            CoapOption option = new Options.UriQuery();
 
             Assert.AreEqual(15, option.OptionNumber, "OptionNumber is incorrect");
 
@@ -229,7 +229,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionAccept()
         {
-            Option option = new Options.Accept();
+            CoapOption option = new Options.Accept();
 
             Assert.AreEqual(17, option.OptionNumber, "OptionNumber is incorrect");
 
@@ -251,7 +251,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionLocationQuery()
         {
-            Option option = new Options.LocationQuery();
+            CoapOption option = new Options.LocationQuery();
 
             Assert.AreEqual(20, option.OptionNumber, "OptionNumber is incorrect");
 
@@ -273,7 +273,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionProxyUri()
         {
-            Option option = new Options.ProxyUri();
+            CoapOption option = new Options.ProxyUri();
 
             Assert.AreEqual(35, option.OptionNumber, "OptionNumber is incorrect");
 
@@ -295,7 +295,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionProxyScheme()
         {
-            Option option = new Options.ProxyScheme();
+            CoapOption option = new Options.ProxyScheme();
 
             Assert.AreEqual(39, option.OptionNumber, "OptionNumber is incorrect");
 
@@ -317,7 +317,7 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestOptionSize1()
         {
-            Option option = new Options.Size1();
+            CoapOption option = new Options.Size1();
 
             Assert.AreEqual(60, option.OptionNumber, "OptionNumber is incorrect");
 

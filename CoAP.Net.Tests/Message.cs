@@ -8,12 +8,12 @@ namespace CoAP.Net.Tests
     [TestClass]
     public class MessageTest
     {
-        private Message _message = null;
+        private CoapMessage _message = null;
 
         [TestInitialize]
         public void InitTest()
         {
-            _message = new Message();
+            _message = new CoapMessage();
         }
 
         [TestCleanup]
@@ -26,8 +26,8 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestMessageEmpty()
         {
-            _message.Type = MessageType.Confirmable;
-            _message.Code = MessageCode.None;
+            _message.Type = CoapMessageType.Confirmable;
+            _message.Code = CoapMessageCode.None;
             _message.Id = 1234;
 
             var expected = new byte[] { 0x40, 0x00, 0x04, 0xD2 };
@@ -39,9 +39,9 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestMessageEmptyAckknowledgement()
         {
-            _message = new Message();
-            _message.Type = MessageType.Acknowledgement;
-            _message.Code = MessageCode.Valid;
+            _message = new CoapMessage();
+            _message.Type = CoapMessageType.Acknowledgement;
+            _message.Code = CoapMessageCode.Valid;
             _message.Id = 1235;
 
             var expected = new byte[] { 0x60, 0x43, 0x04, 0xD3 };
@@ -54,8 +54,8 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestMessageEncodeRequest()
         {
-            _message.Type = MessageType.Confirmable;
-            _message.Code = MessageCode.Get;
+            _message.Type = CoapMessageType.Confirmable;
+            _message.Code = CoapMessageCode.Get;
             _message.Id = 16962;
             _message.Token = new byte[] { 0xde, 0xad, 0xbe, 0xef };
 
@@ -75,8 +75,8 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestMessageEncodeResponse()
         {
-            _message.Type = MessageType.Acknowledgement;
-            _message.Code = MessageCode.Content;
+            _message.Type = CoapMessageType.Acknowledgement;
+            _message.Code = CoapMessageCode.Content;
             _message.Id = 16962;
             _message.Token = new byte[] { 0xde, 0xad, 0xbe, 0xef };
             _message.Options.Add(new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat));
@@ -101,13 +101,13 @@ namespace CoAP.Net.Tests
                 0x6B, 0x6E, 0x6F, 0x77, 0x6E, 0x04, 0x63, 0x6F, 0x72, 0x65
             });
 
-            Assert.AreEqual(MessageType.Confirmable, _message.Type);
-            Assert.AreEqual(MessageCode.Get, _message.Code);
+            Assert.AreEqual(CoapMessageType.Confirmable, _message.Type);
+            Assert.AreEqual(CoapMessageCode.Get, _message.Code);
             Assert.AreEqual(16962, _message.Id);
 
             Assert.IsTrue(new byte[] { 0xde, 0xad, 0xbe, 0xef }.SequenceEqual(_message.Token));
 
-            Assert.IsTrue(new List<Option> {
+            Assert.IsTrue(new List<CoapOption> {
                 new Options.UriPath(".well-known"),
                 new Options.UriPath("core"),
             }.SequenceEqual(_message.Options));
@@ -122,11 +122,11 @@ namespace CoAP.Net.Tests
                 0x6f, 0x77, 0x6e, 0x2f, 0x63, 0x6f, 0x72, 0x65, 0x2f, 0x3e
             });
 
-            Assert.AreEqual(MessageType.Acknowledgement, _message.Type);
-            Assert.AreEqual(MessageCode.Content, _message.Code);
+            Assert.AreEqual(CoapMessageType.Acknowledgement, _message.Type);
+            Assert.AreEqual(CoapMessageCode.Content, _message.Code);
             Assert.AreEqual(16962, _message.Id);
             Assert.IsTrue(new byte[] { 0xde, 0xad, 0xbe, 0xef }.SequenceEqual(_message.Token));
-            Assert.IsTrue(new List<Option>{
+            Assert.IsTrue(new List<CoapOption>{
                 new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat),
             }.SequenceEqual(_message.Options));
 
@@ -139,7 +139,7 @@ namespace CoAP.Net.Tests
         {
             _message.FromUri("coap://example.net/.well-known/core");
 
-            var expectedOptions = new List<Option>
+            var expectedOptions = new List<CoapOption>
             {
                 new Options.UriHost("example.net"),
                 new Options.UriPath(".well-known"),
@@ -149,7 +149,7 @@ namespace CoAP.Net.Tests
             Assert.IsTrue(expectedOptions.SequenceEqual(_message.Options));
 
             // Test again but using static CreateFromUri method
-            var message = Message.CreateFromUri("coap://example.net/.well-known/core");
+            var message = CoapMessage.CreateFromUri("coap://example.net/.well-known/core");
             Assert.IsTrue(expectedOptions.SequenceEqual(message.Options));
         }
 
@@ -159,7 +159,7 @@ namespace CoAP.Net.Tests
         {
             _message.FromUri("coap://198.51.100.1:61616//%2F//?%2F%2F&?%26");
 
-            var expectedOptions = new List<Option> {
+            var expectedOptions = new List<CoapOption> {
                 new Options.UriPort(61616),
                 new Options.UriPath(""),
                 new Options.UriPath("/"),
@@ -172,7 +172,7 @@ namespace CoAP.Net.Tests
             Assert.IsTrue(expectedOptions.SequenceEqual(_message.Options));
 
             // Test again but using static CreateFromUri method
-            var message = Message.CreateFromUri("coap://198.51.100.1:61616//%2F//?%2F%2F&?%26");
+            var message = CoapMessage.CreateFromUri("coap://198.51.100.1:61616//%2F//?%2F%2F&?%26");
             Assert.IsTrue(expectedOptions.SequenceEqual(message.Options));
         }
 
@@ -182,7 +182,7 @@ namespace CoAP.Net.Tests
         {
             _message.FromUri("coap://\u307B\u3052.example/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF");
 
-            var expectedOptions = new List<Option>
+            var expectedOptions = new List<CoapOption>
             {
                 new Options.UriHost("xn--18j4d.example"),
                 new Options.UriPath("\u3053\u3093\u306b\u3061\u306f"),
@@ -191,7 +191,7 @@ namespace CoAP.Net.Tests
             Assert.IsTrue(expectedOptions.SequenceEqual(_message.Options));
 
             // Test again but using static CreateFromUri method
-            var message = Message.CreateFromUri("coap://\u307B\u3052.example/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF");
+            var message = CoapMessage.CreateFromUri("coap://\u307B\u3052.example/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF");
             Assert.IsTrue(expectedOptions.SequenceEqual(message.Options));
         }
     }
