@@ -12,15 +12,14 @@ namespace CoAP.Net.Tests
         [TestMethod]
         public void TestClientRequest()
         {
-            var clientTransport = new Mock<ICoapTransport>();
-            var endpoint = new Mock<ICoapEndpoint>();
+            var mockClientEndpoint = new Mock<ICoapEndpoint>();
 
-            clientTransport
-                .Setup(c => c.SendAsync(It.IsAny<ICoapPayload>()))
+            mockClientEndpoint
+                .Setup(c => c.SendAsync(It.IsAny<CoapPayload>()))
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-            using (var client = new CoapClient(endpoint.Object, clientTransport.Object))
+            using (var client = new CoapClient(mockClientEndpoint.Object))
             {
                 client.SendAsync(new CoapMessage
                 {
@@ -28,16 +27,15 @@ namespace CoAP.Net.Tests
                     Code = CoapMessageCode.None
                 }).Wait();
 
-                Mock.Verify(clientTransport);
+                Mock.Verify(mockClientEndpoint);
             }
         }
 
         [TestMethod]
         public void TestClientResponse()
         {
-            var mockClientTransport = new Mock<ICoapTransport>();
-            var mockEndpoint = new Mock<ICoapEndpoint>();
-            var mockPayload = new Mock<ICoapPayload>();
+            var mockClientEndpoint = new Mock<ICoapEndpoint>();
+            var mockPayload = new Mock<CoapPayload>();
 
             var expected = new CoapMessage
             {
@@ -53,23 +51,23 @@ namespace CoAP.Net.Tests
             mockPayload
                 .Setup(p => p.Payload)
                 .Returns(() => expected.Serialise());
-            mockClientTransport
-                .Setup(c => c.SendAsync(It.IsAny<ICoapPayload>()))
+            mockClientEndpoint
+                .Setup(c => c.SendAsync(It.IsAny<CoapPayload>()))
                 // Copy the ID from the message sent out, to the message for the client to receive
-                .Callback<ICoapPayload>((p) => expected.Id = p.MessageId)
+                .Callback<CoapPayload>((p) => expected.Id = p.MessageId)
                 .Returns(Task.CompletedTask);
-            mockClientTransport
+            mockClientEndpoint
                 .Setup(c => c.ReceiveAsync())
                 .Returns(Task.FromResult(mockPayload.Object))
                 .Verifiable();
 
-            using (var client = new CoapClient(mockEndpoint.Object, mockClientTransport.Object))
+            using (var client = new CoapClient(mockClientEndpoint.Object))
             {
                 var responseTask = client.GetAsync("coap://example.com/.well-known/core");
                 responseTask.Wait();
 
                 // Ensure ICoapTransport.ReceiveAsync was called
-                Mock.Verify(mockClientTransport);
+                Mock.Verify(mockClientEndpoint);
 
                 // Verify the message we got back is the expected response
                 Assert.AreEqual(expected.Id, responseTask.Result.Id);

@@ -5,46 +5,19 @@ using System.Threading.Tasks;
 
 namespace CoAP.Net
 {
-    // Provided by Application  Layer
-    public interface ICoapTransport
-    {   
-        /// <summary>
-        /// Called by [Service] to send a <see cref="ICoapPayload.Payload"/> to the specified <see cref="ICoapPayload.Endpoint"/> using the transport layer provided by the Application Layer
-        /// </summary>
-        /// <param name="payload"></param>
-        /// <returns></returns>
-        Task SendAsync(ICoapPayload payload);
-
-        /// <summary>
-        /// Called by [service] to receive data from the transport layer
-        /// </summary>
-        /// <returns></returns>
-        Task<ICoapPayload> ReceiveAsync();
-    }
-
-    
     public class CoapClient : IDisposable
     {
-        class _payload : ICoapPayload
-        {
-            public ICoapEndpoint Endpoint { get ; set ; }
-            public byte[] Payload { get; set; }
-            public int MessageId { get; set; }
-        }
-
-        private ICoapTransport _transport;
-        private readonly ICoapEndpoint _endpoint;
+        private ICoapEndpoint _transport;
         private ushort _messageId;
 
-        // I'm not particularly fond of the following _messageQueue and _messageResponses... Feels more like a hack.
+        // I'm not particularly fond of the following _messageQueue and _messageResponses... Feels more like a hack. but it works? NEEDS MORE TESTING!!!
         private ConcurrentDictionary<int, CoapMessage> _messageQueue = new ConcurrentDictionary<int, CoapMessage>();
         private ConcurrentDictionary<int, TaskCompletionSource<CoapMessage>> _messageReponses = new ConcurrentDictionary<int, TaskCompletionSource<CoapMessage>>();
 
         private CancellationTokenSource _receiveCancellationToken;
 
-        public CoapClient(ICoapEndpoint endpoint, ICoapTransport transport)
+        public CoapClient(ICoapEndpoint transport)
         {
-            _endpoint = endpoint;
             _transport = transport;
 
             _messageId = (ushort)(new Random().Next() & 0xFFFFu);
@@ -100,7 +73,7 @@ namespace CoAP.Net
             if (message.Id == 0)
                 message.Id = _messageId++;
 
-            await _transport.SendAsync(new _payload { Endpoint = _endpoint, Payload = message.Serialise(), MessageId = message.Id });
+            await _transport.SendAsync(new CoapPayload { Payload = message.Serialise(), MessageId = message.Id });
         }
 
         public async Task<CoapMessage> GetAsync(string uri)
@@ -115,7 +88,7 @@ namespace CoAP.Net
 
             _messageReponses.TryAdd(message.Id, new TaskCompletionSource<CoapMessage>());
 
-            await _transport.SendAsync(new _payload { Endpoint = _endpoint, Payload = message.Serialise(), MessageId = message.Id });
+            await _transport.SendAsync(new CoapPayload { Payload = message.Serialise(), MessageId = message.Id });
 
             return await GetResponseAsync(message.Id);
         }
