@@ -55,8 +55,18 @@ namespace CoAP.Net
                             continue;
 
                         var message = new CoapMessage();
-
-                        message.Deserialise(payload.Result.Payload);
+                        try
+                        {
+                            message.Deserialise(payload.Result.Payload);
+                        }
+                        catch(CoapMessageFormatException fe)
+                        {
+                            Task.Run(() => SendAsync(new CoapMessage
+                            {
+                                Id = message.Id,
+                                Type = CoapMessageType.Reset
+                            }, payload.Result.Endpoint));
+                        }
 
                         if (_messageReponses.ContainsKey(message.Id))
                             _messageReponses[message.Id].TrySetResult(message);

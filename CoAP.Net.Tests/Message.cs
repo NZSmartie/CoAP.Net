@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -132,6 +133,24 @@ namespace CoAP.Net.Tests
             }.SequenceEqual(_message.Options));
 
             Assert.IsTrue(Encoding.UTF8.GetBytes("<.well-known/core/>").SequenceEqual(_message.Payload));
+        }
+
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 3"), TestCategory("Decode")]
+        public void TestMessageFormatError()
+        {
+            Assert.ThrowsException<CoapMessageFormatException>(() =>
+            {
+                _message.Deserialise(new byte[] { 0x40, 0x00, 0x10, 0x00, 0xFF, 0x12, 0x34 });
+            }, "Empty message with payload");
+            Assert.ThrowsException<CoapMessageFormatException>(() =>
+            {
+                _message.Deserialise(new byte[] { 0x52, 0x00, 0x10, 0x01, 0x12, 0x34 });
+            }, "Empty message with tag");
+            Assert.ThrowsException<CoapMessageFormatException>(() =>
+            {
+                _message.Deserialise(new byte[] { 0x60, 0x00, 0x10, 0x02, 0xc1, 0x28 });
+            }, "Empty message with options");
         }
 
         [TestMethod]

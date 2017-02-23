@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -141,12 +143,38 @@ namespace CoAP.Net.Tests
             Assert.IsTrue(clientOnMessageReceivedEventCalled);
         }
 
-        // ToDo: Test Empty Message Format
+        // ToDo: Test Reject Empty Message With Format Error
         [TestMethod]
         [TestCategory("[RFC7252] Section 4.1")]
-        public void TestEmptyMessageFormat()
+        public void TestRejectEmptyMessageWithFormatError()
         {
-            throw new NotImplementedException();
+            // Arrange
+            var expected = new CoapMessage
+            {
+                Id = 0x1234,
+                Type = CoapMessageType.Reset,
+                Code = CoapMessageCode.None,
+            };
+
+            var mockPayload = new Mock<CoapPayload>();
+            var mockClientEndpoint = new Mock<ICoapEndpoint>();
+
+            mockPayload
+                .Setup(p => p.Payload)
+                .Returns(new byte[] { 0x40, 0x00, 0x12, 0x34, 0xFF, 0x12, 0x34 }); // "Empty" Message with a payload
+            mockClientEndpoint
+                .SetupSequence(c => c.ReceiveAsync())
+                .Returns(Task.FromResult(mockPayload.Object))
+                .Throws(new CoapEndpointException());
+
+            // Act
+            using (var mockClient = new CoapClient(mockClientEndpoint.Object))
+            {
+                mockClient.Listen();
+
+                // Assert
+                mockClientEndpoint.Verify(cep => cep.SendAsync(It.Is<CoapPayload>(p => p.Payload.SequenceEqual(expected.Serialise()))));
+            }
         }
 
         // ToDo: Test Piggy Backed Response

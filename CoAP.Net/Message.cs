@@ -64,6 +64,14 @@ namespace CoAP.Net
         ProxyingNotSupported = 505
     }
 
+    public class CoapMessageFormatException : Exception {
+        public CoapMessageFormatException() :base() { }
+
+        public CoapMessageFormatException(string message) : base(message) { }
+
+        public CoapMessageFormatException(string message, Exception innerException) : base(message, innerException) { }
+    }
+
     public class CoapMessage
     {
 
@@ -242,9 +250,9 @@ namespace CoAP.Net
             if (data == null)
                 throw new ArgumentNullException("data");
             if (data.Length < 4)
-                throw new ArgumentException("Message should be atleast 4 bytes long");
+                throw new CoapMessageFormatException("Message must be at least 4 bytes long");
             if ((data[0] & 0xC0) != 0x40)
-                throw new ArgumentException("Only verison 1 of CoAP protocl is supported");
+                throw new CoapMessageFormatException("Only verison 1 of CoAP protocol is supported");
 
             var offset = 4;
 
@@ -255,6 +263,10 @@ namespace CoAP.Net
             Code = (CoapMessageCode)code;
 
             Id = (ushort)((data[2] << 8) | (data[3]));
+
+            // Don't process any further if this is a "empty" message
+            if (Code == CoapMessageCode.None && data.Length > 4)
+                throw new CoapMessageFormatException("Empty message must be 4 bytes long");
 
             offset += data[0] & 0x0F;
             if ((data[0] & 0x0F) > 0)
