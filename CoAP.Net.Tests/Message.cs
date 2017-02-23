@@ -22,8 +22,8 @@ namespace CoAP.Net.Tests
             _message = null;
         }
 
-        [TestCategory("Messages"), TestCategory("Encoding")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 3"), TestCategory("Encode")]
         public void TestMessageEmpty()
         {
             _message.Type = CoapMessageType.Confirmable;
@@ -37,6 +37,7 @@ namespace CoAP.Net.Tests
         }
 
         [TestMethod]
+        [TestCategory("[RFC7252] Section 3")]
         public void TestMessageEmptyAckknowledgement()
         {
             _message = new CoapMessage();
@@ -50,8 +51,8 @@ namespace CoAP.Net.Tests
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
 
-        [TestCategory("Messages"), TestCategory("Encoding")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 3"), TestCategory("Encode")]
         public void TestMessageEncodeRequest()
         {
             _message.Type = CoapMessageType.Confirmable;
@@ -71,8 +72,8 @@ namespace CoAP.Net.Tests
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
 
-        [TestCategory("Messages"), TestCategory("Encoding")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 3"), TestCategory("Encode")]
         public void TestMessageEncodeResponse()
         {
             _message.Type = CoapMessageType.Acknowledgement;
@@ -92,8 +93,8 @@ namespace CoAP.Net.Tests
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
 
-        [TestCategory("Messages"), TestCategory("Decoding")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 3"), TestCategory("Decode")]
         public void TestMessageDecodeRequest()
         {
             this._message.Deserialise(new byte[] {
@@ -113,8 +114,8 @@ namespace CoAP.Net.Tests
             }.SequenceEqual(_message.Options));
         }
 
-        [TestCategory("Messages"), TestCategory("Decoding")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 3"), TestCategory("Decode")]
         public void TestMessageDecodeResponse()
         {
             _message.Deserialise(new byte[] {
@@ -133,8 +134,8 @@ namespace CoAP.Net.Tests
             Assert.IsTrue(Encoding.UTF8.GetBytes("<.well-known/core/>").SequenceEqual(_message.Payload));
         }
 
-        [TestCategory("Messages"), TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 3.1"), TestCategory("Encode")]
         public void TestMessageFromUri()
         {
             _message.FromUri("coap://example.net/.well-known/core");
@@ -153,8 +154,8 @@ namespace CoAP.Net.Tests
             Assert.IsTrue(expectedOptions.SequenceEqual(message.Options));
         }
 
-        [TestCategory("Messages"), TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 6.4")]
         public void TestMessageFromUriIPv4()
         {
             _message.FromUri("coap://198.51.100.1:61616//%2F//?%2F%2F&?%26");
@@ -176,8 +177,8 @@ namespace CoAP.Net.Tests
             Assert.IsTrue(expectedOptions.SequenceEqual(message.Options));
         }
 
-        [TestCategory("Messages"), TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 6.4")]
         public void TestMessageFromUriSpecialChars()
         {
             _message.FromUri("coap://\u307B\u3052.example/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF");

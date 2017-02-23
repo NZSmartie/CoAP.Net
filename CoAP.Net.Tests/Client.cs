@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -16,6 +17,7 @@ namespace CoAP.Net.Tests
         public const int MaxTaskTimeout = 2000;
 
         [TestMethod]
+        [TestCategory("CoapClient")]
         public void TestClientRequest()
         {
             // Arrange
@@ -40,6 +42,7 @@ namespace CoAP.Net.Tests
         }
         
         [TestMethod]
+        [TestCategory("CoapClient")]
         public void TestClientResponse()
         {
             // Arrange
@@ -96,6 +99,7 @@ namespace CoAP.Net.Tests
         }
 
         [TestMethod]
+        [TestCategory("CoapClient")]
         public void TestClientOnMessageReceivedEvent()
         {
             // Arrange
@@ -135,6 +139,86 @@ namespace CoAP.Net.Tests
 
             // Assert
             Assert.IsTrue(clientOnMessageReceivedEventCalled);
+        }
+
+        // ToDo: Test Empty Message Format
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 4.1")]
+        public void TestEmptyMessageFormat()
+        {
+            throw new NotImplementedException();
+        }
+
+        // ToDo: Test Piggy Backed Response
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 4.2")]
+        public void TestPiggyBackedResponse()
+        {
+            throw new NotImplementedException();
+        }
+
+        // ToDo: Test Retransmit Delays
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 4.2")]
+        public void TestRetransmitDelays()
+        {
+            throw new NotImplementedException();
+        }
+
+        // ToDo: Test Ignore Repeated Messages
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 4.2")]
+        public void TestIgnoreRepeatedMessages()
+        {
+            throw new NotImplementedException();
+        }
+
+        // ToDo: Test Ignore Messages Received After Timeout
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 4.2")]
+        public void TestIgnoreMessagesReceivedAfterTimeout()
+        {
+            throw new NotImplementedException();
+        }
+
+        // ToDo: Test Ignore Non-Empty Reset Messages
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 4.2")]
+        public void TestIgnoreNonEmptyResetMessages()
+        {
+            throw new NotImplementedException();
+        }
+
+        // ToDo: Test Ignore Acknowledgement Messages With Reserved Code
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 4.2")]
+        public void TestIgnoreAcknowledgementMessagesWithReservedCode()
+        {
+            throw new NotImplementedException();
+        }
+
+        // Todo: Test Reached Max Failed Retransmit Attempts
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 4.2")]
+        public void TestReachedMaxFailedRetransmitAttempts()
+        {
+            throw new NotImplementedException();
+        }
+
+        // ToDo: Test Cancel Request Retransmit Attempts
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 4.2")]
+        public void TestCancelRequestRetransmitAttempts()
+        {
+            throw new NotImplementedException();
+        }
+
+        // ToDo: Test Reject Empty Non-Confirmable Message
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 4.3")]
+        public void TestRejectEmptyNonConfirmableMessage()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -6,8 +6,8 @@ namespace CoAP.Net.Tests
     [TestClass]
     public class OptionsTest
     {
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.8"), TestCategory("Options")]
         public void TestOptionIfMatch()
         {
             CoapOption option = new Options.IfMatch();
@@ -28,8 +28,8 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultOpaque, "Default value is incorrect");
         }
 
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.1"), TestCategory("Options")]
         public void TestOptionUriHost()
         {
             CoapOption option = new Options.UriHost();
@@ -50,8 +50,8 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.6"), TestCategory("Options")]
         public void TestOptionETag()
         {
             CoapOption option = new Options.ETag();
@@ -72,8 +72,8 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultOpaque, "Default value is incorrect");
         }
 
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.8"), TestCategory("Options")]
         public void TestOptionIfNoneMatch()
         {
             CoapOption option = new Options.IfNoneMatch();
@@ -93,8 +93,8 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(OptionType.Empty, option.Type, "Type is incorrect");
         }
 
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.1"), TestCategory("Options")]
         public void TestOptionUriPort()
         {
             CoapOption option = new Options.UriPort();
@@ -115,8 +115,8 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(0u, option.DefaultUInt, "Default value is incorrect");
         }
 
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.7"), TestCategory("Options")]
         public void TestOptionLocationPath()
         {
             CoapOption option = new Options.LocationPath();
@@ -137,8 +137,8 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.1"), TestCategory("Options")]
         public void TestOptionUriPath()
         {
             CoapOption option = new Options.UriPath();
@@ -159,8 +159,8 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
         
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.3"), TestCategory("Options")]
         public void TestOptionContentFormat()
         {
             CoapOption option = new Options.ContentFormat();
@@ -181,8 +181,8 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(0u, option.DefaultUInt, "Default value is incorrect");
         }
 
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.5"), TestCategory("Options")]
         public void TestOptionMaxAge()
         {
             CoapOption option = new Options.MaxAge();
@@ -203,8 +203,8 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(60u, option.DefaultUInt, "Default value is incorrect");
         }
 
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.1"), TestCategory("Options")]
         public void TestOptionUriQuery()
         {
             CoapOption option = new Options.UriQuery();
@@ -225,8 +225,8 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.4"), TestCategory("Options")]
         public void TestOptionAccept()
         {
             CoapOption option = new Options.Accept();
@@ -247,8 +247,8 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(0u, option.DefaultUInt, "Default value is incorrect");
         }
 
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.7"), TestCategory("Options")]
         public void TestOptionLocationQuery()
         {
             CoapOption option = new Options.LocationQuery();
@@ -269,8 +269,8 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.2"), TestCategory("Options")]
         public void TestOptionProxyUri()
         {
             CoapOption option = new Options.ProxyUri();
@@ -291,8 +291,8 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.2"), TestCategory("Options")]
         public void TestOptionProxyScheme()
         {
             CoapOption option = new Options.ProxyScheme();
@@ -313,8 +313,8 @@ namespace CoAP.Net.Tests
             Assert.AreEqual(null, option.DefaultString, "Default value is incorrect");
         }
 
-        [TestCategory("Options")]
         [TestMethod]
+        [TestCategory("[RFC7252] Section 5.10.9"), TestCategory("Options")]
         public void TestOptionSize1()
         {
             CoapOption option = new Options.Size1();

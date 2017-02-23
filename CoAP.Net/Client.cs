@@ -85,7 +85,7 @@ namespace CoAP.Net
         {
             TaskCompletionSource<CoapMessage> responseTask = null;
             if (!_messageReponses.TryGetValue(messageId, out responseTask))
-                throw new ArgumentOutOfRangeException("messageId does not exist");
+                throw new ArgumentOutOfRangeException("Message.Id is not pending response");
 
             await responseTask.Task;
 
@@ -95,12 +95,14 @@ namespace CoAP.Net
             return responseTask.Task.Result;
         }
 
-        public async Task SendAsync(CoapMessage message, ICoapEndpoint endpoint = null)
+        public async Task<int> SendAsync(CoapMessage message, ICoapEndpoint endpoint = null)
         {
             if (message.Id == 0)
                 message.Id = _messageId++;
 
             await _transport.SendAsync(new CoapPayload { Payload = message.Serialise(), MessageId = message.Id, Endpoint = endpoint });
+
+            return message.Id;
         }
 
         public async Task<int> GetAsync(string uri, ICoapEndpoint endpoint = null)
@@ -115,9 +117,7 @@ namespace CoAP.Net
 
             _messageReponses.TryAdd(message.Id, new TaskCompletionSource<CoapMessage>());
 
-            await _transport.SendAsync(new CoapPayload { Payload = message.Serialise(), MessageId = message.Id, Endpoint = endpoint });
-
-            return message.Id;
+            return await SendAsync(message, endpoint);
         }
     }
 }
