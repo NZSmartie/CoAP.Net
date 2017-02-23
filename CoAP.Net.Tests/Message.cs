@@ -143,14 +143,25 @@ namespace CoAP.Net.Tests
             {
                 _message.Deserialise(new byte[] { 0x40, 0x00, 0x10, 0x00, 0xFF, 0x12, 0x34 });
             }, "Empty message with payload");
+
+            // Verify that Message.Id was decoded 
+            Assert.AreEqual(0x1000, _message.Id);
+
             Assert.ThrowsException<CoapMessageFormatException>(() =>
             {
-                _message.Deserialise(new byte[] { 0x52, 0x00, 0x10, 0x01, 0x12, 0x34 });
+                _message.Deserialise(new byte[] { 0x52, 0x00, 0xAA, 0x55, 0x12, 0x34 });
             }, "Empty message with tag");
+
+            // Verify that Message.Id was decoded 
+            Assert.AreEqual(0xAA55, _message.Id);
+
             Assert.ThrowsException<CoapMessageFormatException>(() =>
             {
-                _message.Deserialise(new byte[] { 0x60, 0x00, 0x10, 0x02, 0xc1, 0x28 });
+                _message.Deserialise(new byte[] { 0x60, 0x00, 0xC3, 0x3C, 0xc1, 0x28 });
             }, "Empty message with options");
+
+            // Verify that Message.Id was decoded 
+            Assert.AreEqual(0xC33C, _message.Id);
         }
 
         [TestMethod]
