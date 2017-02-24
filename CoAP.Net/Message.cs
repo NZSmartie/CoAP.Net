@@ -268,6 +268,9 @@ namespace CoAP.Net
             if (Code == CoapMessageCode.None && data.Length > 4)
                 throw new CoapMessageFormatException("Empty message must be 4 bytes long");
 
+            if (new int[] { 1, 6, 7 }.Contains(code / 100))
+                throw new CoapMessageFormatException("Message.Code can not use reserved classes");
+
             offset += data[0] & 0x0F;
             if ((data[0] & 0x0F) > 0)
                 _token = data.Skip(4).Take(data[0] & 0x0F).ToArray();

@@ -61,11 +61,15 @@ namespace CoAP.Net
                         }
                         catch(CoapMessageFormatException fe)
                         {
-                            Task.Run(() => SendAsync(new CoapMessage
+                            if (message.Type == CoapMessageType.Confirmable)
                             {
-                                Id = message.Id,
-                                Type = CoapMessageType.Reset
-                            }, payload.Result.Endpoint));
+                                Task.Run(() => SendAsync(new CoapMessage
+                                {
+                                    Id = message.Id,
+                                    Type = CoapMessageType.Reset
+                                }, payload.Result.Endpoint));
+                            }
+                            continue;
                         }
 
                         if (_messageReponses.ContainsKey(message.Id))

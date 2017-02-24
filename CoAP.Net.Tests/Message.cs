@@ -162,6 +162,11 @@ namespace CoAP.Net.Tests
 
             // Verify that Message.Id was decoded 
             Assert.AreEqual(0xC33C, _message.Id);
+
+            Assert.ThrowsException<CoapMessageFormatException>(() =>
+            {
+                _message.Deserialise(new byte[] { 0x40, 0x20, 0x12, 0x34, 0xc1, 0x28 });
+            }, "Message with invalid Message.Code class");
         }
 
         [TestMethod]
