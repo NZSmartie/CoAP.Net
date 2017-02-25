@@ -7,6 +7,41 @@ namespace CoAP.Net.Tests
     public class OptionsTest
     {
         [TestMethod]
+        [TestCategory("Options")]
+        public void TestOptionHashCodesAndEquality()
+        {
+            // Should result in four items
+            var setFourUriPath = new System.Collections.Generic.HashSet<CoapOption>
+            {
+                new Options.UriPath("one"),
+                new Options.UriPath("two"),
+                new Options.UriPath("three"),
+                new Options.UriPath("four"),
+            };
+
+            // Should result in one item as duplicates are discarded
+            var setOneUriPath = new System.Collections.Generic.HashSet<CoapOption>
+            {
+                new Options.UriPath("Test"),
+                new Options.UriPath("Test"),
+                new Options.UriPath("Test"),
+                new Options.UriPath("Test")
+            };
+
+            // Should result in three items are hashcodes are different
+            var setThreeDifferentOptions = new System.Collections.Generic.HashSet<CoapOption>
+            {
+                new Options.UriHost("Test"),
+                new Options.UriPath("Test"),
+                new Options.UriQuery("Test"),
+            };
+
+            Assert.AreEqual(4, setFourUriPath.Count);
+            Assert.AreEqual(1, setOneUriPath.Count);
+            Assert.AreEqual(3, setThreeDifferentOptions.Count);
+        }
+
+        [TestMethod]
         [TestCategory("[RFC7252] Section 5.10.8"), TestCategory("Options")]
         public void TestOptionIfMatch()
         {

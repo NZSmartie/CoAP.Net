@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
@@ -283,6 +284,24 @@ namespace CoAP.Net
                 default:
                     throw new InvalidOperationException();
             }
+        }
+
+        /// <summary>
+        /// Gets a hashcode unique to the <see cref="CoapOption"/> sub class. 
+        /// </summary>
+        /// <remarks>
+        /// This will generate and store the hashcode based on the subclass's full name. 
+        /// </remarks>
+        private static Dictionary<Type, int> _hashCode = new Dictionary<System.Type, int>();
+        public override int GetHashCode()
+        {
+            if (_hashCode.TryGetValue(GetType(), out int hashcode) == false)
+            {
+                hashcode = GetType().FullName.GetHashCode();
+                _hashCode.Add(GetType(), hashcode);
+            }
+
+            return hashcode;
         }
     }
 }
