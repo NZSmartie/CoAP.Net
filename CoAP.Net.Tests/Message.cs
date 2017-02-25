@@ -171,6 +171,34 @@ namespace CoAP.Net.Tests
 
         [TestMethod]
         [TestCategory("[RFC7252] Section 3.1"), TestCategory("Encode")]
+        public void TestMessageOptionsOutOfOrder()
+        {
+            // Arrange
+            var expectedOptions = new List<CoapOption>
+            {
+                new Options.UriHost("example.net"),
+                new Options.UriPath(".well-known"),
+                new Options.UriPath("core"),
+                new Options.Accept(Options.ContentFormatType.ApplicationLinkFormat),
+            };
+
+            // Act
+            _message = new CoapMessage
+            {
+                Options = new List<CoapOption> {
+                    new Options.Accept(Options.ContentFormatType.ApplicationLinkFormat),
+                    new Options.UriPath(".well-known"),
+                    new Options.UriPath("core"),
+                    new Options.UriHost("example.net"),
+                }
+            };
+
+            // Assert
+            Assert.IsTrue(expectedOptions.SequenceEqual(_message.Options));
+        }
+
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 3.1"), TestCategory("Encode")]
         public void TestMessageFromUri()
         {
             _message.FromUri("coap://example.net/.well-known/core");

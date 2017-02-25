@@ -27,7 +27,7 @@ namespace CoAP.Net
 
     // Todo: Caching (Section 5.6 of [RFC7252])
     // Todo: Proxying (Section 5.7 of [RFC7252])
-    public class CoapOption
+    public class CoapOption : IComparable<CoapOption>
     {
         private readonly int _optionNumber;
         /// <summary>
@@ -302,6 +302,11 @@ namespace CoAP.Net
             }
 
             return hashcode;
+        }
+
+        int IComparable<CoapOption>.CompareTo(CoapOption other)
+        {
+            return _optionNumber - other._optionNumber;
         }
     }
 }

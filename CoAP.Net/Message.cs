@@ -135,7 +135,11 @@ namespace CoAP.Net
         public List<CoapOption> Options
         {
             get { return _options; }
-            set { _options = value; }
+            set
+            {
+                _options = value;
+                _options.Sort();
+            }
         }
 
         /// <summary>
@@ -179,8 +183,9 @@ namespace CoAP.Net
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             // | Options (if any) ...
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-            // Todo: encode Options in *ORDER* 
             var currentOptionDelta = 0;
+
+            _options.Sort();
             foreach (var option in _options)
             {
                 var optionHeader = new List<byte>();
