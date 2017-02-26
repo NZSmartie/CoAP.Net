@@ -38,6 +38,21 @@ namespace CoAP.Net.Tests
         }
 
         [TestMethod]
+        [TestCategory("[RFC7252] Section 3"), TestCategory("Encode")]
+        public void TestMessageEmptyWithToken()
+        {
+            _message.Type = CoapMessageType.Acknowledgement;
+            _message.Code = CoapMessageCode.None;
+            _message.Id = 1234;
+            _message.Token = new byte[] { 0xC0, 0xff, 0xee };
+
+            var expected = new byte[] { 0x60, 0x00, 0x04, 0xD2 };
+            var actual = _message.Serialise();
+
+            Assert.IsTrue(expected.SequenceEqual(actual));
+        }
+
+        [TestMethod]
         [TestCategory("[RFC7252] Section 3")]
         public void TestMessageEmptyAckknowledgement()
         {

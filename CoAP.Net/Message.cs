@@ -175,6 +175,13 @@ namespace CoAP.Net
             result.Add((byte)((Id >> 8) & 0xFF)); // Message ID (upper byte)
             result.Add((byte)(Id & 0xFF));        // Message ID (lower byte)
 
+            // Empty messages must only contain a 4 byte header.
+            if (Code == CoapMessageCode.None)
+            {
+                result[0] &= 0xF0; // Zero out the token length in case the application layer set one
+                return result.ToArray();
+            }
+
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             // | Token (if any, TKL bytes) ...
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
