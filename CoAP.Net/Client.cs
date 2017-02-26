@@ -114,6 +114,9 @@ namespace CoAP.Net
             if (message.Id == 0)
                 message.Id = _messageId++;
 
+            if(message.Type == CoapMessageType.Confirmable)
+                _messageReponses.TryAdd(message.Id, new TaskCompletionSource<CoapMessage>());
+
             await _transport.SendAsync(new CoapPayload { Payload = message.Serialise(), MessageId = message.Id, Endpoint = endpoint });
 
             return message.Id;
