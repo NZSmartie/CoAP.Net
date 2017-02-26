@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -111,16 +112,15 @@ namespace CoAP.Net.Tests
                 Type = CoapMessageType.Acknowledgement,
                 Code = CoapMessageCode.None,
             };
-            var mockPayload = new Mock<CoapPayload>();
             var mockClientEndpoint = new Mock<ICoapEndpoint>();
             var clientOnMessageReceivedEventCalled = false;
 
-            mockPayload
-                .Setup(p => p.Payload)
-                .Returns(expected.Serialise());
             mockClientEndpoint
                 .SetupSequence(c => c.ReceiveAsync())
-                .Returns(Task.FromResult(mockPayload.Object))
+                .Returns(Task.FromResult(new CoapPayload
+                {
+                    Payload = expected.Serialise()
+                }))
                 .Throws(new CoapEndpointException());
 
             // Act
@@ -136,14 +136,12 @@ namespace CoAP.Net.Tests
                 mockClient.Listen();
 
                 task.Task.Wait(MaxTaskTimeout);
-                mockClient.Dispose();
             }
 
             // Assert
             Assert.IsTrue(clientOnMessageReceivedEventCalled);
         }
 
-        // ToDo: Test Reject Empty Message With Format Error
         [TestMethod]
         [TestCategory("[RFC7252] Section 4.1")]
         public void TestRejectEmptyMessageWithFormatError()
@@ -156,15 +154,17 @@ namespace CoAP.Net.Tests
                 Code = CoapMessageCode.None,
             };
 
-            var mockPayload = new Mock<CoapPayload>();
             var mockClientEndpoint = new Mock<ICoapEndpoint>();
-
-            mockPayload
-                .Setup(p => p.Payload)
-                .Returns(new byte[] { 0x40, 0x00, 0x12, 0x34, 0xFF, 0x12, 0x34 }); // "Empty" Message with a payload
             mockClientEndpoint
                 .SetupSequence(c => c.ReceiveAsync())
-                .Returns(Task.FromResult(mockPayload.Object))
+                .Returns(Task.FromResult(new CoapPayload
+                {
+                    Payload = new byte[] { 0x40, 0x00, 0x12, 0x34, 0xFF, 0x12, 0x34 } // "Empty" Confirmable Message with a payload
+                }))
+                .Returns(Task.FromResult(new CoapPayload
+                {
+                    Payload = new byte[] { 0x60, 0x00, 0x12, 0x34, 0xFF, 0x12, 0x34 } // "Empty" Acknowledge Message with a payload (ignored)
+                }))
                 .Throws(new CoapEndpointException());
 
             // Act
@@ -173,16 +173,92 @@ namespace CoAP.Net.Tests
                 mockClient.Listen();
 
                 // Assert
-                mockClientEndpoint.Verify(cep => cep.SendAsync(It.Is<CoapPayload>(p => p.Payload.SequenceEqual(expected.Serialise()))));
+                mockClientEndpoint.Verify(
+                    cep => cep.SendAsync(It.Is<CoapPayload>(p => p.Payload.SequenceEqual(expected.Serialise()))),
+                    Times.Exactly(1));
             }
         }
 
-        // ToDo: Test Piggy Backed Response
         [TestMethod]
         [TestCategory("[RFC7252] Section 4.2")]
-        public void TestPiggyBackedResponse()
+        public void TestRequestWithSeperateResponse()
         {
-            throw new NotImplementedException();
+            // Arrange
+            var token = new byte[] { 0xC0, 0xFF, 0xEE };
+            var requestMessage = new CoapMessage
+            {
+                Id = 0x1234,
+                Token = token,
+                Type = CoapMessageType.Confirmable,
+                Code = CoapMessageCode.Get,
+                Options = new System.Collections.Generic.List<CoapOption>
+                {
+                    new Options.UriPath("test")
+                }
+            };
+
+            var acknowledgeMessage = new CoapMessage
+            {
+                Id = 0xfeed,
+                Type = CoapMessageType.Acknowledgement,
+                Token = token
+            };
+
+            var mockClientEndpoint = new Mock<ICoapEndpoint>();
+            mockClientEndpoint
+                .SetupSequence(c => c.ReceiveAsync())
+                .Returns(Task.FromResult(new CoapPayload
+                {
+                    Payload = new CoapMessage
+                    {
+                        Id = 0x1234,
+                        Token = token,
+                        Type = CoapMessageType.Acknowledgement
+                    }.Serialise()
+                }))
+                .Returns(Task.FromResult(new CoapPayload
+                {
+                    Payload = new CoapMessage
+                    {
+                        Id = 0xfeed,
+                        Token = token,
+                        Type = CoapMessageType.Confirmable,
+                        Code = CoapMessageCode.Content,
+                        Payload = Encoding.UTF8.GetBytes("Test Resource")
+                    }.Serialise()
+                }))
+                .Throws(new CoapEndpointException());
+
+            // Act
+            using (var mockClient = new CoapClient(mockClientEndpoint.Object))
+            {
+                mockClient.OnMessageReceived += (s, e) =>
+                {
+                    mockClient.SendAsync(acknowledgeMessage).Wait(MaxTaskTimeout);
+                };
+
+                var requestTask = mockClient.SendAsync(requestMessage);
+                requestTask.Wait(MaxTaskTimeout);
+                if (!requestTask.IsCompleted)
+                    Assert.Fail("Took too long to send Get request");
+
+
+                mockClient.Listen();
+
+                var reponseTask = mockClient.GetResponseAsync(requestTask.Result);
+                reponseTask.Wait(MaxTaskTimeout);
+                if (!reponseTask.IsCompleted)
+                    Assert.Fail("Took too long to get reponse");
+
+                // Assert
+                mockClientEndpoint.Verify(
+                    cep => cep.SendAsync(It.Is<CoapPayload>(p => p.Payload.SequenceEqual(requestMessage.Serialise()))),
+                    Times.Exactly(1));
+
+                mockClientEndpoint.Verify(
+                    cep => cep.SendAsync(It.Is<CoapPayload>(p => p.Payload.SequenceEqual(acknowledgeMessage.Serialise()))),
+                    Times.Exactly(1));
+            }
         }
 
         // ToDo: Test Retransmit Delays
