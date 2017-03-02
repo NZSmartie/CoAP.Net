@@ -21,4 +21,11 @@ namespace CoAP.Net
         public const int Size1 = 60;
     }
 
+    public static class Consts
+    {
+        public const string MulticastIPv4 = "224.0.1.187";
+        public const string MulticastIPv6 = "FF0X::FD";
+        public const ushort Port = 5683;
+        public const ushort PortDTLS = 5684;
+    }
 }

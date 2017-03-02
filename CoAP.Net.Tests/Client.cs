@@ -17,7 +17,7 @@ namespace CoAP.Net.Tests
         /// <summary>
         /// Timout for any Tasks
         /// </summary>
-        public const int MaxTaskTimeout = 2000;
+        public readonly int MaxTaskTimeout = System.Diagnostics.Debugger.IsAttached ? -1 : 2000;
 
         [TestMethod]
         [TestCategory("CoapClient")]
@@ -74,7 +74,7 @@ namespace CoAP.Net.Tests
             mockClientEndpoint
                 .SetupSequence(c => c.ReceiveAsync())
                 .Returns(Task.FromResult(mockPayload.Object))
-                .Throws(new CoapEndpointException());
+                .Throws(new CoapEndpointException("Endpoint closed"));
 
             // Ack
             using (var client = new CoapClient(mockClientEndpoint.Object))
@@ -121,7 +121,7 @@ namespace CoAP.Net.Tests
                 {
                     Payload = expected.Serialise()
                 }))
-                .Throws(new CoapEndpointException());
+                .Throws(new CoapEndpointException("Endpoint closed"));
 
             // Act
             using (var mockClient = new CoapClient(mockClientEndpoint.Object))
@@ -165,7 +165,7 @@ namespace CoAP.Net.Tests
                 {
                     Payload = new byte[] { 0x60, 0x00, 0x12, 0x34, 0xFF, 0x12, 0x34 } // "Empty" Acknowledge Message with a payload (ignored)
                 }))
-                .Throws(new CoapEndpointException());
+                .Throws(new CoapEndpointException("Endpoint closed"));
 
             // Act
             using (var mockClient = new CoapClient(mockClientEndpoint.Object))
@@ -227,7 +227,7 @@ namespace CoAP.Net.Tests
                         Payload = Encoding.UTF8.GetBytes("Test Resource")
                     }.Serialise()
                 }))
-                .Throws(new CoapEndpointException());
+                .Throws(new CoapEndpointException("Endpoint closed"));
 
             // Act
             using (var mockClient = new CoapClient(mockClientEndpoint.Object))
@@ -321,6 +321,104 @@ namespace CoAP.Net.Tests
         [TestMethod]
         [TestCategory("[RFC7252] Section 4.3")]
         public void TestRejectEmptyNonConfirmableMessage()
+        {
+            throw new NotImplementedException();
+        }
+
+        // ToDo: Test Multicast Message Is Marked Multicast
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 8.1")]
+        public void TestMulticastMessagFromMulticastEndpoint()
+        {
+            // Arrange
+            var mockClientEndpoint = new Mock<ICoapEndpoint>();
+            var mockPayload = new Mock<CoapPayload>();
+
+            var messageReceived = new TaskCompletionSource<bool>();
+
+            var expected = new CoapMessage
+            {
+                Type = CoapMessageType.Nonnonfirmable,
+                Code = CoapMessageCode.Get,
+                Options = new System.Collections.Generic.List<CoapOption>
+                    {
+                        new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat)
+                    },
+                Payload = Encoding.UTF8.GetBytes("</.well-known/core>")
+            };
+
+            mockPayload
+                .Setup(p => p.Payload)
+                .Returns(() => expected.Serialise());
+
+            mockClientEndpoint.Setup(c => c.IsMulticast).Returns(true);
+            mockClientEndpoint
+                .Setup(c => c.SendAsync(It.IsAny<CoapPayload>()))
+                .Returns(Task.CompletedTask);
+            mockClientEndpoint
+                .SetupSequence(c => c.ReceiveAsync())
+                .Returns(Task.FromResult(mockPayload.Object))
+                .Throws(new CoapEndpointException("Endpoint closed"));
+
+
+            // Ack
+            using (var client = new CoapClient(mockClientEndpoint.Object))
+            {
+                client.OnMessageReceived += (s, e) => messageReceived.SetResult(e?.Message?.IsMulticast ?? false);
+                client.Listen(); // enable loop back thingy
+
+                messageReceived.Task.Wait(MaxTaskTimeout);
+            }
+
+            // Assert
+            Assert.IsTrue(messageReceived.Task.IsCompleted, "Took too long to receive message");
+            Assert.IsTrue(messageReceived.Task.Result, "Message is not marked as Multicast");
+        }
+
+        // ToDo: Test Multicast Message is Non-Confirmable
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 8.1")]
+        public void TestMulticastMessageIsNonConfirmable()
+        {
+            // Arrange
+            var mockClientEndpoint = new Mock<ICoapEndpoint>();
+            var closedEventSource = new TaskCompletionSource<bool>();
+
+            mockClientEndpoint.Setup(c => c.IsMulticast).Returns(true);
+            mockClientEndpoint
+                .Setup(c => c.SendAsync(It.IsAny<CoapPayload>()))
+                .Returns(Task.CompletedTask);
+            mockClientEndpoint
+                .SetupSequence(c => c.ReceiveAsync())
+                .Returns(Task.FromResult(new CoapPayload
+                {
+                    Payload = new byte[] { 0x40, 0x00, 0x12, 0x34, 0xFF, 0x12, 0x34 } // "Empty" Confirmable Message with a payload
+                }))
+                .Returns(Task.FromResult(new CoapPayload
+                {
+                    Payload = new byte[] { 0x60, 0x00, 0x12, 0x34, 0xFF, 0x12, 0x34 } // "Empty" Acknowledge Message with a payload (ignored)
+                }))
+                .Throws(new CoapEndpointException("Endpoint closed"));
+
+
+            // Ack
+            using (var client = new CoapClient(mockClientEndpoint.Object))
+            {
+                client.OnClosed += (s, e) => closedEventSource.SetResult(true);
+                client.Listen(); // enable loop back thingy
+
+                closedEventSource.Task.Wait(MaxTaskTimeout);
+            }
+
+            // Assert
+            Assert.IsTrue(closedEventSource.Task.IsCompleted, "Took too long to receive message");
+            mockClientEndpoint.Verify(x => x.SendAsync(It.IsAny<CoapPayload>()), Times.Never, "Multicast Message was responded to whenn it shouldn't");
+        }
+
+        // ToDo: Test Multicast Message Error Does Not Reset
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 8.1")]
+        public void TestMulticastMessageErrorDoesNotReset()
         {
             throw new NotImplementedException();
         }

@@ -17,6 +17,14 @@ namespace CoAP.Net
     public interface ICoapEndpoint
     {
         /// <summary>
+        /// Gets if this enpoint used for Multicast.
+        /// </summary>
+        /// <remarks>
+        /// Multicast endpoitns do not acknolweged received confirmables.
+        /// </remarks>
+        bool IsMulticast { get; }
+
+        /// <summary>
         /// Called by [Service] to send a <see cref="CoapPayload.Payload"/> to the specified <see cref="CoapPayload.Endpoint"/> using the transport layer provided by the Application Layer
         /// </summary>
         /// <param name="payload"></param>

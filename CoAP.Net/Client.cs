@@ -11,7 +11,13 @@ namespace CoAP.Net
         public ICoapEndpoint Endpoint { get; set; }
     }
 
-    public class CoapEndpointException : Exception { }
+    public class CoapEndpointException : Exception {
+        public CoapEndpointException() :base() { }
+
+        public CoapEndpointException(string message) : base(message) { }
+
+        public CoapEndpointException(string message, Exception innerException) : base(message, innerException) { }
+    }
 
     public class CoapClient : IDisposable
     {
@@ -25,6 +31,8 @@ namespace CoAP.Net
         private CancellationTokenSource _receiveCancellationToken;
 
         public event EventHandler<CoapMessageReceivedEventArgs> OnMessageReceived;
+
+        public event EventHandler<EventArgs> OnClosed;
 
         public CoapClient(ICoapEndpoint transport)
         {
@@ -54,14 +62,15 @@ namespace CoAP.Net
                         if (!payload.IsCompleted || payload.Result == null)
                             continue;
 
-                        var message = new CoapMessage();
+                        var message = new CoapMessage(_transport.IsMulticast);
                         try
                         {
                             message.Deserialise(payload.Result.Payload);
                         }
                         catch(CoapMessageFormatException fe)
                         {
-                            if (message.Type == CoapMessageType.Confirmable)
+                            if (message.Type == CoapMessageType.Confirmable 
+                                && !_transport.IsMulticast)
                             {
                                 Task.Run(() => SendAsync(new CoapMessage
                                 {
@@ -86,6 +95,7 @@ namespace CoAP.Net
                         _receiveCancellationToken.Cancel();
                     }
                 }
+                OnClosed?.Invoke(this, new EventArgs());
             });
         }
 

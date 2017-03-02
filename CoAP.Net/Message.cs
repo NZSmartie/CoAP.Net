@@ -148,7 +148,12 @@ namespace CoAP.Net
         /// <remarks>Check (or add) <see cref="Options.ContentFormat"/> in <see cref="CoapMessage.Options"/> for the format of the payload.</remarks>
         public byte[] Payload { get; set; }
 
-        public CoapMessage() { }
+        public readonly bool IsMulticast;
+
+        public CoapMessage(bool multicast = false)
+        {
+            IsMulticast = multicast;
+        }
 
         /// <summary>
         /// Serialises the message into bytes, ready to be encrypted or transported to the destination endpoint.
