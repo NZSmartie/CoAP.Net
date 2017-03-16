@@ -30,11 +30,17 @@ namespace CoAP.Net
 
         public ulong MaxSize;
 
+        public List<Options.ContentFormatType> SuggestedContentTypes;
+
         public Dictionary<string, string> Extentions = new Dictionary<string, string>();
 
         public CoapResource(string uri)
         {
             URIReference = uri;
+        }
+
+        private bool nullableSequenceEquals<T>(ICollection<T> a, ICollection<T> b) {
+            return (a == null && b == null) || (a != null && b != null && a.SequenceEqual(b));
         }
 
         public override bool Equals(object obj)
@@ -43,9 +49,6 @@ namespace CoAP.Net
 
             if (other == null)
                 return base.Equals(obj);
-
-            Func<ICollection<string>, ICollection<string>, bool> nullableSequenceEquals = 
-                (a, b) => (a == null && b == null) || (a != null && b != null && a.SequenceEqual(b));
 
             if (URIReference != other.URIReference)
                 return false;
@@ -68,6 +71,8 @@ namespace CoAP.Net
             if (!nullableSequenceEquals(ResourceTypes, other.ResourceTypes))
                 return false;
             if (!nullableSequenceEquals(InterfaceDescription, other.InterfaceDescription))
+                return false;
+            if (!nullableSequenceEquals(SuggestedContentTypes, other.SuggestedContentTypes))
                 return false;
             if (MaxSize != other.MaxSize)
                 return false;
@@ -201,11 +206,37 @@ namespace CoAP.Net
                                 if(!ulong.TryParse(value, out currentResource.MaxSize))
                                     throw new ArgumentException(string.Format("Could not parse cardinal at pos {0}", mSeek));
                             }
+                            else if(param == "ct")
+                            {
+                                int ct = 0;
+                                currentResource.SuggestedContentTypes = new List<Options.ContentFormatType>();
+
+                                if (value[0] == '"')
+                                {
+                                    if (value[value.Length - 1] != '"')
+                                        throw new ArgumentException(string.Format("Expected Type DQUOTE '\"' at pos {0}", mSeek));
+                                    currentResource.SuggestedContentTypes.AddRange(
+                                        value
+                                            .Substring(1, value.Length - 2)
+                                            .Split(new char[] { ' ' })
+                                            .Select(s => (Options.ContentFormatType)int.Parse(s))
+                                        );
+                                }
+                                else
+                                {
+                                    if (value[0] == '0' && value.Length != 1)
+                                        throw new ArgumentException(string.Format("cardinal may not start with '0' unless at pos {0}", mSeek));
+                                    if (!int.TryParse(value, out ct))
+                                        throw new ArgumentException(string.Format("Could not parse cardinal at pos {0}", mSeek));
+
+                                    currentResource.SuggestedContentTypes.Add((Options.ContentFormatType)ct);
+                                }
+                            }
                             else
                             {
                                 if (value.Length == 1)
                                 {
-                                    if (!new char[] { '!', '#', '$', '%', '&', '\'', '(', ')', '*', '+', '-', '.', '/', ':', '<', '=', '>', '?', '@', '[', ']', '^', '_', '`', '{', '|', '}', '~' }.Contains(value[0]))
+                                    if (!char.IsLetterOrDigit(value[0]) && !new char[] { '!', '#', '$', '%', '&', '\'', '(', ')', '*', '+', '-', '.', '/', ':', '<', '=', '>', '?', '@', '[', ']', '^', '_', '`', '{', '|', '}', '~' }.Contains(value[0]))
                                         throw new ArgumentException(string.Format("PToken contains invalid character '{0}' at pos {1}", value[0], mSeek));
                                     currentResource.Extentions.Add(param, value);
                                 }

@@ -52,7 +52,12 @@ namespace CoAP.Net.Tests
                     HrefLang = "en-nz",
                     Media = "none",
                     Title = "Outside Temperature",
-                    TitleExt = "Primo Sensor"
+                    TitleExt = "Primo Sensor",
+                    SuggestedContentTypes = new List<Options.ContentFormatType>
+                    {
+                        Options.ContentFormatType.TextPlain,
+                        Options.ContentFormatType.ApplicationJson
+                    }
                 },
                 new CoapResource("http://stupid.schema.io/temperature.json")
                 {
@@ -61,13 +66,14 @@ namespace CoAP.Net.Tests
                 new CoapResource("/firmware/v2.1")
                 {
                     ResourceTypes = new List<string>{ "firmware" },
+                    SuggestedContentTypes = new List<Options.ContentFormatType>{ Options.ContentFormatType.ApplicationOctetStream },
                     MaxSize = 262144
                 }
             };
 
-            var message = "</sensor/temp>;if=\"sensor read\";rt=\"temperature-c temperature-f\";rev=\"one two\";rel=\"one two\";hreflang=en-nz;media=none;title=\"Outside Temperature\";title*=utf-8'en-nz'\"Primo Sensor\""
+            var message = "</sensor/temp>;if=\"sensor read\";ct=\"0 50\";rt=\"temperature-c temperature-f\";rev=\"one two\";rel=\"one two\";hreflang=en-nz;media=none;title=\"Outside Temperature\";title*=utf-8'en-nz'\"Primo Sensor\""
                 + ",<http://stupid.schema.io/temperature.json>;anchor=\"/sensor/temp\""
-                + ",</firmware/v2.1>;rt=\"firmware\";sz=262144";
+                + ",</firmware/v2.1>;rt=\"firmware\";ct=42;sz=262144";
 
             // Act
             var actual = CoreLinkFormat.Parse(message);
