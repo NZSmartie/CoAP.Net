@@ -25,6 +25,45 @@ namespace CoAP.Net
         String
     }
 
+    /// <summary>
+    /// Helper extension methods for handling collections of <see cref="CoapOption"/>s
+    /// </summary>
+    public static class CoapOptionExtensions
+    {
+        /// <summary>
+        /// Gets the first <typeparamref name="OptionType"/> in <paramref name="collection"/> that matches the class type. 
+        /// </summary>
+        /// <typeparam name="OptionType"></typeparam>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+        public static OptionType Get<OptionType>(this ICollection<CoapOption> collection) where OptionType : CoapOption
+        {
+            return (OptionType)collection.FirstOrDefault(o => o is OptionType);
+        }
+
+        /// <summary>
+        /// Checks if the <typeparamref name="OptionType"/> exists in <paramref name="collection"/>
+        /// </summary>
+        /// <typeparam name="OptionType"></typeparam>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+        public static bool Contains<OptionType>(this ICollection<CoapOption> collection) where OptionType : CoapOption
+        {
+            return collection.Any(o => o is OptionType);
+        }
+
+        /// <summary>
+        /// Gets the first <see cref="CoapOption"/> in <paramref name="collection"/> that matches the <paramref name="optionNumber"/>
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <param name="optionNumber"></param>
+        /// <returns></returns>
+        public static bool Contains(this ICollection<CoapOption> collection, int optionNumber)
+        {
+            return collection.Any(o => o.OptionNumber == optionNumber);
+        }
+    }
+
     // Todo: Caching (Section 5.6 of [RFC7252])
     // Todo: Proxying (Section 5.7 of [RFC7252])
     public class CoapOption : IComparable<CoapOption>

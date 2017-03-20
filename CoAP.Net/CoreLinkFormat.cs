@@ -6,7 +6,8 @@ namespace CoAP.Net
 {
     public class CoapResource
     {
-        public readonly string URIReference;
+        private readonly string _uriReference;
+        public string URIReference { get => _uriReference; }
 
         public List<string> Rel;
 
@@ -36,7 +37,7 @@ namespace CoAP.Net
 
         public CoapResource(string uri)
         {
-            URIReference = uri;
+            _uriReference = uri;
         }
 
         private bool nullableSequenceEquals<T>(ICollection<T> a, ICollection<T> b) {
@@ -83,7 +84,7 @@ namespace CoAP.Net
 
         public override int GetHashCode()
         {
-            return URIReference.GetHashCode();
+            return _uriReference.GetHashCode();
         }
     }
 
@@ -104,6 +105,9 @@ namespace CoAP.Net
                 var run = true;
                 do
                 {
+                    if (mPos >= message.Length)
+                        break;
+
                     switch (state)
                     {
                         case _formatState.LinkValue:
@@ -266,9 +270,9 @@ namespace CoAP.Net
                 }
                 while (run);
             }
-            catch(IndexOutOfRangeException ex)
+            catch(IndexOutOfRangeException)
             {
-
+                // Moving on...
             }
 
             if (currentResource != null)

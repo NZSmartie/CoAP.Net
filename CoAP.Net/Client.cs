@@ -67,7 +67,7 @@ namespace CoAP.Net
                         {
                             message.Deserialise(payload.Result.Payload);
                         }
-                        catch(CoapMessageFormatException fe)
+                        catch(CoapMessageFormatException)
                         {
                             if (message.Type == CoapMessageType.Confirmable 
                                 && !_transport.IsMulticast)
@@ -83,14 +83,14 @@ namespace CoAP.Net
 
                         if (_messageReponses.ContainsKey(message.Id))
                             _messageReponses[message.Id].TrySetResult(message);
-                        else
-                            OnMessageReceived?.Invoke(this, new CoapMessageReceivedEventArgs
-                            {
-                                Message = message,
-                                Endpoint = payload.Result.Endpoint
-                            });
+
+                        OnMessageReceived?.Invoke(this, new CoapMessageReceivedEventArgs
+                        {
+                            Message = message,
+                            Endpoint = payload.Result.Endpoint
+                        });
                     }
-                    catch(CoapEndpointException ex)
+                    catch(CoapEndpointException)
                     {
                         _receiveCancellationToken.Cancel();
                     }

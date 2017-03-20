@@ -10,7 +10,7 @@ namespace CoAP.Net
     public enum CoapMessageType
     {
         Confirmable = 0,
-        Nonnonfirmable = 1,
+        NonConfirmable = 1,
         Acknowledgement = 2,
         Reset = 3,
     }
@@ -384,6 +384,29 @@ namespace CoAP.Net
 
             if (uri.Query.Length > 0)
                 _options.AddRange(uri.Query.Substring(1).Split(new[] { '&' }).Select(p => new Options.UriQuery(Uri.UnescapeDataString(p))));
+        }
+
+        public override string ToString()
+        {
+            var result = Type == CoapMessageType.Acknowledgement ? "ACK" :
+                         Type == CoapMessageType.Confirmable     ? "CON" :
+                         Type == CoapMessageType.NonConfirmable  ? "NON" : "RST";
+
+            result += ", MID:" + Id.ToString();
+
+            if (Code <= CoapMessageCode.Delete)
+            {
+                result += ", " + Code.ToString();
+            }
+            else
+            {
+                result += string.Format(", {0}.{1:D2} {2}", ((int)Code / 100), ((int)Code % 100), Code);
+            }
+
+            if (Options.Any(o => o.OptionNumber == RegisteredOptionNumber.UriPath))
+                result += ", /" + Options.Where(o => o.OptionNumber == RegisteredOptionNumber.UriPath).Select(o => o.ValueString).Aggregate((a, b) => a + "/" + b);
+
+            return result;
         }
     }
 }
