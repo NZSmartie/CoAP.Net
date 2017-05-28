@@ -42,6 +42,17 @@ namespace CoAP.Net
         }
 
         /// <summary>
+        /// Gets the first <typeparamref name="OptionType"/> in <paramref name="collection"/> that matches the class type. 
+        /// </summary>
+        /// <typeparam name="OptionType"></typeparam>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+        public static IEnumerable<OptionType> GetAll<OptionType>(this ICollection<CoapOption> collection) where OptionType : CoapOption
+        {
+            return collection.Where(o => o is OptionType).Select(o => (OptionType)o);
+        }
+
+        /// <summary>
         /// Checks if the <typeparamref name="OptionType"/> exists in <paramref name="collection"/>
         /// </summary>
         /// <typeparam name="OptionType"></typeparam>
