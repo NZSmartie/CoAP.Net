@@ -233,6 +233,65 @@ namespace CoAP.Net.Tests
         }
 
         [TestMethod]
+        [TestCategory("[RFC7252] Section 3.1"), TestCategory("Encode")]
+        public void TestMessageToUri()
+        {
+            _message = new CoapMessage
+            {
+                Options = new List<CoapOption>
+                {
+                    new Options.UriHost("example.net"),
+                    new Options.UriPath(".well-known"),
+                    new Options.UriPath("core"),
+                }
+            };
+            var expected = new Uri("coap://example.net/.well-known/core");
+            var actual = _message.GetUri();
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 3.1"), TestCategory("Encode")]
+        public void TestMessageToUriDTLS()
+        {
+            _message = new CoapMessage
+            {
+                Options = new List<CoapOption>
+                {
+                    new Options.UriHost("example.net"),
+                    new Options.UriPort(Consts.PortDTLS),
+                    new Options.UriPath(".well-known"),
+                    new Options.UriPath("core"),
+                }
+            };
+            var expected = new Uri("coaps://example.net/.well-known/core");
+            var actual = _message.GetUri();
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        [TestCategory("[RFC7252] Section 3.1"), TestCategory("Encode")]
+        public void TestMessageToUriCustomPort()
+        {
+            _message = new CoapMessage
+            {
+                Options = new List<CoapOption>
+                {
+                    new Options.UriHost("example.net"),
+                    new Options.UriPort(1234),
+                    new Options.UriPath(".well-known"),
+                    new Options.UriPath("core"),
+                }
+            };
+            var expected = new Uri("coap://example.net:1234/.well-known/core");
+            var actual = _message.GetUri();
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         [TestCategory("[RFC7252] Section 6.4")]
         public void TestMessageFromUriIPv4()
         {

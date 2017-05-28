@@ -348,7 +348,15 @@ namespace CoAP.Net
         public void FromUri(string input)
         {
             // Will throw exceptions that the application code can handle
-            Uri uri = new Uri(input);
+            FromUri(new Uri(input));
+        }
+
+        /// <summary>
+        /// Popualtes <see cref="CoapMessage.Options"/> to match the Uri.
+        /// </summary>
+        /// <remarks>Any potentially conflicting <see cref="CoapOption"/>s are stripped after URI validation and before processing.</remarks>
+        /// <param name="uri"></param>
+        public void FromUri(Uri uri) { 
 
             if (!uri.IsAbsoluteUri)
                 throw new UriFormatException("URI is not absolute and unsupported by the CoAP scheme");
@@ -384,6 +392,30 @@ namespace CoAP.Net
 
             if (uri.Query.Length > 0)
                 _options.AddRange(uri.Query.Substring(1).Split(new[] { '&' }).Select(p => new Options.UriQuery(Uri.UnescapeDataString(p))));
+        }
+
+        public Uri GetUri()
+        {
+            var uri = new UriBuilder();
+
+            uri.Scheme = "coap";
+            uri.Host = _options.Get<Options.UriHost>().ValueString;
+
+            var port = _options.Get<Options.UriPort>()?.ValueUInt;
+            if (port != Consts.Port)
+            {
+                if (port == Consts.PortDTLS)
+                    uri.Scheme = "coaps";
+                else if (port != null)
+                    uri.Port = (int)port;
+            }
+
+            uri.Path = "/" + string.Join("/", _options.GetAll<Options.UriPath>().Select(p => p.ValueString));
+
+            if(_options.Contains<Options.UriQuery>())
+                uri.Query = "?" + string.Join("&", _options.GetAll<Options.UriQuery>().Select(q => q.ValueString));
+
+            return uri.Uri;
         }
 
         public override string ToString()
