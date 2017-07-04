@@ -6,8 +6,7 @@ namespace CoAP.Net
 {
     public class CoapResource
     {
-        private readonly string _uriReference;
-        public string URIReference { get => _uriReference; }
+        public string URIReference { get; }
 
         public List<string> Rel;
 
@@ -37,7 +36,7 @@ namespace CoAP.Net
 
         public CoapResource(string uri)
         {
-            _uriReference = uri;
+            URIReference = uri;
         }
 
         private bool nullableSequenceEquals<T>(ICollection<T> a, ICollection<T> b) {
@@ -84,7 +83,7 @@ namespace CoAP.Net
 
         public override int GetHashCode()
         {
-            return _uriReference.GetHashCode();
+            return URIReference.GetHashCode();
         }
     }
 

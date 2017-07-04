@@ -17,6 +17,11 @@ namespace CoAP.Net
     public interface ICoapEndpoint
     {
         /// <summary>
+        /// Gets if this enpoint is encrypted using DTLS
+        /// </summary>
+        bool IsSecure { get; }
+
+        /// <summary>
         /// Gets if this enpoint used for Multicast.
         /// </summary>
         /// <remarks>
