@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 using CoAP;
 
@@ -14,43 +13,97 @@ namespace CoAP.Net.Options
     /// Content-Formats", within the "CoRE Parameters" registry.
     /// <para>See section 12.3 of [RFC7252]</para>
     /// </summary>
-    public enum ContentFormatType
+    public sealed class ContentFormatType
     {
+        private static Dictionary<string, ContentFormatType> nameLookup = new Dictionary<string, ContentFormatType>();
+        private static Dictionary<int, ContentFormatType> valueLookup = new Dictionary<int, ContentFormatType>();
+
         /// <summary>
         /// text/plain; charset=utf-8
         /// <para>[RFC2046] [RFC3676] [RFC5147]</para>
         /// </summary>
-        TextPlain = 0,
+        public static readonly ContentFormatType TextPlain = new ContentFormatType(0, "text/plain");
         /// <summary>
         /// application/link-format
         /// <para>See [rfc6690]</para>
         /// </summary>
-        ApplicationLinkFormat = 40,
+        public static readonly ContentFormatType ApplicationLinkFormat = new ContentFormatType(40, "application/link-format");
         /// <summary>
         /// application/xml
         /// <para>[RFC3023]</para>
         /// </summary>
-        ApplicationXml = 41,
+        public static readonly ContentFormatType ApplicationXml = new ContentFormatType(41, "application/xml");
         /// <summary>
         /// application/octet-stream
         /// <para>See [RFC2045] and [RFC2046]</para>
         /// </summary>
-        ApplicationOctetStream = 42,
+        public static readonly ContentFormatType ApplicationOctetStream = new ContentFormatType(42, "application/octet-stream");
         /// <summary>
         /// application/exi
         /// <para>See [REC-exi-20140211]</para>
         /// </summary>
-        ApplicationExi = 47,
+        public static readonly ContentFormatType ApplicationExi = new ContentFormatType(47, "application/exi");
         /// <summary>
         /// application/json
         /// <para>See [RFC7159]</para>
         /// </summary>
-        ApplicationJson = 50,
+        public static readonly ContentFormatType ApplicationJson = new ContentFormatType(50, "application/json");
         /// <summary>
         /// applicaiton/cbor
         /// <para>See [RFC7049]</para>
         /// </summary>
-        ApplicationCbor = 60,
+        public static readonly ContentFormatType ApplicationCbor = new ContentFormatType(60, "applicaiton/cbor");
+
+        private readonly int _value;
+
+        private readonly string _name;
+
+        public ContentFormatType(int value, string name)
+        {
+            _value = value;
+            _name = name;
+
+            nameLookup[_name] = this;
+            valueLookup[_value] = this;
+        }
+
+        #region implicit operators (string, int, uint)
+
+        public static implicit operator ContentFormatType(string name)
+        {
+            if (nameLookup.TryGetValue(name, out var result))
+                return result;
+            throw new InvalidCastException();
+        }
+
+        public static implicit operator ContentFormatType(int value)
+        {
+            if (valueLookup.TryGetValue(value, out var result))
+                return result;
+            throw new InvalidCastException();
+        }
+
+        public static implicit operator ContentFormatType(uint value)
+        {
+            return (ContentFormatType)((int)value);
+        }
+
+        public static implicit operator int(ContentFormatType type)
+        {
+            return type._value;
+        }
+
+        public static implicit operator uint(ContentFormatType type)
+        {
+            return (uint)type._value;
+        }
+
+        #endregion
+
+        public override string ToString()
+        {
+            return _name;
+        }
     }
 
     /// <summary>
