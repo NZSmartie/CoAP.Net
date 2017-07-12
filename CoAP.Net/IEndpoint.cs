@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace CoAP.Net
+namespace CoAPNet
 {
     public class CoapPayload
     {

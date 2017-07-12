@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-using CoAP;
+using CoAPNet;
 
-namespace CoAP.Net.Options
+namespace CoAPNet.Options
 {
     public class UriHost : CoapOption
     {

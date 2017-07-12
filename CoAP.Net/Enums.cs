@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoAP.Net
+namespace CoAPNet
 {
     public static class RegisteredOptionNumber
     {

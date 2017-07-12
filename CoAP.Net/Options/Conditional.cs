@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoAP.Net.Options
+namespace CoAPNet.Options
 {
     /// <summary>
     /// The If-Match Option MAY be used to make a request conditional on the

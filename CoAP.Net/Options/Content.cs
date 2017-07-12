@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using CoAP;
+using CoAPNet;
 
-namespace CoAP.Net.Options
+namespace CoAPNet.Options
 {
     /// <summary>
     /// Internet media types are identified by a string, such as

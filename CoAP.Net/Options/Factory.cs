@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Collections.Generic;
 
-namespace CoAP.Net.Options
+namespace CoAPNet.Options
 {
     public static class Factory
     {

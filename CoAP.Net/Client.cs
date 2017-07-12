@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CoAP.Net
+namespace CoAPNet
 {
     public class CoapMessageReceivedEventArgs : EventArgs
     {

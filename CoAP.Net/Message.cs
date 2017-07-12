@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CoAP.Net
+namespace CoAPNet
 {
     /// <summary>
     /// <see cref="CoapMessage.Type"/>

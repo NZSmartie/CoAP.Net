@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoAP.Net.Options
+namespace CoAPNet.Options
 {
     public class ProxyUri : CoapOption
     {

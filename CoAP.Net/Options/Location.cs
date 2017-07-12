@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoAP.Net.Options
+namespace CoAPNet.Options
 {
     /// <summary>
     /// <para>See section 5.10.7 of [RFC7252]</para>
