@@ -30,6 +30,11 @@ namespace CoAPNet
         bool IsMulticast { get; }
 
         /// <summary>
+        /// Gets the base URI (excluding path and query) for this endpoint. 
+        /// </summary>
+        Uri BaseUri { get; }
+
+        /// <summary>
         /// Called by [Service] to send a <see cref="CoapPayload.Payload"/> to the specified <see cref="CoapPayload.Endpoint"/> using the transport layer provided by the Application Layer
         /// </summary>
         /// <param name="payload"></param>

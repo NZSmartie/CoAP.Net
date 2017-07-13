@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-using CoAP.Net;
+using CoAPNet;
 
-namespace CoAP.Net.Tests
+namespace CoAPNet.Tests
 {
     [TestClass]
     public class Client

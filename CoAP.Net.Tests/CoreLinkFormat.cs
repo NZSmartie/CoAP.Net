@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using CoAP.Net;
+using CoAPNet;
 
-namespace CoAP.Net.Tests
+namespace CoAPNet.Tests
 {
     [TestClass]
     public class TestCoreLinkFormat

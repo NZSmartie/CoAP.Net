@@ -1,7 +1,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CoAP.Net.Tests
+namespace CoAPNet.Tests
 {
     [TestClass]
     public class OptionsTest

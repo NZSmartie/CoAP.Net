@@ -4,7 +4,7 @@ using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CoAP.Net.Tests
+namespace CoAPNet.Tests
 {
     [TestClass]
     public class MessageTest
