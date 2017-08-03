@@ -2,29 +2,30 @@
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit;
+using NUnit.Framework;
 
 namespace CoAPNet.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class MessageTest
     {
         private CoapMessage _message = null;
 
-        [TestInitialize]
+        [SetUp]
         public void InitTest()
         {
             _message = new CoapMessage();
         }
 
-        [TestCleanup]
+        [TearDown]
         public void CleanupTest()
         {
             _message = null;
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 3"), TestCategory("Encode")]
+        [Test]
+        [Category("[RFC7252] Section 3"), Category("Encode")]
         public void TestMessageEmpty()
         {
             _message.Type = CoapMessageType.Confirmable;
@@ -37,8 +38,8 @@ namespace CoAPNet.Tests
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 3"), TestCategory("Encode")]
+        [Test]
+        [Category("[RFC7252] Section 3"), Category("Encode")]
         public void TestMessageEmptyWithToken()
         {
             _message.Type = CoapMessageType.Acknowledgement;
@@ -52,8 +53,8 @@ namespace CoAPNet.Tests
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 3")]
+        [Test]
+        [Category("[RFC7252] Section 3")]
         public void TestMessageEmptyAckknowledgement()
         {
             _message = new CoapMessage();
@@ -67,8 +68,8 @@ namespace CoAPNet.Tests
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 3"), TestCategory("Encode")]
+        [Test]
+        [Category("[RFC7252] Section 3"), Category("Encode")]
         public void TestMessageEncodeRequest()
         {
             _message.Type = CoapMessageType.Confirmable;
@@ -88,8 +89,8 @@ namespace CoAPNet.Tests
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 3"), TestCategory("Encode")]
+        [Test]
+        [Category("[RFC7252] Section 3"), Category("Encode")]
         public void TestMessageEncodeResponse()
         {
             _message.Type = CoapMessageType.Acknowledgement;
@@ -109,8 +110,8 @@ namespace CoAPNet.Tests
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 3"), TestCategory("Decode")]
+        [Test]
+        [Category("[RFC7252] Section 3"), Category("Decode")]
         public void TestMessageDecodeRequest()
         {
             this._message.Deserialise(new byte[] {
@@ -130,8 +131,8 @@ namespace CoAPNet.Tests
             }.SequenceEqual(_message.Options));
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 3"), TestCategory("Decode")]
+        [Test]
+        [Category("[RFC7252] Section 3"), Category("Decode")]
         public void TestMessageDecodeResponse()
         {
             _message.Deserialise(new byte[] {
@@ -150,11 +151,11 @@ namespace CoAPNet.Tests
             Assert.IsTrue(Encoding.UTF8.GetBytes("<.well-known/core/>").SequenceEqual(_message.Payload));
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 3"), TestCategory("Decode")]
+        [Test]
+        [Category("[RFC7252] Section 3"), Category("Decode")]
         public void TestMessageFormatError()
         {
-            Assert.ThrowsException<CoapMessageFormatException>(() =>
+            Assert.Throws<CoapMessageFormatException>(() =>
             {
                 _message.Deserialise(new byte[] { 0x40, 0x00, 0x10, 0x00, 0xFF, 0x12, 0x34 });
             }, "Empty message with payload");
@@ -162,7 +163,7 @@ namespace CoAPNet.Tests
             // Verify that Message.Id was decoded 
             Assert.AreEqual(0x1000, _message.Id);
 
-            Assert.ThrowsException<CoapMessageFormatException>(() =>
+            Assert.Throws<CoapMessageFormatException>(() =>
             {
                 _message.Deserialise(new byte[] { 0x52, 0x00, 0xAA, 0x55, 0x12, 0x34 });
             }, "Empty message with tag");
@@ -170,7 +171,7 @@ namespace CoAPNet.Tests
             // Verify that Message.Id was decoded 
             Assert.AreEqual(0xAA55, _message.Id);
 
-            Assert.ThrowsException<CoapMessageFormatException>(() =>
+            Assert.Throws<CoapMessageFormatException>(() =>
             {
                 _message.Deserialise(new byte[] { 0x60, 0x00, 0xC3, 0x3C, 0xc1, 0x28 });
             }, "Empty message with options");
@@ -178,14 +179,14 @@ namespace CoAPNet.Tests
             // Verify that Message.Id was decoded 
             Assert.AreEqual(0xC33C, _message.Id);
 
-            Assert.ThrowsException<CoapMessageFormatException>(() =>
+            Assert.Throws<CoapMessageFormatException>(() =>
             {
                 _message.Deserialise(new byte[] { 0x40, 0x20, 0x12, 0x34, 0xc1, 0x28 });
             }, "Message with invalid Message.Code class");
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 3.1"), TestCategory("Encode")]
+        [Test]
+        [Category("[RFC7252] Section 3.1"), Category("Encode")]
         public void TestMessageOptionsOutOfOrder()
         {
             // Arrange
@@ -212,8 +213,8 @@ namespace CoAPNet.Tests
             Assert.IsTrue(expectedOptions.SequenceEqual(_message.Options));
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 3.1"), TestCategory("Encode")]
+        [Test]
+        [Category("[RFC7252] Section 3.1"), Category("Encode")]
         public void TestMessageFromUri()
         {
             _message.FromUri("coap://example.net/.well-known/core");
@@ -232,8 +233,8 @@ namespace CoAPNet.Tests
             Assert.IsTrue(expectedOptions.SequenceEqual(message.Options));
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 3.1"), TestCategory("Encode")]
+        [Test]
+        [Category("[RFC7252] Section 3.1"), Category("Encode")]
         public void TestMessageToUri()
         {
             _message = new CoapMessage
@@ -251,8 +252,8 @@ namespace CoAPNet.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 3.1"), TestCategory("Encode")]
+        [Test]
+        [Category("[RFC7252] Section 3.1"), Category("Encode")]
         public void TestMessageToUriDTLS()
         {
             _message = new CoapMessage
@@ -271,8 +272,8 @@ namespace CoAPNet.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 3.1"), TestCategory("Encode")]
+        [Test]
+        [Category("[RFC7252] Section 3.1"), Category("Encode")]
         public void TestMessageToUriCustomPort()
         {
             _message = new CoapMessage
@@ -291,8 +292,8 @@ namespace CoAPNet.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 6.4")]
+        [Test]
+        [Category("[RFC7252] Section 6.4")]
         public void TestMessageFromUriIPv4()
         {
             _message.FromUri("coap://198.51.100.1:61616//%2F//?%2F%2F&?%26");
@@ -314,8 +315,8 @@ namespace CoAPNet.Tests
             Assert.IsTrue(expectedOptions.SequenceEqual(message.Options));
         }
 
-        [TestMethod]
-        [TestCategory("[RFC7252] Section 6.4")]
+        [Test]
+        [Category("[RFC7252] Section 6.4")]
         public void TestMessageFromUriSpecialChars()
         {
             _message.FromUri("coap://\u307B\u3052.example/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF");

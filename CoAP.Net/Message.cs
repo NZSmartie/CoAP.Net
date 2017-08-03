@@ -374,7 +374,7 @@ namespace CoAPNet
             switch (uri.HostNameType)
             {
                 case UriHostNameType.Dns:
-                    _options.Add(new Options.UriHost(uri.IdnHost));
+                    _options.Add(new Options.UriHost(uri.Host));
                     break;
                 case UriHostNameType.IPv4:
                 case UriHostNameType.IPv6:

@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit;
+using NUnit.Framework;
 
 using CoAPNet;
 
 namespace CoAPNet.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class TestCoreLinkFormat
     {
-        [TestMethod]
-        [TestCategory("[RFC6690] Section 2")]
+        [Test]
+        [Category("[RFC6690] Section 2")]
         public void ParseSimpleLinkFormat()
         {
             // Arrange
@@ -36,8 +37,8 @@ namespace CoAPNet.Tests
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
 
-        [TestMethod]
-        [TestCategory("[RFC6690] Section 2")]
+        [Test]
+        [Category("[RFC6690] Section 2")]
         public void ParseExtensiveLinkFormat()
         {
             // Arrange
