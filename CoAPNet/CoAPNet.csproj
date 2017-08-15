@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net46;netstandard1.4</TargetFrameworks>
+    <TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>NZSmartie.CoAPNet</PackageId>
+    <Version>0.1.2</Version>
+    <Authors>Roman Vaughan</Authors>
+    <Company>NZSmartie</Company>
+    <Product>CoAPNet</Product>
+    <Description>Provides client/server CoAP protocol support for .Net using arbitary transports.</Description>
+    <PackageProjectUrl>https://github.com/NZSmartie/CoAP.Net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/NZSmartie/CoAP.Net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>CoAP IoT sensors devices hardware network protocol</PackageTags>
+    <IncludeSource>True</IncludeSource>
+    <IncludeSymbols>True</IncludeSymbols>
+    <PackageReleaseNotes>v0.1.2
+ - Compiled with symbols and debug sources</PackageReleaseNotes>
+  </PropertyGroup>
+</Project>
