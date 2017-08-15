@@ -327,11 +327,11 @@ namespace CoAPNet.Tests
                 new Options.UriPath("\u3053\u3093\u306b\u3061\u306f"),
             };
 
-            Assert.IsTrue(expectedOptions.SequenceEqual(_message.Options));
+            Assert.AreEqual(expectedOptions, _message.Options);
 
             // Test again but using static CreateFromUri method
             var message = CoapMessage.CreateFromUri("coap://\u307B\u3052.example/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF");
-            Assert.IsTrue(expectedOptions.SequenceEqual(message.Options));
+            Assert.AreEqual(expectedOptions, message.Options);
         }
     }
 }

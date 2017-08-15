@@ -20,11 +20,11 @@ namespace CoAPNet.Tests
             {
                 new CoapResource("/sensor/temp")
                 {
-                    InterfaceDescription = new List<string>{ "sensor" }
+                    InterfaceDescription = { "sensor" }
                 },
                 new CoapResource("/sensor/light")
                 {
-                    InterfaceDescription = new List<string>{ "sensor" }
+                    InterfaceDescription = { "sensor" }
                 }
             };
 
@@ -46,15 +46,15 @@ namespace CoAPNet.Tests
             {
                 new CoapResource("/sensor/temp")
                 {
-                    InterfaceDescription = new List<string>{"sensor", "read"},
-                    ResourceTypes = new List<string> { "temperature-c", "temperature-f" },
-                    Rev = new List<string>{"one", "two" },
-                    Rel = new List<string>{"one", "two" },
+                    InterfaceDescription = {"sensor", "read"},
+                    ResourceTypes = { "temperature-c", "temperature-f" },
+                    Rev = {"one", "two" },
+                    Rel = {"one", "two" },
                     HrefLang = "en-nz",
                     Media = "none",
                     Title = "Outside Temperature",
                     TitleExt = "Primo Sensor",
-                    SuggestedContentTypes = new List<Options.ContentFormatType>
+                    SuggestedContentTypes = 
                     {
                         Options.ContentFormatType.TextPlain,
                         Options.ContentFormatType.ApplicationJson
@@ -66,8 +66,8 @@ namespace CoAPNet.Tests
                 },
                 new CoapResource("/firmware/v2.1")
                 {
-                    ResourceTypes = new List<string>{ "firmware" },
-                    SuggestedContentTypes = new List<Options.ContentFormatType>{ Options.ContentFormatType.ApplicationOctetStream },
+                    ResourceTypes = { "firmware" },
+                    SuggestedContentTypes = { Options.ContentFormatType.ApplicationOctetStream },
                     MaxSize = 262144
                 }
             };

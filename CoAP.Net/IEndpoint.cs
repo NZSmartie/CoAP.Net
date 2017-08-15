@@ -35,14 +35,14 @@ namespace CoAPNet
         Uri BaseUri { get; }
 
         /// <summary>
-        /// Called by [Service] to send a <see cref="CoapPayload.Payload"/> to the specified <see cref="CoapPayload.Endpoint"/> using the transport layer provided by the Application Layer
+        /// Called by [Service] to send a <see cref="CoapPayload.Payload"/> to the specified <see cref="CoapPayload.Endpoint"/> using the endpoint layer provided by the Application Layer
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
         Task SendAsync(CoapPayload payload);
 
         /// <summary>
-        /// Called by [service] to receive data from the transport layer
+        /// Called by [service] to receive data from the endpoint layer
         /// </summary>
         /// <returns></returns>
         Task<CoapPayload> ReceiveAsync();

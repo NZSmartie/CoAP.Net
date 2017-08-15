@@ -92,6 +92,20 @@ namespace CoAPNet
             }
         }
 
+        public override string ToString()
+        {
+            if (_type == OptionType.Empty)
+                return $"<{GetType().Name}> (empty)";
+
+            if (_type == OptionType.Opaque)
+                return $"<{GetType().Name}> ({_length} bytes)";
+
+            if (_type == OptionType.String)
+                return $"<{GetType().Name}> \"({(string)_value}\"";
+
+            return $"{GetType().Name}";
+        }
+
         /// <summary>
         /// Gets if this resource is unsafe to proxy through the CoAP endpoint
         /// <para>See Section 5.4.2 of [RFC7252]</para>

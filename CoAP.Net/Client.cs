@@ -21,11 +21,12 @@ namespace CoAPNet
 
     public class CoapClient : IDisposable
     {
-        private ICoapEndpoint _transport;
+        protected  ICoapEndpoint Endpoint;
+
         private ushort _messageId;
 
         // I'm not particularly fond of the following _messageQueue and _messageResponses... Feels more like a hack. but it works? NEEDS MORE TESTING!!!
-        private ConcurrentDictionary<int, TaskCompletionSource<CoapMessage>> _messageReponses 
+        private readonly ConcurrentDictionary<int, TaskCompletionSource<CoapMessage>> _messageReponses 
             = new ConcurrentDictionary<int, TaskCompletionSource<CoapMessage>>();
 
         private CancellationTokenSource _receiveCancellationToken;
@@ -34,14 +35,14 @@ namespace CoAPNet
 
         public event EventHandler<EventArgs> OnClosed;
 
-        public CoapClient(ICoapEndpoint transport)
+        public CoapClient(ICoapEndpoint endpoint)
         {
-            _transport = transport;
+            Endpoint = endpoint;
 
             _messageId = (ushort)(new Random().Next() & 0xFFFFu);
         }
 
-        public bool IsListening { get => _receiveCancellationToken != null && !_receiveCancellationToken.IsCancellationRequested; }
+        public bool IsListening => _receiveCancellationToken?.IsCancellationRequested ?? false;
 
         public void Listen() {
             if (IsListening)
@@ -57,12 +58,12 @@ namespace CoAPNet
                 {
                     try
                     {
-                        var payload = _transport.ReceiveAsync();
+                        var payload = Endpoint.ReceiveAsync();
                         payload.Wait(token);
                         if (!payload.IsCompleted || payload.Result == null)
                             continue;
 
-                        var message = new CoapMessage(_transport.IsMulticast);
+                        var message = new CoapMessage(Endpoint.IsMulticast);
                         try
                         {
                             message.Deserialise(payload.Result.Payload);
@@ -70,7 +71,7 @@ namespace CoAPNet
                         catch(CoapMessageFormatException)
                         {
                             if (message.Type == CoapMessageType.Confirmable 
-                                && !_transport.IsMulticast)
+                                && !Endpoint.IsMulticast)
                             {
                                 Task.Run(() => SendAsync(new CoapMessage
                                 {
@@ -127,7 +128,7 @@ namespace CoAPNet
             if(message.Type == CoapMessageType.Confirmable)
                 _messageReponses.TryAdd(message.Id, new TaskCompletionSource<CoapMessage>());
 
-            await _transport.SendAsync(new CoapPayload { Payload = message.Serialise(), MessageId = message.Id, Endpoint = endpoint });
+            await Endpoint.SendAsync(new CoapPayload { Payload = message.Serialise(), MessageId = message.Id, Endpoint = endpoint });
 
             return message.Id;
         }

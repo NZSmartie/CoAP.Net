@@ -374,7 +374,7 @@ namespace CoAPNet
             switch (uri.HostNameType)
             {
                 case UriHostNameType.Dns:
-                    _options.Add(new Options.UriHost(uri.Host));
+                    _options.Add(new Options.UriHost(uri.IdnHost));
                     break;
                 case UriHostNameType.IPv4:
                 case UriHostNameType.IPv6:
@@ -399,14 +399,14 @@ namespace CoAPNet
             var uri = new UriBuilder();
 
             uri.Scheme = "coap";
-            uri.Host = _options.Get<Options.UriHost>().ValueString;
+            uri.Host = _options.Get<Options.UriHost>()?.ValueString ?? "localhost";
 
-            var port = _options.Get<Options.UriPort>()?.ValueUInt;
+            var port = _options.Get<Options.UriPort>()?.ValueUInt ?? Consts.Port;
             if (port != Consts.Port)
             {
                 if (port == Consts.PortDTLS)
                     uri.Scheme = "coaps";
-                else if (port != null)
+                else
                     uri.Port = (int)port;
             }
 
