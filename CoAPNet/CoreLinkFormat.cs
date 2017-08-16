@@ -8,13 +8,13 @@ namespace CoAPNet
     {
         private enum FormatState { LinkValue, LinkParam }
 
-        public static List<CoapResource> Parse(string message)
+        public static List<CoapResourceMetadata> Parse(string message)
         {
             var state = FormatState.LinkValue;
             var mPos = 0;
 
-            var result = new List<CoapResource>();
-            CoapResource currentResource = null;
+            var result = new List<CoapResourceMetadata>();
+            CoapResourceMetadata currentResourceMetadata = null;
             try
             {
                 var run = true;
@@ -30,13 +30,13 @@ namespace CoAPNet
                             if (message[mPos++] != '<')
                                 throw new ArgumentException($"Expected link-value '<' at pos {mPos}");
                             mSeek = message.IndexOf('>', mPos);
-                            if (currentResource != null)
-                                result.Add(currentResource);
-                            currentResource = new CoapResource(message.Substring(mPos, mSeek - mPos));
+                            if (currentResourceMetadata != null)
+                                result.Add(currentResourceMetadata);
+                            currentResourceMetadata = new CoapResourceMetadata(message.Substring(mPos, mSeek - mPos));
                             mPos = mSeek + 1;
                             break;
                         case FormatState.LinkParam:
-                            if (currentResource == null)
+                            if (currentResourceMetadata == null)
                                 throw new InvalidOperationException();
 
                             mSeek = message.IndexOf('=', mPos);
@@ -53,35 +53,35 @@ namespace CoAPNet
                                 case "if":
                                     value = value.Substring(1, value.Length - 2);
                                     foreach (var s in value.Split(' '))
-                                        currentResource.InterfaceDescription.Add(s);
+                                        currentResourceMetadata.InterfaceDescription.Add(s);
                                     break;
                                 case "rt":
                                     value = value.Substring(1, value.Length - 2);
                                     foreach (var s in value.Split(' '))
-                                        currentResource.ResourceTypes.Add(s);
+                                        currentResourceMetadata.ResourceTypes.Add(s);
                                     break;
                                 case "rev":
-                                    if (currentResource.Rev.Count == 0)
+                                    if (currentResourceMetadata.Rev.Count == 0)
                                     {
                                         value = value.Substring(1, value.Length - 2);
                                         foreach (var s in value.Split(' '))
-                                            currentResource.Rev.Add(s);
+                                            currentResourceMetadata.Rev.Add(s);
                                     }
                                     break;
                                 case "rel":
-                                    if (currentResource.Rel.Count == 0)
+                                    if (currentResourceMetadata.Rel.Count == 0)
                                     {
                                         value = value.Substring(1, value.Length - 2);
                                         foreach (var s in value.Split(' '))
-                                            currentResource.Rel.Add(s);
+                                            currentResourceMetadata.Rel.Add(s);
                                     }
                                     break;
                                 case "anchor":
-                                    currentResource.Anchor = value.Substring(1, value.Length - 2);
+                                    currentResourceMetadata.Anchor = value.Substring(1, value.Length - 2);
                                     break;
                                 case "hreflang":
                                     // Much easier to let libraries offload language formatting stuff
-                                    currentResource.HrefLang = new System.Globalization.CultureInfo(value).Name.ToLower();
+                                    currentResourceMetadata.HrefLang = new System.Globalization.CultureInfo(value).Name.ToLower();
                                     break;
                                 case "media":
                                     if(value[0] == '"')
@@ -90,14 +90,14 @@ namespace CoAPNet
                                             throw new ArgumentException($"Expected MediaDesc DQUOTE '\"' at pos {mSeek}");
                                         value = value.Substring(1, value.Length - 2);
                                     }
-                                    currentResource.Media = value;
+                                    currentResourceMetadata.Media = value;
                                     break;
                                 case "title":
                                     if (value[0] != '"' )
                                         throw new ArgumentException($"Expected QuotedString DQUOTE '\"' at pos {mPos}");
                                     if (value[value.Length - 1] != '"')
                                         throw new ArgumentException($"Expected QuotedString DQUOTE '\"' at pos {mSeek}");
-                                    currentResource.Title = value.Substring(1, value.Length - 2);
+                                    currentResourceMetadata.Title = value.Substring(1, value.Length - 2);
                                     break;
                                 case "title*":
                                     // Todo: No idea what to do here...?
@@ -108,7 +108,7 @@ namespace CoAPNet
                                     //System.Diagnostics.Debug.WriteLine("title* = {3}\n\tCharset: {0}\n\tLanguage: {1}\n\tValue: {2}", 
                                     //    charset, lang, value, Uri.UnescapeDataString(value));
 
-                                    currentResource.TitleExt = Uri.UnescapeDataString(value);
+                                    currentResourceMetadata.TitleExt = Uri.UnescapeDataString(value);
                                     break;
                                 case "type":
                                     if (value[0] == '"')
@@ -117,18 +117,18 @@ namespace CoAPNet
                                             throw new ArgumentException($"Expected Type DQUOTE '\"' at pos {mSeek}");
                                         value = value.Substring(1, value.Length - 2);
                                     }
-                                    currentResource.Type = value;
+                                    currentResourceMetadata.Type = value;
                                     break;
                                 case "sz":
                                     if (value[0] == '0' && value.Length != 1)
                                         throw new ArgumentException($"cardinal may not start with '0' unless at pos {mSeek}");
                                     if(!ulong.TryParse(value, out var maxSize))
                                         throw new ArgumentException($"Could not parse cardinal at pos {mSeek}");
-                                    currentResource.MaxSize = maxSize;
+                                    currentResourceMetadata.MaxSize = maxSize;
                                     break;
                                 case "ct":
                                     int ct = 0;
-                                    currentResource.SuggestedContentTypes.Clear();
+                                    currentResourceMetadata.SuggestedContentTypes.Clear();
 
                                     if (value[0] == '"')
                                     {
@@ -140,7 +140,7 @@ namespace CoAPNet
                                             .Split(' ')
                                             .Select(s => (Options.ContentFormatType) int.Parse(s)))
                                         {
-                                            currentResource.SuggestedContentTypes.Add(contentFormatType);
+                                            currentResourceMetadata.SuggestedContentTypes.Add(contentFormatType);
                                         }
                                     }
                                     else
@@ -150,7 +150,7 @@ namespace CoAPNet
                                         if (!int.TryParse(value, out ct))
                                             throw new ArgumentException($"Could not parse cardinal at pos {mSeek}");
 
-                                        currentResource.SuggestedContentTypes.Add(ct);
+                                        currentResourceMetadata.SuggestedContentTypes.Add(ct);
                                     }
                                     break;
                                 default:
@@ -158,7 +158,7 @@ namespace CoAPNet
                                     {
                                         if (!char.IsLetterOrDigit(value[0]) && !new [] { '!', '#', '$', '%', '&', '\'', '(', ')', '*', '+', '-', '.', '/', ':', '<', '=', '>', '?', '@', '[', ']', '^', '_', '`', '{', '|', '}', '~' }.Contains(value[0]))
                                             throw new ArgumentException($"PToken contains invalid character '{value[0]}' at pos {mSeek}");
-                                        currentResource.Extentions.Add(param, value);
+                                        currentResourceMetadata.Extentions.Add(param, value);
                                     }
                                     else
                                     {
@@ -166,7 +166,7 @@ namespace CoAPNet
                                             throw new ArgumentException($"Expected QuotedString DQUOTE '\"' at pos {mPos}");
                                         if (value[value.Length - 1] != '"')
                                             throw new ArgumentException($"Expected QuotedString DQUOTE '\"' at pos {mSeek}");
-                                        currentResource.Extentions.Add(param, value.Substring(1, value.Length - 2));
+                                        currentResourceMetadata.Extentions.Add(param, value.Substring(1, value.Length - 2));
                                     }
                                     break;
                             }
@@ -192,8 +192,8 @@ namespace CoAPNet
                 // Moving on...
             }
 
-            if (currentResource != null)
-                result.Add(currentResource);
+            if (currentResourceMetadata != null)
+                result.Add(currentResourceMetadata);
 
             return result;
         }

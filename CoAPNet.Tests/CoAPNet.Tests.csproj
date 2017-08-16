@@ -9,7 +9,6 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CoAP.Net\CoAPNet.csproj" />
     <ProjectReference Include="..\CoAPNet\CoAPNet.csproj" />
   </ItemGroup>
   <ItemGroup>

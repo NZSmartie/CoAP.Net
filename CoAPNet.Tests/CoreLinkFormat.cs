@@ -16,13 +16,13 @@ namespace CoAPNet.Tests
         public void ParseSimpleLinkFormat()
         {
             // Arrange
-            var expected = new List<CoapResource>
+            var expected = new List<CoapResourceMetadata>
             {
-                new CoapResource("/sensor/temp")
+                new CoapResourceMetadata("/sensor/temp")
                 {
                     InterfaceDescription = { "sensor" }
                 },
-                new CoapResource("/sensor/light")
+                new CoapResourceMetadata("/sensor/light")
                 {
                     InterfaceDescription = { "sensor" }
                 }
@@ -42,9 +42,9 @@ namespace CoAPNet.Tests
         public void ParseExtensiveLinkFormat()
         {
             // Arrange
-            var expected = new List<CoapResource>
+            var expected = new List<CoapResourceMetadata>
             {
-                new CoapResource("/sensor/temp")
+                new CoapResourceMetadata("/sensor/temp")
                 {
                     InterfaceDescription = {"sensor", "read"},
                     ResourceTypes = { "temperature-c", "temperature-f" },
@@ -60,11 +60,11 @@ namespace CoAPNet.Tests
                         Options.ContentFormatType.ApplicationJson
                     }
                 },
-                new CoapResource("http://stupid.schema.io/temperature.json")
+                new CoapResourceMetadata("http://stupid.schema.io/temperature.json")
                 {
                     Anchor = "/sensor/temp"
                 },
-                new CoapResource("/firmware/v2.1")
+                new CoapResourceMetadata("/firmware/v2.1")
                 {
                     ResourceTypes = { "firmware" },
                     SuggestedContentTypes = { Options.ContentFormatType.ApplicationOctetStream },

@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CoAPNet.Options;
 
 namespace CoAPNet
 {
-    public class CoapResource
+    public class CoapResourceMetadata
     {
-        public string URIReference { get; }
+        public Uri UriReference { get; }
 
         public IList<string> Rel { get; } = new List<string>();
 
@@ -34,23 +35,21 @@ namespace CoAPNet
 
         public Dictionary<string, string> Extentions = new Dictionary<string, string>();
 
-        public CoapResource(string uri)
-        {
-            URIReference = uri;
-        }
+        public CoapResourceMetadata(string uri)
+            : this(new Uri(uri, UriKind.RelativeOrAbsolute)) { }
 
-        private bool nullableSequenceEquals<T>(ICollection<T> a, ICollection<T> b) {
-            return (a == null && b == null) || (a != null && b != null && a.SequenceEqual(b));
+        public CoapResourceMetadata(Uri uri)
+        {
+            UriReference = uri;
         }
 
         public override bool Equals(object obj)
         {
-            var other = obj as CoapResource;
+            var other = obj as CoapResourceMetadata;
 
             if (other == null)
-                return base.Equals(obj);
-
-            if (URIReference != other.URIReference)
+                return false;
+            if (UriReference != other.UriReference)
                 return false;
             if (Anchor != other.Anchor)
                 return false;
@@ -64,26 +63,26 @@ namespace CoAPNet
                 return false;
             if (Type != other.Type)
                 return false;
-            if (!nullableSequenceEquals(Rel, other.Rel))
+            if (!Rel.SequenceEqual(other.Rel))
                 return false;
-            if (!nullableSequenceEquals(Rev, other.Rev))
+            if (!Rev.SequenceEqual(other.Rev))
                 return false;
-            if (!nullableSequenceEquals(ResourceTypes, other.ResourceTypes))
+            if (!ResourceTypes.SequenceEqual(other.ResourceTypes))
                 return false;
-            if (!nullableSequenceEquals(InterfaceDescription, other.InterfaceDescription))
+            if (!InterfaceDescription.SequenceEqual(other.InterfaceDescription))
                 return false;
-            if (!nullableSequenceEquals(SuggestedContentTypes, other.SuggestedContentTypes))
+            if (!SuggestedContentTypes.SequenceEqual(other.SuggestedContentTypes))
                 return false;
             if (MaxSize != other.MaxSize)
                 return false;
-            if (!Enumerable.SequenceEqual<KeyValuePair<string, string>>(Extentions, other.Extentions))
+            if (!Extentions.SequenceEqual(other.Extentions))
                 return false;
             return true;
         }
 
         public override int GetHashCode()
         {
-            return URIReference.GetHashCode();
+            return UriReference.GetHashCode();
         }
     }
 }
