@@ -133,6 +133,7 @@ namespace CoAPNet.Tests
                 {
                     clientOnMessageReceivedEventCalled = true;
                     task.SetResult(true);
+                    return Task.CompletedTask;
                 };
 
                 mockClient.Listen();
@@ -237,6 +238,7 @@ namespace CoAPNet.Tests
                 mockClient.OnMessageReceived += (s, e) =>
                 {
                     mockClient.SendAsync(acknowledgeMessage).Wait(MaxTaskTimeout);
+                    return Task.CompletedTask;
                 };
 
                 var requestTask = mockClient.SendAsync(requestMessage);
@@ -366,7 +368,11 @@ namespace CoAPNet.Tests
             // Ack
             using (var client = new CoapClient(mockClientEndpoint.Object))
             {
-                client.OnMessageReceived += (s, e) => messageReceived.SetResult(e?.Message?.IsMulticast ?? false);
+                client.OnMessageReceived += (s, e) =>
+                {
+                    messageReceived.SetResult(e?.Message?.IsMulticast ?? false);
+                    return Task.CompletedTask;
+                };
                 client.Listen(); // enable loop back thingy
 
                 messageReceived.Task.Wait(MaxTaskTimeout);

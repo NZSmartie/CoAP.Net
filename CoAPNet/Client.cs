@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,9 +21,11 @@ namespace CoAPNet
         public CoapEndpointException(string message, Exception innerException) : base(message, innerException) { }
     }
 
+    public delegate Task AsyncEventHandler<TEventArgs>(object sender, TEventArgs e);
+
     public class CoapClient : IDisposable
     {
-        protected  ICoapEndpoint Endpoint;
+        public ICoapEndpoint Endpoint { get; }
 
         private ushort _messageId;
 
@@ -31,20 +35,20 @@ namespace CoAPNet
 
         private CancellationTokenSource _receiveCancellationToken;
 
-        public event EventHandler<CoapMessageReceivedEventArgs> OnMessageReceived;
+        public virtual event AsyncEventHandler<CoapMessageReceivedEventArgs> OnMessageReceived;
 
-        public event EventHandler<EventArgs> OnClosed;
+        public virtual event EventHandler<EventArgs> OnClosed;
 
         public CoapClient(ICoapEndpoint endpoint)
         {
-            Endpoint = endpoint;
+            Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
 
             _messageId = (ushort)(new Random().Next() & 0xFFFFu);
         }
 
-        public bool IsListening => _receiveCancellationToken?.IsCancellationRequested ?? false;
+        public virtual bool IsListening => _receiveCancellationToken?.IsCancellationRequested ?? false;
 
-        public void Listen() {
+        public virtual void Listen() {
             if (IsListening)
                 return;
 
@@ -52,52 +56,80 @@ namespace CoAPNet
 
             Task.Factory.StartNew(() =>
             {
-                var token = _receiveCancellationToken.Token;
+                Task.WhenAll(ReceiveAsyncTasks()).Wait();
 
-                while (!token.IsCancellationRequested)
-                {
-                    try
-                    {
-                        var payload = Endpoint.ReceiveAsync();
-                        payload.Wait(token);
-                        if (!payload.IsCompleted || payload.Result == null)
-                            continue;
-
-                        var message = new CoapMessage(Endpoint.IsMulticast);
-                        try
-                        {
-                            message.Deserialise(payload.Result.Payload);
-                        }
-                        catch(CoapMessageFormatException)
-                        {
-                            if (message.Type == CoapMessageType.Confirmable 
-                                && !Endpoint.IsMulticast)
-                            {
-                                Task.Run(() => SendAsync(new CoapMessage
-                                {
-                                    Id = message.Id,
-                                    Type = CoapMessageType.Reset
-                                }, payload.Result.Endpoint));
-                            }
-                            continue;
-                        }
-
-                        if (_messageReponses.ContainsKey(message.Id))
-                            _messageReponses[message.Id].TrySetResult(message);
-
-                        OnMessageReceived?.Invoke(this, new CoapMessageReceivedEventArgs
-                        {
-                            Message = message,
-                            Endpoint = payload.Result.Endpoint
-                        });
-                    }
-                    catch(CoapEndpointException)
-                    {
-                        _receiveCancellationToken.Cancel();
-                    }
-                }
                 OnClosed?.Invoke(this, new EventArgs());
             });
+        }
+
+        private IEnumerable<Task> ReceiveAsyncTasks()
+        {
+            var token = _receiveCancellationToken.Token;
+
+            while (!token.IsCancellationRequested)
+            {
+                var receiveTask = Endpoint.ReceiveAsync();
+
+                yield return receiveTask.ContinueWith(async payloadTask =>
+                {
+                    var payload = payloadTask.Result ?? throw new NullReferenceException();
+                    var message = new CoapMessage(Endpoint.IsMulticast);
+                    try
+                    {
+                        message.Deserialise(payload.Payload);
+                    }
+                    catch (CoapMessageFormatException)
+                    {
+                        if (message.Type == CoapMessageType.Confirmable
+                            && !Endpoint.IsMulticast)
+                        {
+                            await SendAsync(new CoapMessage
+                            {
+                                Id = message.Id,
+                                Type = CoapMessageType.Reset
+                            }, payload.Endpoint);
+                        }
+                        return;
+                    }
+
+                    if (_messageReponses.ContainsKey(message.Id))
+                        _messageReponses[message.Id].TrySetResult(message);
+
+                    await InvokeOnMessageReceivedAsync(message, payload.Endpoint).ConfigureAwait(false);
+                }, token);
+
+                try
+                {
+                    receiveTask.Wait(token);
+                }
+                catch (CoapEndpointException)
+                {
+                    _receiveCancellationToken.Cancel();
+                }
+            }
+        }
+
+        private async Task InvokeOnMessageReceivedAsync(CoapMessage message, ICoapEndpoint endpoint, params Type[] acceptableExceptions)
+        {
+            try
+            {
+                if (OnMessageReceived == null)
+                    return;
+                foreach (var listener in OnMessageReceived.GetInvocationList())
+                {
+                    if (listener.DynamicInvoke(this, new CoapMessageReceivedEventArgs
+                    {
+                        Message = message,
+                        Endpoint = endpoint
+                    }) is Task task)
+                        await task;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!acceptableExceptions.Contains(ex.GetType()))
+                    throw;
+            }
         }
 
         public void Dispose()
@@ -108,9 +140,8 @@ namespace CoAPNet
 
         public async Task<CoapMessage> GetResponseAsync(int messageId)
         {
-            TaskCompletionSource<CoapMessage> responseTask = null;
-            if (!_messageReponses.TryGetValue(messageId, out responseTask))
-                throw new ArgumentOutOfRangeException("Message.Id is not pending response");
+            if (!_messageReponses.TryGetValue(messageId, out var responseTask))
+                throw new ArgumentOutOfRangeException($"The current message id ({messageId}) is not pending a due response");
 
             await responseTask.Task;
 
@@ -120,7 +151,7 @@ namespace CoAPNet
             return responseTask.Task.Result;
         }
 
-        public async Task<int> SendAsync(CoapMessage message, ICoapEndpoint endpoint = null)
+        public virtual async Task<int> SendAsync(CoapMessage message, ICoapEndpoint endpoint = null)
         {
             if (message.Id == 0)
                 message.Id = _messageId++;
@@ -133,7 +164,7 @@ namespace CoAPNet
             return message.Id;
         }
 
-        public async Task<int> GetAsync(string uri, ICoapEndpoint endpoint = null)
+        public virtual async Task<int> GetAsync(string uri, ICoapEndpoint endpoint = null)
         {
             var message = new CoapMessage
             {
