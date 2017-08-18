@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace CoAPNet.Tests
 {
     [TestFixture]
-    public class OptionsTest
+    public class CoapOptionsTests
     {
         [Test]
         [Category("Options")]

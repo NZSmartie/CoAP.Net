@@ -1,19 +1,15 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using NUnit;
 using NUnit.Framework;
 using Moq;
 
 using CoAPNet;
-using NUnit.Framework.Internal;
 
 namespace CoAPNet.Tests
 {
     [TestFixture]
-    public class Client
+    public class CoapClientTests
     {
 
         /// <summary>

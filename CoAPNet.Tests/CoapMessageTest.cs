@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace CoAPNet.Tests
 {
     [TestFixture]
-    public class MessageTest
+    public class CoapMessageTest
     {
         private CoapMessage _message = null;
 

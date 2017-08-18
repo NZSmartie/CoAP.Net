@@ -9,7 +9,7 @@ using CoAPNet;
 namespace CoAPNet.Tests
 {
     [TestFixture]
-    public class TestCoreLinkFormat
+    public class CoreLinkFormatTests
     {
         [Test]
         [Category("[RFC6690] Section 2")]
