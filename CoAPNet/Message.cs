@@ -64,6 +64,26 @@ namespace CoAPNet
         ProxyingNotSupported = 505
     }
 
+    public static class MessageExtensions
+    {
+        public static bool IsRequest(this CoapMessageCode code)
+        {
+            return ((int) code / 100) == 0;
+        }
+        public static bool IsSuccess(this CoapMessageCode code)
+        {
+            return ((int)code / 100) == 2;
+        }
+        public static bool IsClientError(this CoapMessageCode code)
+        {
+            return ((int)code / 100) == 4;
+        }
+        public static bool IsServerError(this CoapMessageCode code)
+        {
+            return ((int)code / 100) == 5;
+        }
+    }
+
     public class CoapMessageFormatException : Exception {
         public CoapMessageFormatException() :base() { }
 
