@@ -75,8 +75,8 @@ namespace CoAPNet
         }
     }
 
-    // Todo: Caching (Section 5.6 of [RFC7252])
-    // Todo: Proxying (Section 5.7 of [RFC7252])
+    // TODO: Caching (Section 5.6 of [RFC7252])
+    // TODO: Proxying (Section 5.7 of [RFC7252])
     public class CoapOption : IComparable<CoapOption>
     {
         private readonly int _optionNumber;

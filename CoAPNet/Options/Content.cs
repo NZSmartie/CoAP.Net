@@ -184,7 +184,7 @@ namespace CoAPNet.Options
     /// ETag values.)
     /// <para>See section 5.10.6 of [RFC7252]</para>
     /// </summary>
-    /// Todo: Implement ETag request/response semantics as descripbed in section 5.10.6.1 and 5.10.6.2 of [RFC7252]
+    /// TODO: Implement ETag request/response semantics as descripbed in section 5.10.6.1 and 5.10.6.2 of [RFC7252]
     public class ETag : CoapOption
     {
         public ETag() : base(optionNumber: RegisteredOptionNumber.ETag, minLength: 1, maxLength: 8, isRepeatable: true, type: OptionType.Opaque)

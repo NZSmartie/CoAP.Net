@@ -145,7 +145,7 @@ namespace CoAPNet
 
             await responseTask.Task;
 
-            // ToDo: if wait timed out, retry sending message with back-off delay
+            // TODO: if wait timed out, retry sending message with back-off delay
             _messageReponses.TryRemove(messageId, out responseTask);
 
             return responseTask.Task.Result;

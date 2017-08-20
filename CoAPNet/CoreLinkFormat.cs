@@ -100,7 +100,7 @@ namespace CoAPNet
                                     currentResourceMetadata.Title = value.Substring(1, value.Length - 2);
                                     break;
                                 case "title*":
-                                    // Todo: No idea what to do here...?
+                                    // TODO: No idea what to do here...?
                                     var charset = value.Substring(0, value.IndexOf('\''));
                                     var lang = value.Substring(charset.Length + 1, value.IndexOf('\'', charset.Length + 1) - charset.Length - 1);
                                     value = value.Substring(charset.Length + lang.Length + 3, value.Length - charset.Length - lang.Length - 4);

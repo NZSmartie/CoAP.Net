@@ -261,7 +261,7 @@ namespace CoAPNet.Tests
             }
         }
 
-        // ToDo: Test Retransmit Delays
+        // TODO: Test Retransmit Delays
         [Test]
         [Category("[RFC7252] Section 4.2")]
         public void TestRetransmitDelays()
@@ -269,7 +269,7 @@ namespace CoAPNet.Tests
             Assert.Inconclusive("Not Implemented");
         }
 
-        // ToDo: Test Ignore Repeated Messages
+        // TODO: Test Ignore Repeated Messages
         [Test]
         [Category("[RFC7252] Section 4.2")]
         public void TestIgnoreRepeatedMessages()
@@ -277,7 +277,7 @@ namespace CoAPNet.Tests
             Assert.Inconclusive("Not Implemented");
         }
 
-        // ToDo: Test Ignore Messages Received After Timeout
+        // TODO: Test Ignore Messages Received After Timeout
         [Test]
         [Category("[RFC7252] Section 4.2")]
         public void TestIgnoreMessagesReceivedAfterTimeout()
@@ -285,7 +285,7 @@ namespace CoAPNet.Tests
             Assert.Inconclusive("Not Implemented");
         }
 
-        // ToDo: Test Ignore Non-Empty Reset Messages
+        // TODO: Test Ignore Non-Empty Reset Messages
         [Test]
         [Category("[RFC7252] Section 4.2")]
         public void TestIgnoreNonEmptyResetMessages()
@@ -293,7 +293,7 @@ namespace CoAPNet.Tests
             Assert.Inconclusive("Not Implemented");
         }
 
-        // ToDo: Test Ignore Acknowledgement Messages With Reserved Code
+        // TODO: Test Ignore Acknowledgement Messages With Reserved Code
         [Test]
         [Category("[RFC7252] Section 4.2")]
         public void TestIgnoreAcknowledgementMessagesWithReservedCode()
@@ -301,7 +301,7 @@ namespace CoAPNet.Tests
             Assert.Inconclusive("Not Implemented");
         }
 
-        // Todo: Test Reached Max Failed Retransmit Attempts
+        // TODO: Test Reached Max Failed Retransmit Attempts
         [Test]
         [Category("[RFC7252] Section 4.2")]
         public void TestReachedMaxFailedRetransmitAttempts()
@@ -309,7 +309,7 @@ namespace CoAPNet.Tests
             Assert.Inconclusive("Not Implemented");
         }
 
-        // ToDo: Test Cancel Request Retransmit Attempts
+        // TODO: Test Cancel Request Retransmit Attempts
         [Test]
         [Category("[RFC7252] Section 4.2")]
         public void TestCancelRequestRetransmitAttempts()
@@ -317,7 +317,7 @@ namespace CoAPNet.Tests
             Assert.Inconclusive("Not Implemented");
         }
 
-        // ToDo: Test Reject Empty Non-Confirmable Message
+        // TODO: Test Reject Empty Non-Confirmable Message
         [Test]
         [Category("[RFC7252] Section 4.3")]
         public void TestRejectEmptyNonConfirmableMessage()
@@ -325,7 +325,7 @@ namespace CoAPNet.Tests
             Assert.Inconclusive("Not Implemented");
         }
 
-        // ToDo: Test Multicast Message Is Marked Multicast
+        // TODO: Test Multicast Message Is Marked Multicast
         [Test]
         [Category("[RFC7252] Section 8.1")]
         public void TestMulticastMessagFromMulticastEndpoint()
@@ -379,7 +379,7 @@ namespace CoAPNet.Tests
             Assert.IsTrue(messageReceived.Task.Result, "Message is not marked as Multicast");
         }
 
-        // ToDo: Test Multicast Message is Non-Confirmable
+        // TODO: Test Multicast Message is Non-Confirmable
         [Test]
         [Category("[RFC7252] Section 8.1")]
         public void TestMulticastMessageIsNonConfirmable()
@@ -419,7 +419,7 @@ namespace CoAPNet.Tests
             mockClientEndpoint.Verify(x => x.SendAsync(It.IsAny<CoapPayload>()), Times.Never, "Multicast Message was responded to whenn it shouldn't");
         }
 
-        // ToDo: Test Multicast Message Error Does Not Reset
+        // TODO: Test Multicast Message Error Does Not Reset
         [Test]
         [Category("[RFC7252] Section 8.1")]
         public void TestMulticastMessageErrorDoesNotReset()

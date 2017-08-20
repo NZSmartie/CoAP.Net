@@ -50,7 +50,7 @@ namespace CoAPNet
             //TODO: check if message is multicast, ignore Confirmable requests and delay response
 
             if (!message.Code.IsRequest())
-                // Todo: send CoapMessageCode.Reset or ignore them, i dunno
+                // TODO: send CoapMessageCode.Reset or ignore them, i dunno
                 throw new NotImplementedException("Need to respond with a RESET or something");
 
             var resource = Resources.FirstOrDefault(r =>
