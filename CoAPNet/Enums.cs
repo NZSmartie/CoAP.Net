@@ -27,5 +27,8 @@ namespace CoAPNet
         public const string MulticastIPv6 = "FF0X::FD";
         public const ushort Port = 5683;
         public const ushort PortDTLS = 5684;
+
+        public const int MaxRestransmitAttempts = 3;
+        public static readonly TimeSpan RetransmitTimeout = TimeSpan.FromSeconds(2);
     }
 }

@@ -35,7 +35,7 @@ namespace CoAPNet.Tests
             {
                 client.SendAsync(new CoapMessage
                 {
-                    Type = CoapMessageType.Confirmable,
+                    Type = CoapMessageType.NonConfirmable,
                     Code = CoapMessageCode.None
                 }).Wait();
             }
@@ -54,6 +54,7 @@ namespace CoAPNet.Tests
 
             var expected = new CoapMessage
             {
+                Id = 0x1234,
                 Type = CoapMessageType.Acknowledgement,
                 Code = CoapMessageCode.Content,
                 Options = new System.Collections.Generic.List<CoapOption>
@@ -63,22 +64,18 @@ namespace CoAPNet.Tests
                 Payload = System.Text.Encoding.UTF8.GetBytes("</.well-known/core>")
             };
 
-            mockPayload
-                .Setup(p => p.Payload)
-                .Returns(() => expected.Serialise());
             mockClientEndpoint
                 .Setup(c => c.SendAsync(It.IsAny<CoapPacket>(), It.IsAny<CancellationToken>()))
-                // Copy the ID from the message sent out, to the message for the client to receive
-                .Callback<CoapPacket, CancellationToken>((p, ct) => expected.Id = p.MessageId)
                 .Returns(Task.CompletedTask);
             mockClientEndpoint
                 .SetupSequence(c => c.ReceiveAsync(It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(mockPayload.Object))
+                .Returns(Task.FromResult(new CoapPacket{Payload = expected.Serialise()}))
                 .Throws(new CoapEndpointException("Endpoint closed"));
 
             // Ack
             using (var client = new CoapClient(mockClientEndpoint.Object))
             {
+                client.SetNetMessageId(0x1234);
                 // Sned message
                 var sendTask = client.GetAsync("coap://example.com/.well-known/core");
                 sendTask.Wait(MaxTaskTimeout);
@@ -89,7 +86,7 @@ namespace CoAPNet.Tests
                 try
                 {
                     while (true)
-                        client.ReceiveAsync(CancellationToken.None).Wait();
+                        client.ReceiveAsync(CancellationToken.None).Wait(MaxTaskTimeout);
                 }catch(AggregateException ex) when(ex.InnerException.GetType() == typeof(CoapEndpointException)) { }
 
                 // Receive msssage
@@ -231,12 +228,102 @@ namespace CoAPNet.Tests
                 Times.Exactly(1));
         }
 
-        // TODO: Test Retransmit Delays
         [Test]
         [Category("[RFC7252] Section 4.2")]
-        public void TestRetransmitDelays()
+        public void TestRetransmissionAttempts()
         {
-            Assert.Inconclusive("Not Implemented");
+            // Arrange
+            var requestMessage = new CoapMessage
+            {
+                Id = 0x1234,
+                Type = CoapMessageType.Confirmable,
+                Code = CoapMessageCode.Get,
+                Options = new System.Collections.Generic.List<CoapOption>
+                {
+                    new Options.UriPath("test")
+                }
+            };
+
+            var mockClientEndpoint = new Mock<ICoapEndpoint>();
+            mockClientEndpoint
+                .SetupSequence(c => c.ReceiveAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.Delay(500).ContinueWith(delayTask => new CoapPacket
+                {
+                    Payload = new CoapMessage
+                    {
+                        Id = 0x1234,
+                        Type = CoapMessageType.Acknowledgement
+                    }.Serialise()
+                }))
+                .Throws(new CoapEndpointException("Endpoint closed"));
+
+            // Act
+            using (var mockClient = new CoapClient(mockClientEndpoint.Object))
+            {
+                mockClient.RetransmitTimeout = TimeSpan.FromMilliseconds(200);
+                mockClient.MaxRetransmitAttempts = 3;
+
+                mockClient.SendAsync(requestMessage).GetAwaiter().GetResult();
+
+                try
+                {
+                    while (true)
+                    {
+                        mockClient.ReceiveAsync(CancellationToken.None).GetAwaiter().GetResult();
+                    }
+                }
+                catch (CoapEndpointException) { }
+            }
+
+            // Assert
+            mockClientEndpoint.Verify(
+                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(requestMessage.Serialise())), It.IsAny<CancellationToken>()),
+                Times.Exactly(2));
+        }
+
+        [Test]
+        [Category("[RFC7252] Section 4.2")]
+        public void TestRetransmissionMaxAttempts()
+        {
+            // Arrange
+            var requestMessage = new CoapMessage
+            {
+                Id = 0x1234,
+                Type = CoapMessageType.Confirmable,
+                Code = CoapMessageCode.Get,
+                Options = new System.Collections.Generic.List<CoapOption>
+                {
+                    new Options.UriPath("test")
+                }
+            };
+
+            var mockClientEndpoint = new Mock<ICoapEndpoint>();
+            mockClientEndpoint
+                .SetupSequence(c => c.ReceiveAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.Delay(2000).ContinueWith<CoapPacket>(delayTask => throw new CoapEndpointException("Endpoint closed")));
+
+            // Act
+            using (var mockClient = new CoapClient(mockClientEndpoint.Object))
+            {
+                mockClient.RetransmitTimeout = TimeSpan.FromMilliseconds(200);
+                mockClient.MaxRetransmitAttempts = 3;
+
+                Assert.ThrowsAsync<CoapClientException>(async () => await mockClient.SendAsync(requestMessage));
+
+                try
+                {
+                    while (true)
+                    {
+                        mockClient.ReceiveAsync(CancellationToken.None).GetAwaiter().GetResult();
+                    }
+                }
+                catch (CoapEndpointException) { }
+            }
+
+            // Assert
+            mockClientEndpoint.Verify(
+                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(requestMessage.Serialise())), It.IsAny<CancellationToken>()),
+                Times.Exactly(3));
         }
 
         // TODO: Test Ignore Repeated Messages

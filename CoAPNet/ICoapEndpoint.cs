@@ -4,6 +4,15 @@ using System.Threading.Tasks;
 
 namespace CoAPNet
 {
+    public class CoapEndpointException : Exception
+    {
+        public CoapEndpointException() : base() { }
+
+        public CoapEndpointException(string message) : base(message) { }
+
+        public CoapEndpointException(string message, Exception innerException) : base(message, innerException) { }
+    }
+
     public interface ICoapConnectionInformation
     {
         ICoapEndpoint LocalEndpoint { get; }
@@ -11,7 +20,7 @@ namespace CoAPNet
         ICoapEndpoint RemoteEndpoint { get; }
     }
 
-    public interface ICoapEndpoint
+    public interface ICoapEndpoint : IDisposable
     {
         /// <summary>
         /// Gets if this enpoint is encrypted using DTLS

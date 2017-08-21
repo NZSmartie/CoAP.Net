@@ -4,7 +4,7 @@
     <TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>NZSmartie.CoAPNet</PackageId>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <Authors>Roman Vaughan</Authors>
     <Company>NZSmartie</Company>
     <Product>CoAPNet</Product>
@@ -15,7 +15,9 @@
     <PackageTags>CoAP IoT sensors devices hardware network protocol</PackageTags>
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
-    <PackageReleaseNotes>v0.2.0
+    <PackageReleaseNotes>v0.2.1
+ - Support message retransmission in CoapClient
+v0.2.0
  - Added (still Work in Progress) CoapHandler and CoapService with tests for handling incomming requests.
 v0.1.1
  - Improve concurrency in CoapClient
