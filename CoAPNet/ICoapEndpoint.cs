@@ -1,19 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CoAPNet
 {
-    public class CoapPayload
+    public interface ICoapConnectionInformation
     {
-        public virtual int MessageId { get; set; }
+        ICoapEndpoint LocalEndpoint { get; }
 
-        public virtual byte[] Payload { get; set; }
-
-        public virtual ICoapEndpoint Endpoint { get; set; }
+        ICoapEndpoint RemoteEndpoint { get; }
     }
 
-    // Provided by Application  Layer
     public interface ICoapEndpoint
     {
         /// <summary>
@@ -35,16 +32,17 @@ namespace CoAPNet
         Uri BaseUri { get; }
 
         /// <summary>
-        /// Called by [Service] to send a <see cref="CoapPayload.Payload"/> to the specified <see cref="CoapPayload.Endpoint"/> using the endpoint layer provided by the Application Layer
+        /// Called by [Service] to send a <see cref="CoapPacket.Payload"/> to the specified <see cref="CoapPacket.Endpoint"/> using the endpoint layer provided by the Application Layer
         /// </summary>
-        /// <param name="payload"></param>
+        /// <param name="packet"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        Task SendAsync(CoapPayload payload);
+        Task SendAsync(CoapPacket packet, CancellationToken token);
 
         /// <summary>
         /// Called by [service] to receive data from the endpoint layer
         /// </summary>
         /// <returns></returns>
-        Task<CoapPayload> ReceiveAsync();
+        Task<CoapPacket> ReceiveAsync(CancellationToken token);
     }
 }

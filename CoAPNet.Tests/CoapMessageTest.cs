@@ -261,7 +261,7 @@ namespace CoAPNet.Tests
                 Options = new List<CoapOption>
                 {
                     new Options.UriHost("example.net"),
-                    new Options.UriPort(Consts.PortDTLS),
+                    new Options.UriPort(Coap.PortDTLS),
                     new Options.UriPath(".well-known"),
                     new Options.UriPath("core"),
                 }

@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 
+using CoAPNet.Utils;
+
 namespace CoAPNet.Tests
 {
     [TestFixture]
-    public class CoapServiceTests
+    public class CoapResourceHandlerTests
     {
         private Mock<ICoapEndpoint> _endpoint;
-        private Mock<CoapClient> _client;
         private Uri _baseUri;
 
         [OneTimeSetUp]
@@ -23,17 +26,15 @@ namespace CoAPNet.Tests
         {
             _endpoint = new Mock<ICoapEndpoint>();
             _endpoint.Setup(e => e.BaseUri).Returns(_baseUri);
-
-            _client = new Mock<CoapClient>(_endpoint.Object);
-            _client.Setup(c => c.SendAsync(It.IsAny<CoapMessage>(), null)).Returns(Task.FromResult(0));
+            _endpoint.Setup(e => e.SendAsync(It.IsAny<CoapPacket>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(0));
         }
 
         [Test]
         public void TestResponse()
         {
             // Arrange
-            _client
-                .Setup(c => c.SendAsync(It.IsAny<CoapMessage>(), null))
+            _endpoint
+                .Setup(c => c.SendAsync(It.IsAny<CoapPacket>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(0))
                 .Verifiable();
 
@@ -44,15 +45,14 @@ namespace CoAPNet.Tests
             request.FromUri(new Uri(_baseUri, "/test"));
 
             // Act
-            using (var service = new CoapService(_client.Object))
-            {
-                service.Resources.Add(mockResource.Object);
+            var service = new CoapResourceHandler();
+            service.Resources.Add(mockResource.Object);
 
-                _client.Raise(c => c.OnMessageReceived += null, new CoapMessageReceivedEventArgs {Message = request});
-            }
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
+            //_client.Raise(c => c.OnMessageReceived += null, new CoapMessageReceivedEventArgs {Message = request});
             
             // Assert
-            Mock.Verify(_client, mockResource);
+            Mock.Verify(_endpoint, mockResource);
         }
 
         [Test]
@@ -65,19 +65,17 @@ namespace CoAPNet.Tests
                 .Returns(new CoapMessage())
                 .Verifiable();
 
-            var request = new CoapMessage {Code = CoapMessageCode.Get};
+            var request = new CoapMessage { Code = CoapMessageCode.Get };
             request.FromUri(new Uri(_baseUri, "/test"));
 
             // Act
-            using (var service = new CoapService(_client.Object))
-            {
-                service.Resources.Add(mockResource.Object);
+            var service = new CoapResourceHandler();
 
-                _client.Raise(c => c.OnMessageReceived += null, new CoapMessageReceivedEventArgs {Message = request});
-            }
+            service.Resources.Add(mockResource.Object);
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
             
             // Assert
-            Mock.Verify(_client, mockResource);
+            Mock.Verify(_endpoint, mockResource);
         }
 
         [Test]
@@ -94,16 +92,13 @@ namespace CoAPNet.Tests
             request.FromUri(new Uri(_baseUri, "/test"));
 
             // Act
-            using (var service = new CoapService(_client.Object))
-            {
-                service.Resources.Add(mockResource.Object);
+            var service = new CoapResourceHandler();
 
-                _client.Raise(c => c.OnMessageReceived += null, new CoapMessageReceivedEventArgs {Message = request});
+            service.Resources.Add(mockResource.Object);
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
 
-            }
-            
             // Assert
-            Mock.Verify(_client, mockResource);
+            Mock.Verify(_endpoint, mockResource);
         }
 
         [Test]
@@ -120,16 +115,13 @@ namespace CoAPNet.Tests
             request.FromUri(new Uri(_baseUri, "/test"));
 
             // Act
-            using (var service = new CoapService(_client.Object))
-            {
-                service.Resources.Add(mockResource.Object);
+            var service = new CoapResourceHandler();
 
-                _client.Raise(c => c.OnMessageReceived += null, new CoapMessageReceivedEventArgs {Message = request});
-
-            }
+            service.Resources.Add(mockResource.Object);
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
 
             // Assert
-            Mock.Verify(_client, mockResource);
+            Mock.Verify(_endpoint, mockResource);
         }
 
         [Test]
@@ -146,49 +138,23 @@ namespace CoAPNet.Tests
             request.FromUri(new Uri(_baseUri, "/test"));
 
             // Act
-            using (var service = new CoapService(_client.Object))
-            {
-                service.Resources.Add(mockResource.Object);
+            var service = new CoapResourceHandler();
 
-                _client.Raise(c => c.OnMessageReceived += null, new CoapMessageReceivedEventArgs {Message = request});
-            }
+            service.Resources.Add(mockResource.Object);
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
 
             // Assert
-            Mock.Verify(_client, mockResource);
+            Mock.Verify(_endpoint, mockResource);
         }
 
         [Test]
         public void TestResourceMethodNotImplemented()
         {
             // Arrange
-            _client
-                .Setup(c => c.SendAsync(It.Is<CoapMessage>(m => m.Code == CoapMessageCode.NotImplemented), null))
-                .Returns(Task.FromResult(0))
-                .Verifiable();
-
-            var request = new CoapMessage {Code = CoapMessageCode.Get};
-            request.FromUri(new Uri(_baseUri, "/test"));
-
-            // Act
-            using (var service = new CoapService(_client.Object))
-            {
-                service.Resources.Add(new CoapResource("/test"));
-
-                _client.Raise(c => c.OnMessageReceived += null,
-                    new CoapMessageReceivedEventArgs {Message = request});
-
-            }
-
-            // Assert
-            Mock.Verify(_client);
-        }
-
-        [Test]
-        public void TestResourceNotFound()
-        {
-            // Arrange
-            _client
-                .Setup(c => c.SendAsync(It.Is<CoapMessage>(m => m.Code == CoapMessageCode.NotFound), null))
+            var expectedMessage = CoapMessageUtility
+                .CreateMessage(CoapMessageCode.NotImplemented, new NotImplementedException().Message).Serialise();
+            _endpoint
+                .Setup(c => c.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage)), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(0))
                 .Verifiable();
 
@@ -196,14 +162,47 @@ namespace CoAPNet.Tests
             request.FromUri(new Uri(_baseUri, "/test"));
 
             // Act
-            using (var service = new CoapService(_client.Object))
-            {
-                _client.Raise(c => c.OnMessageReceived += null, new CoapMessageReceivedEventArgs {Message = request});
+            var service = new CoapResourceHandler();
 
-            }
+            service.Resources.Add(new CoapResource("/test"));
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
 
             // Assert
-            Mock.Verify(_client);
+            Mock.Verify(_endpoint);
         }
+
+        [Test]
+        public void TestResourceNotFound()
+        {
+            // Arrange
+            var expectedMessage = CoapMessageUtility.CreateMessage(CoapMessageCode.NotFound, $"Resouce {new Uri(_baseUri, "/test")} was not found").Serialise();
+            _endpoint
+                .Setup(e => e.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage)), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(0))
+                .Verifiable();
+
+            var request = new CoapMessage { Code = CoapMessageCode.Get };
+            request.FromUri(new Uri(_baseUri, "/test"));
+
+            // Act
+            var service = new CoapResourceHandler();
+
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
+
+            // Assert
+            Mock.Verify(_endpoint);
+        }
+    }
+
+    public class MockConnectionInformation : ICoapConnectionInformation
+    {
+        public MockConnectionInformation(ICoapEndpoint endPoint)
+        {
+            LocalEndpoint = endPoint;
+        }
+
+        public ICoapEndpoint LocalEndpoint { get; }
+
+        public ICoapEndpoint RemoteEndpoint => new Mock<ICoapEndpoint>().Object;
     }
 }

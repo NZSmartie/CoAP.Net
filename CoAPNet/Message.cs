@@ -421,10 +421,10 @@ namespace CoAPNet
             uri.Scheme = "coap";
             uri.Host = _options.Get<Options.UriHost>()?.ValueString ?? "localhost";
 
-            var port = _options.Get<Options.UriPort>()?.ValueUInt ?? Consts.Port;
-            if (port != Consts.Port)
+            var port = _options.Get<Options.UriPort>()?.ValueUInt ?? Coap.Port;
+            if (port != Coap.Port)
             {
-                if (port == Consts.PortDTLS)
+                if (port == Coap.PortDTLS)
                     uri.Scheme = "coaps";
                 else
                     uri.Port = (int)port;

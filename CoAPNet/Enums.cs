@@ -21,7 +21,7 @@ namespace CoAPNet
         public const int Size1 = 60;
     }
 
-    public static class Consts
+    public static class Coap
     {
         public const string MulticastIPv4 = "224.0.1.187";
         public const string MulticastIPv6 = "FF0X::FD";
