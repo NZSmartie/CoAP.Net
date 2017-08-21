@@ -1,4 +1,4 @@
-# CoAP.Net
+# CoAP.Net [![Build status](https://ci.appveyor.com/api/projects/status/e014xw5hb3gyw1qv?svg=true)](https://ci.appveyor.com/project/NZSmartie/coap-net) [![NuGet version](https://badge.fury.io/nu/NZSmartie.CoAPNet.svg)](https://badge.fury.io/nu/NZSmartie.CoAPNet)
 
 My attempt at writing a CoAP library for .Net Standard (1.3) that is compliant with [RFC7252]
 
