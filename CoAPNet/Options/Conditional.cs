@@ -15,7 +15,7 @@ namespace CoAPNet.Options
     /// </summary>
     public class IfMatch : CoapOption
     {
-        public IfMatch() : base(optionNumber: RegisteredOptionNumber.IfMatch, maxLength: 8, isRepeatable: true, type: OptionType.Opaque) { }
+        public IfMatch() : base(optionNumber: CoapRegisteredOptionNumber.IfMatch, maxLength: 8, isRepeatable: true, type: OptionType.Opaque) { }
     }
 
     /// <summary>
@@ -29,6 +29,6 @@ namespace CoAPNet.Options
     /// </summary>
     public class IfNoneMatch : CoapOption
     {
-        public IfNoneMatch() : base(optionNumber: RegisteredOptionNumber.IfNoneMatch) { }
+        public IfNoneMatch() : base(optionNumber: CoapRegisteredOptionNumber.IfNoneMatch) { }
     }
 }

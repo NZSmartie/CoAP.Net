@@ -2,7 +2,7 @@
 
 namespace CoAPNet
 {
-    public static class RegisteredOptionNumber
+    public static class CoapRegisteredOptionNumber
     {
         public const int IfMatch = 1;
         public const int UriHost = 3;

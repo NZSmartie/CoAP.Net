@@ -9,7 +9,7 @@ namespace CoAPNet.Options
     /// </summary>
     public class LocationPath : CoapOption
     {
-        public LocationPath() : base(optionNumber: RegisteredOptionNumber.LocationPath, maxLength: 255, isRepeatable: true, type: OptionType.String) { }
+        public LocationPath() : base(optionNumber: CoapRegisteredOptionNumber.LocationPath, maxLength: 255, isRepeatable: true, type: OptionType.String) { }
     }
 
     /// <summary>
@@ -17,6 +17,6 @@ namespace CoAPNet.Options
     /// </summary>
     public class LocationQuery : CoapOption
     {
-        public LocationQuery() : base(optionNumber: RegisteredOptionNumber.LocationQuery, maxLength: 255, isRepeatable: true, type: OptionType.String){ }
+        public LocationQuery() : base(optionNumber: CoapRegisteredOptionNumber.LocationQuery, maxLength: 255, isRepeatable: true, type: OptionType.String){ }
     }
 }

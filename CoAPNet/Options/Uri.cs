@@ -8,7 +8,7 @@ namespace CoAPNet.Options
 {
     public class UriHost : CoapOption
     {
-        public UriHost() : base(optionNumber: RegisteredOptionNumber.UriHost, minLength: 1, maxLength: 255, type: OptionType.String)
+        public UriHost() : base(optionNumber: CoapRegisteredOptionNumber.UriHost, minLength: 1, maxLength: 255, type: OptionType.String)
         {
             ValueString = null;
 
@@ -22,7 +22,7 @@ namespace CoAPNet.Options
 
     public class UriPort : CoapOption
     {
-        public UriPort() : base(optionNumber: RegisteredOptionNumber.UriPort, minLength: 0, maxLength: 2, type: OptionType.UInt)
+        public UriPort() : base(optionNumber: CoapRegisteredOptionNumber.UriPort, minLength: 0, maxLength: 2, type: OptionType.UInt)
         {
             ValueUInt = 0u;
         }
@@ -35,7 +35,7 @@ namespace CoAPNet.Options
 
     public class UriPath : CoapOption
     {
-        public UriPath() : base(optionNumber: RegisteredOptionNumber.UriPath, minLength: 0, maxLength: 255, isRepeatable: true, type: OptionType.String)
+        public UriPath() : base(optionNumber: CoapRegisteredOptionNumber.UriPath, minLength: 0, maxLength: 255, isRepeatable: true, type: OptionType.String)
         {
             ValueString = null;
         }
@@ -48,7 +48,7 @@ namespace CoAPNet.Options
 
     public class UriQuery : CoapOption
     {
-        public UriQuery() : base(optionNumber: RegisteredOptionNumber.UriQuery, minLength: 0, maxLength: 255, isRepeatable: true, type: OptionType.String)
+        public UriQuery() : base(optionNumber: CoapRegisteredOptionNumber.UriQuery, minLength: 0, maxLength: 255, isRepeatable: true, type: OptionType.String)
         {
             ValueString = null;
         }

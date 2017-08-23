@@ -404,7 +404,7 @@ namespace CoAPNet
                 throw new UriFormatException("Fragments are unsupported in the CoAP scheme");
 
             // Strip out any existing URI Options 
-            var optionsToDiscard = new int[] { RegisteredOptionNumber.UriHost, RegisteredOptionNumber.UriPort, RegisteredOptionNumber.UriPath, RegisteredOptionNumber.UriQuery };
+            var optionsToDiscard = new int[] { CoapRegisteredOptionNumber.UriHost, CoapRegisteredOptionNumber.UriPort, CoapRegisteredOptionNumber.UriPath, CoapRegisteredOptionNumber.UriQuery };
             _options = _options.Where(kv => !optionsToDiscard.Contains(kv.OptionNumber)).ToList();
 
             switch (uri.HostNameType)
@@ -471,8 +471,8 @@ namespace CoAPNet
                 result += string.Format(", {0}.{1:D2} {2}", ((int)Code / 100), ((int)Code % 100), Code);
             }
 
-            if (Options.Any(o => o.OptionNumber == RegisteredOptionNumber.UriPath))
-                result += ", /" + Options.Where(o => o.OptionNumber == RegisteredOptionNumber.UriPath).Select(o => o.ValueString).Aggregate((a, b) => a + "/" + b);
+            if (Options.Any(o => o.OptionNumber == CoapRegisteredOptionNumber.UriPath))
+                result += ", /" + Options.Where(o => o.OptionNumber == CoapRegisteredOptionNumber.UriPath).Select(o => o.ValueString).Aggregate((a, b) => a + "/" + b);
 
             return result;
         }

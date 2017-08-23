@@ -115,7 +115,7 @@ namespace CoAPNet.Options
     {
         public ContentFormatType MediaType { get => (ContentFormatType)ValueUInt; set => ValueUInt = (uint)value; }
 
-        public ContentFormat() : base(optionNumber: RegisteredOptionNumber.ContentFormat, maxLength: 2, type: OptionType.UInt)
+        public ContentFormat() : base(optionNumber: CoapRegisteredOptionNumber.ContentFormat, maxLength: 2, type: OptionType.UInt)
         {
             MediaType = ContentFormatType.TextPlain;
         }
@@ -136,7 +136,7 @@ namespace CoAPNet.Options
     {
         public ContentFormatType MediaType { get => (ContentFormatType)ValueUInt; set => ValueUInt = (uint)value; }
 
-        public Accept() : base(optionNumber: RegisteredOptionNumber.Accept, maxLength: 2, type: OptionType.UInt)
+        public Accept() : base(optionNumber: CoapRegisteredOptionNumber.Accept, maxLength: 2, type: OptionType.UInt)
         {
             MediaType = ContentFormatType.TextPlain;
         }
@@ -160,7 +160,7 @@ namespace CoAPNet.Options
     /// </summary>
     public class MaxAge : CoapOption
     {
-        public MaxAge() : base(optionNumber: RegisteredOptionNumber.MaxAge, maxLength: 4, type: OptionType.UInt, defaultValue: 60u)
+        public MaxAge() : base(optionNumber: CoapRegisteredOptionNumber.MaxAge, maxLength: 4, type: OptionType.UInt, defaultValue: 60u)
         {
             ValueUInt = 0u;
         }
@@ -187,7 +187,7 @@ namespace CoAPNet.Options
     /// TODO: Implement ETag request/response semantics as descripbed in section 5.10.6.1 and 5.10.6.2 of [RFC7252]
     public class ETag : CoapOption
     {
-        public ETag() : base(optionNumber: RegisteredOptionNumber.ETag, minLength: 1, maxLength: 8, isRepeatable: true, type: OptionType.Opaque)
+        public ETag() : base(optionNumber: CoapRegisteredOptionNumber.ETag, minLength: 1, maxLength: 8, isRepeatable: true, type: OptionType.Opaque)
         { 
             ValueOpaque = null;
         }
@@ -209,7 +209,7 @@ namespace CoAPNet.Options
     /// </summary>
     public class Size1 : CoapOption
     {
-        public Size1() : base(optionNumber: RegisteredOptionNumber.Size1, maxLength: 4, type: OptionType.UInt)
+        public Size1() : base(optionNumber: CoapRegisteredOptionNumber.Size1, maxLength: 4, type: OptionType.UInt)
         {
             ValueUInt = 9u;
         }
