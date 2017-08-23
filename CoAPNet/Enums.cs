@@ -30,5 +30,12 @@ namespace CoAPNet
 
         public const int MaxRestransmitAttempts = 3;
         public static readonly TimeSpan RetransmitTimeout = TimeSpan.FromSeconds(2);
+
+        public static string GetMulticastIPv6ForScope(int scope)
+        {
+            if(scope < 1 || scope >= 15)
+                throw new ArgumentOutOfRangeException(nameof(scope), "Scope is in the range from 1 to 14. 0 and 15 are reserved. (See RFC 7346)");
+            return MulticastIPv6.Replace("X", scope.ToString("X"));
+        }
     }
 }
