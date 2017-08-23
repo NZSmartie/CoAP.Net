@@ -152,7 +152,7 @@ namespace CoAPNet.Tests
         {
             // Arrange
             var expectedMessage = CoapMessageUtility
-                .CreateMessage(CoapMessageCode.NotImplemented, new NotImplementedException().Message).Serialise();
+                .FromException(new NotImplementedException()).Serialise();
             _endpoint
                 .Setup(c => c.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage)), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(0))
@@ -180,7 +180,8 @@ namespace CoAPNet.Tests
         public void TestResourceNotFound()
         {
             // Arrange
-            var expectedMessage = CoapMessageUtility.CreateMessage(CoapMessageCode.NotFound, $"Resouce {new Uri(_baseUri, "/test")} was not found").Serialise();
+            var expectedMessage = CoapMessageUtility.CreateMessage(CoapMessageCode.NotFound, $"Resouce {new Uri(_baseUri, "/test")} was not found", CoapMessageType.Acknowledgement).Serialise();
+
             _endpoint
                 .Setup(e => e.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage)), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(0))

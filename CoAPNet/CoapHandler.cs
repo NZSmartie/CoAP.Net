@@ -8,7 +8,7 @@ using CoAPNet.Utils;
 
 namespace CoAPNet
 {
-    public class CoapResourceHandler : CoapHander
+    public class CoapResourceHandler : CoapHandler
     {
         public readonly IList<CoapResource> Resources = new List<CoapResource>();
 
@@ -35,7 +35,7 @@ namespace CoAPNet
         }
     }
 
-    public class CoapHander : ICoapHandler
+    public class CoapHandler : ICoapHandler
     {
         public virtual CoapResource GetResource(Uri requesstUri)
         {
@@ -46,23 +46,36 @@ namespace CoAPNet
 
         public virtual Uri BaseUri { get; } = new Uri("coap://localhost/");
 
+        private int _messageId;
+
+        public CoapHandler()
+        {
+            _messageId = new Random().Next() & 0xFFFF;
+        }
+
+        private int GetNextMessageId()
+        {
+            return Interlocked.Increment(ref _messageId) & ushort.MaxValue;
+        }
+
         public async Task ProcessRequestAsync(ICoapConnectionInformation connection, byte[] payload)
         {
-            var message = new CoapMessage();
-            message.Deserialise(payload);
-
-            //TODO: check if message is multicast, ignore Confirmable requests and delay response
-
-            if (!message.Code.IsRequest())
-            {
-                // TODO: send CoapMessageCode.Reset or ignore them, i dunno
-                throw new NotImplementedException("TODO: Send CoapMessageCode.Reset or ignore them");
-            }
-
-            var resource = GetResource(new Uri(BaseUri, message.GetUri()));
             CoapMessage result = null;
+            var message = new CoapMessage();
             try
             {
+                message.Deserialise(payload);
+
+                //TODO: check if message is multicast, ignore Confirmable requests and delay response
+
+                if (!message.Code.IsRequest())
+                {
+                    // TODO: send CoapMessageCode.Reset or ignore them, i dunno
+                    throw new NotImplementedException("TODO: Send CoapMessageCode.Reset or ignore them");
+                }
+
+                var resource = GetResource(new Uri(BaseUri, message.GetUri()));
+
                 if (resource == null)
                 {
                     result = CoapMessageUtility.CreateMessage(CoapMessageCode.NotFound,
@@ -90,19 +103,38 @@ namespace CoAPNet
                     }
                 }
             }
-            catch (NotImplementedException ex)
-            {
-                result = CoapMessageUtility.CreateMessage(CoapMessageCode.NotImplemented, ex.Message);
-                //Debug.Fail(ex.Message);
-            }
-            catch (Exception ex)
+            catch (CoapException ex)
             {
                 result = CoapMessageUtility.FromException(ex);
-                //Debug.Fail(ex.Message);
+            }
+            catch (NotImplementedException ex)
+            {
+                result = CoapMessageUtility.FromException(ex);
+            }
+            catch (Exception)
+            {
+                result = CoapMessageUtility.CreateMessage(CoapMessageCode.InternalServerError,
+                    "An unexpected error occured", CoapMessageType.Reset);
+                throw;
             }
             finally
             {
                 Debug.Assert(result != null);
+
+                if (message.Type == CoapMessageType.Confirmable)
+                {
+                    if (result.Type != CoapMessageType.Reset)
+                        result.Type = CoapMessageType.Acknowledgement;
+
+                    // TODO: create unit tests to ensure message.Id and message.Token are set when exceptions are thrown
+                    result.Id = message.Id;
+                }
+                else
+                {
+                    result.Id = GetNextMessageId();
+                }
+
+                result.Token = message.Token;
 
                 await connection.LocalEndpoint.SendAsync(
                     new CoapPacket
