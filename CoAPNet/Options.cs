@@ -5,6 +5,15 @@ using System.Linq;
 
 namespace CoAPNet
 {
+    public class CoapOptionException : CoapException
+    {
+        public CoapOptionException() : base() { }
+
+        public CoapOptionException(string message) : base(message) { }
+
+        public CoapOptionException(string message, Exception innerException) : base(message, innerException) { }
+    }
+
     public enum OptionType
     {
         /// <summary>

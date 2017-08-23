@@ -84,7 +84,7 @@ namespace CoAPNet
         }
     }
 
-    public class CoapMessageFormatException : Exception {
+    public class CoapMessageFormatException : CoapException {
         public CoapMessageFormatException() :base() { }
 
         public CoapMessageFormatException(string message) : base(message) { }
@@ -285,11 +285,11 @@ namespace CoAPNet
         public void Deserialise(byte[] data)
         {
             if (data == null)
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             if (data.Length < 4)
                 throw new CoapMessageFormatException("Message must be at least 4 bytes long");
             if ((data[0] & 0xC0) != 0x40)
-                throw new CoapMessageFormatException("Only verison 1 of CoAP protocol is supported");
+                throw new CoapMessageFormatException($"Unexpected CoAP version ({data[0] & 0xC0:D}). Only verison 1 is supported");
 
             var offset = 4;
 
@@ -305,13 +305,12 @@ namespace CoAPNet
             if (Code == CoapMessageCode.None && data.Length > 4)
                 throw new CoapMessageFormatException("Empty message must be 4 bytes long");
 
-            if (new int[] { 1, 6, 7 }.Contains(code / 100))
-                throw new CoapMessageFormatException("Message.Code can not use reserved classes");
-
             offset += data[0] & 0x0F;
             if ((data[0] & 0x0F) > 0)
                 _token = data.Skip(4).Take(data[0] & 0x0F).ToArray();
 
+            // Catch all the CoapOptionExceptions and throw them after all the options have been parsed.
+            var badOptions = new List<int>();
             var optionDelta = 0;
             for(var i = offset; i<data.Length; i++)
             {
@@ -340,12 +339,29 @@ namespace CoAPNet
                     dataLen = data[i++ + 1] << 8;
                     dataLen |= data[i++ + 1] + 269;
                 }
-                Options.Add(CoAPNet.Options.Factory.Create(optCode + optionDelta, data.Skip(i+1).Take(dataLen).ToArray()));
+
+                try
+                {
+                    var option = CoAPNet.Options.Factory.Create(optCode + optionDelta,
+                        data.Skip(i + 1).Take(dataLen).ToArray());
+                    if (option != null)
+                        Options.Add(option);
+                }
+                catch (CoapOptionException)
+                {
+                    badOptions.Add(optCode + optionDelta);
+                }
+
                 i += dataLen;
                 optionDelta += optCode;
             }
 
+            // Performing this check after parsing the options to allow the chance of reading the message token
+            if (new int[] {1, 6, 7}.Contains(code / 100))
+                throw new CoapMessageFormatException("Message.Code can not use reserved classes");
 
+            if (badOptions.Count > 0)
+                throw new CoapOptionException($"Unsupported critical option ({string.Join(", ", badOptions)})");
         }
 
         /// <summary>
