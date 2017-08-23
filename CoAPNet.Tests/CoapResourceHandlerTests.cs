@@ -39,7 +39,7 @@ namespace CoAPNet.Tests
                 .Verifiable();
 
             var mockResource = new Mock<CoapResource>("/test");
-            mockResource.Setup(r => r.Get()).Returns(new CoapMessage());
+            mockResource.Setup(r => r.Get(It.IsAny<CoapMessage>())).Returns(new CoapMessage());
 
             var request = new CoapMessage { Code = CoapMessageCode.Get };
             request.FromUri(new Uri(_baseUri, "/test"));
@@ -61,7 +61,7 @@ namespace CoAPNet.Tests
             // Arrange
             var mockResource = new Mock<CoapResource>("/test");
             mockResource
-                .Setup(r => r.Get())
+                .Setup(r => r.Get(It.IsAny<CoapMessage>()))
                 .Returns(new CoapMessage())
                 .Verifiable();
 
@@ -84,7 +84,7 @@ namespace CoAPNet.Tests
             // Arrange
             var mockResource = new Mock<CoapResource>("/test");
             mockResource
-                .Setup(r => r.Post())
+                .Setup(r => r.Post(It.IsAny<CoapMessage>()))
                 .Returns(new CoapMessage())
                 .Verifiable();
 
@@ -107,7 +107,7 @@ namespace CoAPNet.Tests
             // Arrange
             var mockResource = new Mock<CoapResource>("/test");
             mockResource
-                .Setup(r => r.Put())
+                .Setup(r => r.Put(It.IsAny<CoapMessage>()))
                 .Returns(new CoapMessage())
                 .Verifiable();
 
@@ -130,7 +130,7 @@ namespace CoAPNet.Tests
             // Arrange
             var mockResource = new Mock<CoapResource>("/test");
             mockResource
-                .Setup(r => r.Delete())
+                .Setup(r => r.Delete(It.IsAny<CoapMessage>()))
                 .Returns(new CoapMessage())
                 .Verifiable();
 
@@ -158,13 +158,18 @@ namespace CoAPNet.Tests
                 .Returns(Task.FromResult(0))
                 .Verifiable();
 
+            var mockResource = new Mock<CoapResource>("/test");
+            mockResource
+                .Setup(r => r.Get(It.IsAny<CoapMessage>()))
+                .Throws(new NotImplementedException());
+
             var request = new CoapMessage { Code = CoapMessageCode.Get };
             request.FromUri(new Uri(_baseUri, "/test"));
 
             // Act
             var service = new CoapResourceHandler();
 
-            service.Resources.Add(new CoapResource("/test"));
+            service.Resources.Add(mockResource.Object);
             service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
 
             // Assert

@@ -74,16 +74,16 @@ namespace CoAPNet
                     switch (message.Code)
                     {
                         case CoapMessageCode.Get:
-                            result = resource.Get();
+                            result = resource.Get(message);
                             break;
                         case CoapMessageCode.Post:
-                            result = resource.Post();
+                            result = resource.Post(message);
                             break;
                         case CoapMessageCode.Put:
-                            result = resource.Put();
+                            result = resource.Put(message);
                             break;
                         case CoapMessageCode.Delete:
-                            result = resource.Delete();
+                            result = resource.Delete(message);
                             break;
                         default:
                             throw new InvalidOperationException();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace CoAPNet
 {
@@ -21,24 +22,40 @@ namespace CoAPNet
             Metadata = metadata;
         }
 
-        public virtual CoapMessage Get()
+        public virtual CoapMessage Get(CoapMessage request)
         {
-            throw new NotImplementedException();
+            return new CoapMessage
+            {
+                Code = CoapMessageCode.MethodNotAllowed,
+                Token = request.Token
+            };
         }
 
-        public virtual CoapMessage Put()
+        public virtual CoapMessage Put(CoapMessage request)
         {
-            throw new NotImplementedException();
+            return new CoapMessage
+            {
+                Code = CoapMessageCode.MethodNotAllowed,
+                Token = request.Token
+            };
         }
 
-        public virtual CoapMessage Post()
+        public virtual CoapMessage Post(CoapMessage request)
         {
-            throw new NotImplementedException();
+            return new CoapMessage
+            {
+                Code = CoapMessageCode.MethodNotAllowed,
+                Token = request.Token
+            };
         }
 
-        public virtual CoapMessage Delete()
+        public virtual CoapMessage Delete(CoapMessage request)
         {
-            throw new NotImplementedException();
+            return new CoapMessage
+            {
+                Code = CoapMessageCode.MethodNotAllowed,
+                Token = request.Token
+            };
         }
     }
 }
