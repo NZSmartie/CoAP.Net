@@ -104,7 +104,7 @@ namespace CoAPNet.Tests
 
         [Test]
         [Category("[RFC7252] Section 4.1")]
-        public async Task TestRejectEmptyMessageWithFormatError()
+        public void TestRejectEmptyMessageWithFormatError()
         {
             // Arrange
             var expected = new CoapMessage
