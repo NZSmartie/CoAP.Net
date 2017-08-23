@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace CoAPNet
 {
@@ -196,6 +197,113 @@ namespace CoAPNet
                 result.Add(currentResourceMetadata);
 
             return result;
+        }
+
+        private static readonly Uri _throwAwayUri = new Uri("coap://localhost/");
+
+        public static string ToCoreLinkFormat(CoapResourceMetadata resource)
+        {
+            var message = new StringBuilder();
+            try
+            {
+                message.Append(resource.UriReference.IsAbsoluteUri
+                    ? $"<{resource.UriReference.AbsolutePath}>"
+                    : $"<{new Uri(_throwAwayUri, resource.UriReference).AbsolutePath}>");
+
+                if(resource.InterfaceDescription.Count > 0)
+                message.AppendFormat(";if=\"{0}\"", string.Join(" ", resource.InterfaceDescription));
+
+                if (resource.SuggestedContentTypes.Count == 1)
+                    message.Append($";ct={(int)resource.SuggestedContentTypes.First():D}");
+
+                if (resource.SuggestedContentTypes.Count > 1)
+                    message.AppendFormat(";ct=\"{0}\"", string.Join(" ", resource.SuggestedContentTypes.Select(ct => ((int) ct).ToString("D"))));
+
+                if (resource.ResourceTypes.Count > 0)
+                    message.AppendFormat(";rt=\"{0}\"", string.Join(" ", resource.ResourceTypes));
+
+                if (resource.Rev.Count == 1)
+                    message.AppendFormat(";rev={0}", resource.Rev.First());
+                if (resource.Rev.Count > 1)
+                    message.AppendFormat(";rev=\"{0}\"", string.Join(" ", resource.Rev));
+
+                if (resource.Rel.Count == 1)
+                    message.AppendFormat(";rel={0}", resource.Rel.First());
+                if (resource.Rel.Count > 1)
+                    message.AppendFormat(";rel=\"{0}\"", string.Join(" ", resource.Rel));
+
+                if ((resource.Anchor ?? string.Empty) != string.Empty)
+                    message.Append($";anchor={resource.Anchor}");
+
+                if ((resource.HrefLang ?? string.Empty) != string.Empty)
+                    message.Append($";hreflang={resource.HrefLang?.ToLower()}");
+
+                if ((resource.Media ?? string.Empty) != string.Empty)
+                    message.Append(resource.Media.Contains(" ")
+                        ? $";media=\"{resource.Media}\""
+                        : $";media={resource.Media}");
+
+                if ((resource.Title ?? string.Empty) != string.Empty)
+                    message.Append($";title=\"{resource.Title}\"");
+
+                //case "title*":
+                //    // TODO: No idea what to do here...?
+                //    var charset = value.Substring(0, value.IndexOf('\''));
+                //    var lang = value.Substring(charset.Length + 1,
+                //        value.IndexOf('\'', charset.Length + 1) - charset.Length - 1);
+                //    value = value.Substring(charset.Length + lang.Length + 3,
+                //        value.Length - charset.Length - lang.Length - 4);
+
+                //    //System.Diagnostics.Debug.WriteLine("title* = {3}\n\tCharset: {0}\n\tLanguage: {1}\n\tValue: {2}", 
+                //    //    charset, lang, value, Uri.UnescapeDataString(value));
+
+                //    resource.TitleExt = Uri.UnescapeDataString(value);
+                //    break;
+
+                if ((resource.Type ?? string.Empty) != string.Empty)
+                    message.Append(resource.Type.Contains(" ")
+                        ? $";type=\"{resource.Type}\""
+                        : $";type={resource.Type}");
+
+                if (resource.MaxSize != 0)
+                    message.Append($";sz={resource.MaxSize:D}");
+
+                
+                //default:
+                //    if (value.Length == 1)
+                //    {
+                //        if (!char.IsLetterOrDigit(value[0]) && !new[]
+                //        {
+                //            '!', '#', '$', '%', '&', '\'', '(', ')', '*', '+', '-', '.', '/', ':',
+                //            '<', '=', '>', '?', '@', '[', ']', '^', '_', '`', '{', '|', '}', '~'
+                //        }.Contains(value[0]))
+                //            throw new ArgumentException(
+                //                $"PToken contains invalid character '{value[0]}' at pos {mSeek}");
+                //        resource.Extentions.Add(param, value);
+                //    }
+                //    else
+                //    {
+                //        if (value[0] != '"')
+                //            throw new ArgumentException(
+                //                $"Expected QuotedString DQUOTE '\"' at pos {mPos}");
+                //        if (value[value.Length - 1] != '"')
+                //            throw new ArgumentException(
+                //                $"Expected QuotedString DQUOTE '\"' at pos {mSeek}");
+                //        resource.Extentions.Add(param,
+                //            value.Substring(1, value.Length - 2));
+                //    }
+                //    break;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                // Moving on...
+            }
+            return message.ToString();
+        }
+
+        public static string ToCoreLinkFormat(IEnumerable<CoapResourceMetadata> resources)
+        {
+            return string.Join(",", resources.Select(ToCoreLinkFormat));
         }
     }
 }

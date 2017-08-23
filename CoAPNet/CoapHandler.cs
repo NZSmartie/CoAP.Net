@@ -2,12 +2,42 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using CoAPNet.Options;
 using CoAPNet.Utils;
 
 namespace CoAPNet
 {
+    /// <summary>
+    /// Generates a /.well-known/core resource based on <see cref="CoapResourceHandler.Resources"/>
+    /// </summary>
+    public class CoapResourceCoreListing : CoapResource
+    {
+        private readonly CoapResourceHandler _resourceHandler;
+
+        public CoapResourceCoreListing(Uri uri, CoapResourceHandler resourceHandler) 
+            : base(new UriBuilder(uri) { Path = "/.well-known/core" }.Uri)
+        {
+            _resourceHandler = resourceHandler;
+            Metadata.SuggestedContentTypes.Add(ContentFormatType.ApplicationLinkFormat);
+        }
+
+        public override CoapMessage Get(CoapMessage request)
+        {
+            // TODO: Allow resources to opt out?
+            // TODO: filter result based on get paremeters
+            return new CoapMessage
+            {
+                Code = CoapMessageCode.Content,
+                Options = {new ContentFormat(ContentFormatType.ApplicationLinkFormat)},
+                Payload = Encoding.UTF8.GetBytes(
+                    CoreLinkFormat.ToCoreLinkFormat(_resourceHandler.Resources.Select(r => r.Metadata)))
+            };
+        }
+    }
+
     public class CoapResourceHandler : CoapHandler
     {
         public readonly IList<CoapResource> Resources = new List<CoapResource>();
@@ -32,6 +62,7 @@ namespace CoAPNet
         public CoapResourceHandler(Uri baseUri)
         {
             BaseUri = baseUri;
+            Resources.Add(new CoapResourceCoreListing(baseUri, this));
         }
     }
 

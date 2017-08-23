@@ -15,7 +15,9 @@
     <PackageTags>CoAP IoT sensors devices hardware network protocol</PackageTags>
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
-    <PackageReleaseNotes>v0.2.3
+    <PackageReleaseNotes>v0.2.4
+ - Support building Core Link Format resources from CoapResourceMetadata
+v0.2.3
  - Implement better exception handling in CoapHandler
  - Throw CoapOptionException when deserialising  unsupported critical options
 v0.2.2

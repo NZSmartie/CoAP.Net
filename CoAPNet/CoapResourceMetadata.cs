@@ -9,31 +9,31 @@ namespace CoAPNet
     {
         public Uri UriReference { get; }
 
-        public IList<string> Rel { get; } = new List<string>();
+        public virtual IList<string> Rel { get; } = new List<string>();
 
-        public string Anchor { get; set; }
+        public virtual string Anchor { get; set; }
 
-        public IList<string> Rev { get; } = new List<string>();
+        public virtual IList<string> Rev { get; } = new List<string>();
 
-        public string HrefLang { get; set; }
+        public virtual string HrefLang { get; set; }
 
-        public string Media { get; set; }
+        public virtual string Media { get; set; }
 
-        public string Title { get; set; }
+        public virtual string Title { get; set; }
 
-        public string TitleExt { get; set; }
+        public virtual string TitleExt { get; set; }
 
-        public string Type { get; set; }
+        public virtual string Type { get; set; }
 
-        public IList<string> ResourceTypes { get; } = new List<string>();
+        public virtual IList<string> ResourceTypes { get; } = new List<string>();
 
-        public IList<string> InterfaceDescription { get; } = new List<string>();
+        public virtual IList<string> InterfaceDescription { get; } = new List<string>();
 
-        public ulong MaxSize { get; set; }
+        public virtual ulong MaxSize { get; set; }
 
-        public IList<ContentFormatType> SuggestedContentTypes { get; } = new List<ContentFormatType>();
+        public virtual IList<ContentFormatType> SuggestedContentTypes { get; } = new List<ContentFormatType>();
 
-        public Dictionary<string, string> Extentions = new Dictionary<string, string>();
+        public virtual Dictionary<string, string> Extentions { get; set; } = new Dictionary<string, string>();
 
         public CoapResourceMetadata(string uri)
             : this(new Uri(uri, UriKind.RelativeOrAbsolute)) { }
