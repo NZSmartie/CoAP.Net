@@ -414,7 +414,7 @@ namespace CoAPNet
                     break;
                 case UriHostNameType.IPv4:
                 case UriHostNameType.IPv6:
-                    //_options.Add(new Options.UriHost { ValueString = uri.Host });
+                    _options.Add(new Options.UriHost(uri.Host));
                     break;
                 default:
                     throw new UriFormatException("Unknown Hostname");

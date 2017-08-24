@@ -54,4 +54,26 @@ namespace CoAPNet
         /// <returns></returns>
         Task<CoapPacket> ReceiveAsync(CancellationToken token);
     }
+
+    /// <summary>
+    /// Will be used as a place holder for endpoints without a known implementation
+    /// </summary>
+    public class CoapEndpoint : ICoapEndpoint
+    {
+        public void Dispose()
+        { }
+
+        public bool IsSecure { get; internal set; }
+        public bool IsMulticast { get; internal set; }
+        public Uri BaseUri { get; internal set; }
+        public Task SendAsync(CoapPacket packet, CancellationToken token)
+        {
+            throw new InvalidOperationException($"{nameof(CoapEndpoint)} can not be used to send and receive");
+        }
+
+        public Task<CoapPacket> ReceiveAsync(CancellationToken token)
+        {
+            throw new InvalidOperationException($"{nameof(CoapEndpoint)} can not be used to send and receive");
+        }
+    }
 }

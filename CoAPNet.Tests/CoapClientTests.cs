@@ -50,7 +50,6 @@ namespace CoAPNet.Tests
         {
             // Arrange
             var mockClientEndpoint = new Mock<ICoapEndpoint>();
-            var mockPayload = new Mock<CoapPacket>();
 
             var expected = new CoapMessage
             {
@@ -61,7 +60,7 @@ namespace CoAPNet.Tests
                     {
                         new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat)
                     },
-                Payload = System.Text.Encoding.UTF8.GetBytes("</.well-known/core>")
+                Payload = Encoding.UTF8.GetBytes("</.well-known/core>")
             };
 
             mockClientEndpoint
@@ -75,7 +74,7 @@ namespace CoAPNet.Tests
             // Ack
             using (var client = new CoapClient(mockClientEndpoint.Object))
             {
-                client.SetNetMessageId(0x1234);
+                client.SetNextMessageId(0x1234);
                 // Sned message
                 var sendTask = client.GetAsync("coap://example.com/.well-known/core");
                 sendTask.Wait(MaxTaskTimeout);
@@ -83,11 +82,59 @@ namespace CoAPNet.Tests
                 if (!sendTask.IsCompleted)
                     Assert.Fail("sendTask took too long to complete");
 
-                try
-                {
-                    while (true)
-                        client.ReceiveAsync(CancellationToken.None).Wait(MaxTaskTimeout);
-                }catch(AggregateException ex) when(ex.InnerException.GetType() == typeof(CoapEndpointException)) { }
+                // Receive msssage
+                var responseTask = client.GetResponseAsync(sendTask.Result);
+                responseTask.Wait(MaxTaskTimeout);
+
+                if (!responseTask.IsCompleted)
+                    Assert.Fail("responseTask took too long to complete");
+
+            }
+
+            // Assert
+            mockClientEndpoint.Verify(x => x.ReceiveAsync(It.IsAny<CancellationToken>()), Times.AtLeastOnce);
+        }
+
+        [Test]
+        [Category("CoapClient")]
+        public void TestClientResponseWithDelay()
+        {
+            // Arrange
+            var mockClientEndpoint = new Mock<ICoapEndpoint>();
+
+            var expected = new CoapMessage
+            {
+                Id = 0x1234,
+                Type = CoapMessageType.Acknowledgement,
+                Code = CoapMessageCode.Content,
+                Options = new System.Collections.Generic.List<CoapOption>
+                    {
+                        new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat)
+                    },
+                Payload = Encoding.UTF8.GetBytes("</.well-known/core>")
+            };
+
+            mockClientEndpoint
+                .Setup(c => c.SendAsync(It.IsAny<CoapPacket>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+            mockClientEndpoint
+                .SetupSequence(c => c.ReceiveAsync(It.IsAny<CancellationToken>()))
+                .Returns(Task.Delay(500).ContinueWith(t => new CoapPacket { Payload = expected.Serialise() }))
+                .Throws(new CoapEndpointException("Endpoint closed"));
+
+            // Ack
+            using (var client = new CoapClient(mockClientEndpoint.Object))
+            {
+                client.RetransmitTimeout = TimeSpan.FromMilliseconds(200);
+                client.MaxRetransmitAttempts = 3;
+                client.SetNextMessageId(0x1234);
+
+                // Sned message
+                var sendTask = client.GetAsync("coap://example.com/.well-known/core");
+                sendTask.Wait(MaxTaskTimeout);
+
+                if (!sendTask.IsCompleted)
+                    Assert.Fail("sendTask took too long to complete");
 
                 // Receive msssage
                 var responseTask = client.GetResponseAsync(sendTask.Result);

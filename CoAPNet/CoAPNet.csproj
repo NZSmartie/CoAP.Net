@@ -4,7 +4,7 @@
     <TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>NZSmartie.CoAPNet</PackageId>
-    <Version>0.2.4</Version>
+    <Version>0.2.5</Version>
     <Authors>Roman Vaughan</Authors>
     <Company>NZSmartie</Company>
     <Product>CoAPNet</Product>
@@ -15,7 +15,10 @@
     <PackageTags>CoAP IoT sensors devices hardware network protocol</PackageTags>
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
-    <PackageReleaseNotes>v0.2.4
+    <PackageReleaseNotes>v0.2.5
+ - Include IP address in Coap Options.
+ - Create CoapEndpoint for unknown endpoints
+v0.2.4
  - Support building Core Link Format resources from CoapResourceMetadata
 v0.2.3
  - Implement better exception handling in CoapHandler

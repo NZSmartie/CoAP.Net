@@ -130,9 +130,20 @@ namespace CoAPNet
             if (!_messageReponses.TryGetValue(messageId, out var responseTask))
                 throw new ArgumentOutOfRangeException($"The current message id ({messageId}) is not pending a due response");
 
-            await responseTask.Task.ConfigureAwait(false);
 
-            // TODO: if wait timed out, retry sending message with back-off delay
+            for (var attempt = 1; attempt <= MaxRetransmitAttempts; attempt++)
+            {
+                if (_receiveTask.IsCompleted)
+                    _receiveTask = ReceiveAsyncInternal();
+
+                await _receiveEvent.WaitAsync(TimeSpan.FromMilliseconds(RetransmitTimeout.TotalMilliseconds * attempt), CancellationToken.None);
+                if (responseTask.Task.IsCompleted)
+                    break;
+            }
+
+            if (responseTask.Task.Status != TaskStatus.RanToCompletion)
+                throw new CoapClientException($"Max timeout reached for Message Id: {messageId}");
+
             _messageReponses.TryRemove(messageId, out responseTask);
 
             return responseTask.Task.GetAwaiter().GetResult();
@@ -166,11 +177,12 @@ namespace CoAPNet
 
             _messageReponses.TryAdd(message.Id, new TaskCompletionSource<CoapMessage>());
 
-            if (_receiveTask.IsCompleted)
-                _receiveTask = ReceiveAsyncInternal();
 
             for (var attempt = 1; attempt <= MaxRetransmitAttempts; attempt++)
             {
+                if (_receiveTask.IsCompleted)
+                    _receiveTask = ReceiveAsyncInternal();
+
                 await SendAsyncInternal(message, endpoint, token).ConfigureAwait(false);
                 await _receiveEvent.WaitAsync(TimeSpan.FromMilliseconds(RetransmitTimeout.TotalMilliseconds * attempt), token);
                 if(_messageReponses[message.Id].Task.IsCompleted)
@@ -181,6 +193,12 @@ namespace CoAPNet
 
         private async Task SendAsyncInternal(CoapMessage message, ICoapEndpoint endpoint, CancellationToken token)
         {
+            if (endpoint == null)
+                endpoint = new CoapEndpoint
+                {
+                    BaseUri = new UriBuilder(message.GetUri()) {Path = "/", Fragment = "", Query = ""}.Uri
+                };
+
             await Endpoint.SendAsync(new CoapPacket
             {
                 Payload = message.Serialise(),
@@ -189,7 +207,7 @@ namespace CoAPNet
             }, token).ConfigureAwait(false);
         }
 
-        internal void SetNetMessageId(int value)
+        internal void SetNextMessageId(int value)
         {
             Interlocked.Exchange(ref _messageId, value - 1);
         }
