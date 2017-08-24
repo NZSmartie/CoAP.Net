@@ -1,31 +1,149 @@
-# CoAP.Net [![Build status](https://ci.appveyor.com/api/projects/status/e014xw5hb3gyw1qv?svg=true)](https://ci.appveyor.com/project/NZSmartie/coap-net) [![NuGet version](https://badge.fury.io/nu/NZSmartie.CoAPNet.svg)](https://badge.fury.io/nu/NZSmartie.CoAPNet)
+# CoAP.Net [![Build status](https://ci.appveyor.com/api/projects/status/e014xw5hb3gyw1qv?svg=true)](https://ci.appveyor.com/project/NZSmartie/coap-net) [![NuGet](https://img.shields.io/nuget/v/NZSmartie.CoAPNet.svg)](https://www.nuget.org/packages/NZSmartie.CoAPNet/)
 
-My attempt at writing a CoAP library for .Net Standard (1.3) that is compliant with [RFC7252]
+This library encodes and decodes CoAP protocol packets that is transport agnostic. 
+IT also provides a CoapClient and CoapServer for communicating over CoAP
 
-**Note:** This project was created with Visual Studio 2017 RC, thus older versions MSBuild/XBuild will nto accept the .csproj files
+Since CoAP is designed for unreliable transport layers. (6LoWPAN, UDP, etc...) it made sense to not worry about the transport implementaions and allow the applicatrion to provide their own.
 
-## Motivation
-
-The idea behind this library is to encode and decode packets for the CoAP protocol that does not depend on any transport mechanisms. 
-
-Minimising the need for platform dependant librarbies (i.e. System.Net) and providing the application layer the freedome to use its own transport. Since CoAP is designed for unreliable transport layers.
-
-**Note**: I'm also following TDD as an exercise to become more familair with the workflow and get into the habbit of writing method stubs.
+If you're after a UDP transport example, see CoAPNet.Udp ([![NuGet](https://img.shields.io/nuget/v/NZSmartie.CoAPNet.Udp.svg)](https://www.nuget.org/packages/NZSmartie.CoAPNet.Udp/))
 
 ## Status
 
-I will throw a checklist here when I figure out what actually plan on doing with this library
+ - `CoapClient` - Simple client for communicating over the CoAP protocol
+   - [X] Send messages
+     - [ ] Resolve host names using mDNS or DNS
+     - [X] Proper multicast handling
+     - [X] Retransmit confirmable (CON) messages, throwing an exception on failure
+     - [X] Await message response for confirmable (CON) messages.
+     - [ ] Await message response for non-confirmable (NON) messages
+   - [X] Receive messages 
+     - [X] Rejects messages when 
+       - [X] Malform messages with appropiate error code.
+       - [X] Exceptions are thrown during processing
+   - [X] Correctly parse CoAP packets
 
-### Working
-
- - Creates and Decodes message packets with
-   - Token
-   - Opions
-   - Paylaods
+ - `CoapServer` - Simple server for binding to local transports and processing requests
+ 
+ - `CoapHandler` - Template request handler to be used by CoapServer
+   - `CoapResourceHandler` - Example handler that specificaly serves `CoapResource`s
 
 ### Todo
 
  - Create unit tests to cover as much of RFC7252 as possible.
- - Message timeout 8 resend handler
- - Verify messages are valid and fail gracefully
  - An application layer friendly API (This is a very low level library at the time of writing)
+
+## Examples
+
+### Client Example
+
+```C#
+using System;
+using System.Text;
+using System.Threading.Tasks;
+using CoAPNet;
+using CoAPNet.Udp;
+
+namespace CoAPDevices
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+
+            Task.Run(async () =>
+            {
+                // Create a new client using a UDP endpoint (defaults to 0.0.0.0 with any available port number)
+                var client = new CoapClient(new CoapUdpEndPoint());
+
+                var messageId = await client.GetAsync("coap://127.0.0.1/hello");
+
+                var response = await client.GetResponseAsync(messageId);
+
+                Console.WriteLine("got a response");
+                Console.WriteLine(Encoding.UTF8.GetString(response.Payload));
+            }).GetAwaiter().GetResult();
+
+            Console.WriteLine("Press <Enter> to exit");
+            Console.ReadLine();
+
+        }
+    }
+}
+```
+
+### Server example
+
+```C#
+using System;
+using System.Net;
+using System.Text;
+using System.Threading;
+using CoAPNet;
+using CoAPNet.Options;
+using CoAPNet.Udp;
+
+namespace CoAPDevices
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var failed = false;
+
+            var myHandler = new CoapResourceHandler();
+
+            myHandler.Resources.Add(new HelloResource("/hello"));
+
+            var myServer = new CoapServer(new CoapUdpTransportFactory());
+
+            try
+            {
+                myServer.BindTo(new CoapUdpEndPoint(IPAddress.Loopback, Coap.Port));
+                myServer.BindTo(new CoapUdpEndPoint(IPAddress.IPv6Loopback, Coap.Port));
+
+                myServer.StartAsync(myHandler, CancellationToken.None).GetAwaiter().GetResult();
+
+                Console.WriteLine("Server Started!");
+
+                Console.WriteLine("Press <Enter> to exit");
+                Console.ReadLine();
+            }
+            catch (Exception ex)
+            {
+                failed = true;
+                Console.WriteLine($"{ex.GetType().Name} occured: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+            }
+            finally
+            {
+                Console.WriteLine("Shutting Down Server");
+                myServer.StopAsync(CancellationToken.None).GetAwaiter().GetResult();
+            }
+
+            if (failed)
+                Console.ReadLine();
+        }
+    }
+
+    public class HelloResource : CoapResource
+    {
+        public HelloResource(string uri) : base(uri)
+        {
+            Metadata.InterfaceDescription.Add("read");
+
+            Metadata.ResourceTypes.Add("message");
+            Metadata.Title = "Hello World";
+        }
+
+        public override CoapMessage Get(CoapMessage request)
+        {
+            return new CoapMessage
+            {
+                Code = CoapMessageCode.Content,
+                Options = {new ContentFormat(ContentFormatType.TextPlain)},
+                Payload = Encoding.UTF8.GetBytes("Hello World!")
+            };
+        }
+    }
+}
+```
