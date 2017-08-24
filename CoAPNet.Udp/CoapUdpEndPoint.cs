@@ -35,17 +35,22 @@ namespace CoAPNet.Udp
         public bool IsSecure => false;
 
         public CoapUdpEndPoint(UdpClient udpClient)
+            :this((IPEndPoint)udpClient.Client.LocalEndPoint)
         {
-            Client = udpClient ?? throw new ArgumentNullException(nameof(udpClient));
-            _endpoint = (IPEndPoint)Client.Client.LocalEndPoint;
-
-            BaseUri = new UriBuilder()
-            {
-                Scheme = "coap://",
-                Host = _endpoint.Address.ToString(),
-                Port = _endpoint.Port != Coap.Port ? _endpoint.Port : -1
-            }.Uri;
+            Client = udpClient;
         }
+
+        public CoapUdpEndPoint(int port = 0)
+            : this(new IPEndPoint(IPAddress.Any, port))
+        { }
+
+        public CoapUdpEndPoint(IPAddress address, int port = 0)
+            : this(new IPEndPoint(address, port))
+        { }
+
+        public CoapUdpEndPoint(string ipAddress, int port = 0)
+            :this(new IPEndPoint(IPAddress.Parse(ipAddress), port))
+        { }
 
         public CoapUdpEndPoint(IPEndPoint endpoint)
         {
@@ -79,7 +84,7 @@ namespace CoAPNet.Udp
         public async Task<CoapPacket> ReceiveAsync(CancellationToken token = default (CancellationToken))
         {
             if (Client == null)
-                throw new InvalidOperationException();
+                await BindAsync();
 
             var result = await Client.ReceiveAsync();
             return new CoapPacket
@@ -92,11 +97,25 @@ namespace CoAPNet.Udp
         public async Task SendAsync(CoapPacket packet, CancellationToken token = default (CancellationToken))
         {
             if (Client == null)
-                throw new InvalidOperationException();
+                await BindAsync();
 
-            var udpDestEndpoint = packet.Endpoint as CoapUdpEndPoint;
-            if (udpDestEndpoint == null)
-                throw new ArgumentException();
+
+            CoapUdpEndPoint udpDestEndpoint;
+            switch (packet.Endpoint)
+            {
+                case CoapUdpEndPoint udpEndPoint:
+                    udpDestEndpoint = udpEndPoint;
+                    break;
+                case CoapEndpoint coapEndpoint:
+                    int port = coapEndpoint.BaseUri.Port;
+                    if (port == -1)
+                        port = coapEndpoint.IsSecure ? Coap.PortDTLS : Coap.Port;
+
+                    udpDestEndpoint = new CoapUdpEndPoint(coapEndpoint.BaseUri.Host, port);
+                    break;
+                default:
+                    throw new InvalidOperationException($"Unsupported {nameof(CoapPacket)}.{nameof(CoapPacket.Endpoint)} type ({packet.Endpoint.GetType().FullName})");
+            }
 
             try
             {
