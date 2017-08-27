@@ -1,4 +1,4 @@
-# CoAP.Net [![Build status](https://ci.appveyor.com/api/projects/status/e014xw5hb3gyw1qv?svg=true)](https://ci.appveyor.com/project/NZSmartie/coap-net) [![NuGet](https://img.shields.io/nuget/v/NZSmartie.CoAPNet.svg)](https://www.nuget.org/packages/NZSmartie.CoAPNet/)
+# CoAP.Net [![Build status](https://ci.appveyor.com/api/projects/status/e014xw5hb3gyw1qv?svg=true)](https://ci.appveyor.com/project/NZSmartie/coap-net) [![NuGet](https://img.shields.io/nuget/v/NZSmartie.CoAPNet.svg)](https://www.nuget.org/packages/NZSmartie.CoAPNet/) [![Coverage Status](https://coveralls.io/repos/github/NZSmartie/CoAP.Net/badge.svg?branch=master)](https://coveralls.io/github/NZSmartie/CoAP.Net?branch=master)
 
 This library encodes and decodes CoAP protocol packets that is transport agnostic. 
 IT also provides a CoapClient and CoapServer for communicating over CoAP
