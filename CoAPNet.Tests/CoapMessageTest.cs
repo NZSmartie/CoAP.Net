@@ -299,6 +299,7 @@ namespace CoAPNet.Tests
             _message.FromUri("coap://198.51.100.1:61616//%2F//?%2F%2F&?%26");
 
             var expectedOptions = new List<CoapOption> {
+                new Options.UriHost("198.51.100.1"),
                 new Options.UriPort(61616),
                 new Options.UriPath(""),
                 new Options.UriPath("/"),
@@ -308,11 +309,11 @@ namespace CoAPNet.Tests
                 new Options.UriQuery("?&"),
             };
 
-            Assert.IsTrue(expectedOptions.SequenceEqual(_message.Options));
+            Assert.AreEqual(expectedOptions, _message.Options);
 
             // Test again but using static CreateFromUri method
             var message = CoapMessage.CreateFromUri("coap://198.51.100.1:61616//%2F//?%2F%2F&?%26");
-            Assert.IsTrue(expectedOptions.SequenceEqual(message.Options));
+            Assert.AreEqual(expectedOptions,message.Options);
         }
 
         [Test]
