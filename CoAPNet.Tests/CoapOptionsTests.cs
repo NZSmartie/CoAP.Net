@@ -370,5 +370,25 @@ namespace CoAPNet.Tests
             Assert.AreEqual(OptionType.UInt, option.Type, "Type is incorrect");
             Assert.AreEqual(0u, option.DefaultUInt, "Default value is incorrect");
         }
+
+        [TestCase(0u, 0, new byte[] { })]
+        [TestCase(0x12u, 1, new byte[] {0x12})]
+        [TestCase(0x1234u, 2, new byte[] {0x12, 0x34})]
+        [TestCase(0x123456u, 3, new byte[] {0x12, 0x34, 0x56})]
+        [TestCase(0x12345678u, 4, new byte[] {0x12, 0x34, 0x56, 0x78})]
+        public void TestValueOption(uint value, int length, byte[] expected)
+        {
+            var optionToBytes = new CoapOption(0, type: OptionType.UInt);
+
+            optionToBytes.ValueUInt = value;
+            Assert.AreEqual(length, optionToBytes.Length);
+            Assert.AreEqual(expected, optionToBytes.GetBytes());
+
+            var optionFromBytes = new CoapOption(0, type: OptionType.UInt);
+
+            optionFromBytes.FromBytes(expected);
+            Assert.AreEqual(length, optionFromBytes.Length);
+            Assert.AreEqual(value, optionFromBytes.ValueUInt);
+        }
     }
 }

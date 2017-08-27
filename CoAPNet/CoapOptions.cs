@@ -296,8 +296,12 @@ namespace CoAPNet
 
         public void FromBytes(byte[] data)
         {
-            if (_type == OptionType.Empty && (data == null || data.Length > 0))
-                throw new InvalidCastException("Empty option does not accept any data");
+            if (_type == OptionType.Empty)
+            {
+                if ((data?.Length ?? 0) > 0)
+                    throw new InvalidCastException("Empty option does not accept any data");
+                return;
+            }
 
             if (_type == OptionType.Opaque)
             {
@@ -312,15 +316,15 @@ namespace CoAPNet
             }
 
             
-            uint value = 0;
+            uint i=0, value = 0;
             if (data.Length == 4)
-                value = (uint)(data[3] << 24);
+                value = (uint)(data[i++] << 24);
             if (data.Length >= 3)
-                value |= (uint)(data[2] << 16);
+                value |= (uint)(data[i++] << 16);
             if (data.Length >= 2)
-                value |= (uint)(data[1] << 8);
+                value |= (uint)(data[i++] << 8);
             if (data.Length >= 1)
-                value |= data[0];
+                value |= data[i++];
             ValueUInt = value;
         }
 
