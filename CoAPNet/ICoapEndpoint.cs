@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CoAPNet
 {
+    [ExcludeFromCodeCoverage]
     public class CoapEndpointException : Exception
     {
         public CoapEndpointException() : base() { }
@@ -58,6 +60,7 @@ namespace CoAPNet
     /// <summary>
     /// Will be used as a place holder for endpoints without a known implementation
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class CoapEndpoint : ICoapEndpoint
     {
         public void Dispose()

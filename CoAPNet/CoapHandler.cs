@@ -129,24 +129,21 @@ namespace CoAPNet
                         case CoapMessageCode.Delete:
                             result = resource.Delete(message);
                             break;
-                        default:
-                            throw new InvalidOperationException();
                     }
                 }
             }
-            catch (CoapException ex)
+            catch (Exception ex)
             {
-                result = CoapMessageUtility.FromException(ex);
-            }
-            catch (NotImplementedException ex)
-            {
-                result = CoapMessageUtility.FromException(ex);
-            }
-            catch (Exception)
-            {
-                result = CoapMessageUtility.CreateMessage(CoapMessageCode.InternalServerError,
-                    "An unexpected error occured", CoapMessageType.Reset);
-                throw;
+                if (ex is CoapException || ex is NotImplementedException)
+                {
+                    result = CoapMessageUtility.FromException(ex);
+                }
+                else
+                {
+                    result = CoapMessageUtility.CreateMessage(CoapMessageCode.InternalServerError,
+                        "An unexpected error occured", CoapMessageType.Reset);
+                    throw;
+                }
             }
             finally
             {

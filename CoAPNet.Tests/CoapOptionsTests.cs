@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using NUnit;
 using NUnit.Framework;
 
@@ -371,6 +372,21 @@ namespace CoAPNet.Tests
             Assert.AreEqual(0u, option.DefaultUInt, "Default value is incorrect");
         }
 
+        [Test]
+        public void TestOpaqueOption()
+        {
+            var option = new CoapOption(0, type: OptionType.Opaque);
+
+            option.ValueOpaque = new byte[] {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xF0};
+            Assert.AreEqual(8, option.Length);
+            Assert.AreEqual(new byte[] {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xF0}, option.ValueOpaque);
+            Assert.AreEqual(new byte[] {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xF0}, option.GetBytes());
+
+            option.FromBytes(new byte[] { 0xAA, 0x55, 0x11});
+            Assert.AreEqual(3, option.Length);
+            Assert.AreEqual(new byte[] { 0xAA, 0x55, 0x11 }, option.ValueOpaque);
+        }
+
         [TestCase(0u, 0, new byte[] { })]
         [TestCase(0x12u, 1, new byte[] {0x12})]
         [TestCase(0x1234u, 2, new byte[] {0x12, 0x34})]
@@ -389,6 +405,29 @@ namespace CoAPNet.Tests
             optionFromBytes.FromBytes(expected);
             Assert.AreEqual(length, optionFromBytes.Length);
             Assert.AreEqual(value, optionFromBytes.ValueUInt);
+        }
+
+        [Test]
+        public void TestOptionInvalidCastException()
+        {
+            var option = new CoapOption(0);
+
+            Assert.Throws<InvalidCastException>(() => _ = option.ValueString);
+            Assert.Throws<InvalidCastException>(() => _ = option.ValueString = "test");
+
+            Assert.Throws<InvalidCastException>(() => _ = option.ValueOpaque);
+            Assert.Throws<InvalidCastException>(() => _ = option.ValueOpaque = Encoding.UTF8.GetBytes("test"));
+
+            Assert.Throws<InvalidCastException>(() => _ = option.ValueUInt);
+            Assert.Throws<InvalidCastException>(() => _ = option.ValueUInt = 1234);
+
+            Assert.Throws<InvalidCastException>(() => _ = option.DefaultString);
+            Assert.Throws<InvalidCastException>(() => _ = option.DefaultOpaque);
+            Assert.Throws<InvalidCastException>(() => _ = option.DefaultUInt);
+
+            option.FromBytes(null); // No-op
+            option.FromBytes(new byte[]{}); // No-op
+            Assert.Throws<InvalidCastException>(() => option.FromBytes(new byte[]{0x12}));
         }
     }
 }

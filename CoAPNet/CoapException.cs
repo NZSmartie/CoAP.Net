@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CoAPNet
 {
+    [ExcludeFromCodeCoverage]
     public class CoapException : Exception
     {
         public CoapException()

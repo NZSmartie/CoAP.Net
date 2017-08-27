@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.8
+VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet", "CoAPNet\CoAPNet.csproj", "{0D43122B-4D99-41B1-B855-5D780F85464A}"
 EndProject
@@ -15,10 +15,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoAPNet.Udp", "CoAPNet.Udp\CoAPNet.Udp.csproj", "{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Udp", "CoAPNet.Udp\CoAPNet.Udp.csproj", "{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		AppVeyor|Any CPU = AppVeyor|Any CPU
+		AppVeyor|x64 = AppVeyor|x64
+		AppVeyor|x86 = AppVeyor|x86
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
@@ -27,6 +30,12 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D43122B-4D99-41B1-B855-5D780F85464A}.AppVeyor|Any CPU.ActiveCfg = AppVeyor|Any CPU
+		{0D43122B-4D99-41B1-B855-5D780F85464A}.AppVeyor|Any CPU.Build.0 = AppVeyor|Any CPU
+		{0D43122B-4D99-41B1-B855-5D780F85464A}.AppVeyor|x64.ActiveCfg = Release|Any CPU
+		{0D43122B-4D99-41B1-B855-5D780F85464A}.AppVeyor|x64.Build.0 = Release|Any CPU
+		{0D43122B-4D99-41B1-B855-5D780F85464A}.AppVeyor|x86.ActiveCfg = Release|Any CPU
+		{0D43122B-4D99-41B1-B855-5D780F85464A}.AppVeyor|x86.Build.0 = Release|Any CPU
 		{0D43122B-4D99-41B1-B855-5D780F85464A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0D43122B-4D99-41B1-B855-5D780F85464A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D43122B-4D99-41B1-B855-5D780F85464A}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -39,6 +48,12 @@ Global
 		{0D43122B-4D99-41B1-B855-5D780F85464A}.Release|x64.Build.0 = Release|Any CPU
 		{0D43122B-4D99-41B1-B855-5D780F85464A}.Release|x86.ActiveCfg = Release|Any CPU
 		{0D43122B-4D99-41B1-B855-5D780F85464A}.Release|x86.Build.0 = Release|Any CPU
+		{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}.AppVeyor|Any CPU.ActiveCfg = AppVeyor|Any CPU
+		{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}.AppVeyor|Any CPU.Build.0 = AppVeyor|Any CPU
+		{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}.AppVeyor|x64.ActiveCfg = AppVeyor|Any CPU
+		{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}.AppVeyor|x64.Build.0 = AppVeyor|Any CPU
+		{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}.AppVeyor|x86.ActiveCfg = AppVeyor|Any CPU
+		{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}.AppVeyor|x86.Build.0 = AppVeyor|Any CPU
 		{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -51,6 +66,12 @@ Global
 		{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}.Release|x64.Build.0 = Release|Any CPU
 		{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}.Release|x86.ActiveCfg = Release|Any CPU
 		{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}.Release|x86.Build.0 = Release|Any CPU
+		{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}.AppVeyor|Any CPU.ActiveCfg = AppVeyor|Any CPU
+		{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}.AppVeyor|Any CPU.Build.0 = AppVeyor|Any CPU
+		{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}.AppVeyor|x64.ActiveCfg = AppVeyor|Any CPU
+		{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}.AppVeyor|x64.Build.0 = AppVeyor|Any CPU
+		{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}.AppVeyor|x86.ActiveCfg = AppVeyor|Any CPU
+		{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}.AppVeyor|x86.Build.0 = AppVeyor|Any CPU
 		{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}.Debug|x64.ActiveCfg = Debug|Any CPU

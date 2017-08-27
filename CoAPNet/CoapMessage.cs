@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using CoAPNet.Options;
 
 namespace CoAPNet
 {
@@ -68,7 +70,7 @@ namespace CoAPNet
     {
         public static bool IsRequest(this CoapMessageCode code)
         {
-            return ((int) code / 100) == 0;
+            return ((int) code / 100) == 0 && code != CoapMessageCode.None;
         }
         public static bool IsSuccess(this CoapMessageCode code)
         {
@@ -84,6 +86,7 @@ namespace CoAPNet
         }
     }
 
+    [ExcludeFromCodeCoverage]
     public class CoapMessageFormatException : CoapException {
         public CoapMessageFormatException() :base() { }
 
@@ -165,7 +168,7 @@ namespace CoAPNet
         /// <summary>
         /// Gets or Sets The paylaod of the message.
         /// </summary>
-        /// <remarks>Check (or add) <see cref="Options.ContentFormat"/> in <see cref="CoapMessage.Options"/> for the format of the payload.</remarks>
+        /// <remarks>Check (or add) <see cref="ContentFormat"/> in <see cref="CoapMessage.Options"/> for the format of the payload.</remarks>
         public byte[] Payload { get; set; }
 
         public readonly bool IsMulticast;

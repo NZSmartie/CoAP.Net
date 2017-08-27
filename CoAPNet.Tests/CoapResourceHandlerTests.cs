@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CoAPNet.Options;
 using Moq;
 using NUnit.Framework;
 
@@ -50,11 +51,11 @@ namespace CoAPNet.Tests
 
             service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
             //_client.Raise(c => c.OnMessageReceived += null, new CoapMessageReceivedEventArgs {Message = request});
-            
+
             // Assert
             Mock.Verify(_endpoint, mockResource);
         }
-
+        
         [Test]
         public void TestGetRequest()
         {
@@ -177,6 +178,35 @@ namespace CoAPNet.Tests
         }
 
         [Test]
+        public void TestResourceMethodBadOption()
+        {
+            // Arrange
+            var expectedMessage = CoapMessageUtility
+                .FromException(new CoapOptionException("Unsupported critical option (45575)")).Serialise();
+            _endpoint
+                .Setup(c => c.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage)), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(0))
+                .Verifiable();
+
+            var mockResource = new Mock<CoapResource>("/test");
+            mockResource
+                .Setup(r => r.Get(It.IsAny<CoapMessage>()))
+                .Throws(new NotImplementedException());
+
+            var request = new CoapMessage {Code = CoapMessageCode.Get, Options = {new CoapOption(111111)}};
+            request.FromUri(new Uri(_baseUri, "/test"));
+
+            // Act
+            var service = new CoapResourceHandler();
+
+            service.Resources.Add(mockResource.Object);
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
+
+            // Assert
+            Mock.Verify(_endpoint);
+        }
+
+        [Test]
         public void TestResourceNotFound()
         {
             // Arrange
@@ -194,6 +224,35 @@ namespace CoAPNet.Tests
             var service = new CoapResourceHandler();
 
             service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
+
+            // Assert
+            Mock.Verify(_endpoint);
+        }
+
+        [Test]
+        public void TestResourceInternalError()
+        {
+            // Arrange
+            var expectedMessage = CoapMessageUtility.CreateMessage(CoapMessageCode.InternalServerError, "An unexpected error occured", CoapMessageType.Reset).Serialise();
+
+            _endpoint
+                .Setup(e => e.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage)), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(0))
+                .Verifiable();
+
+            var mockResource = new Mock<CoapResource>("/test");
+            mockResource
+                .Setup(r => r.Get(It.IsAny<CoapMessage>()))
+                .Throws(new Exception("Somne generic exception"));
+
+            var request = new CoapMessage { Code = CoapMessageCode.Get };
+            request.FromUri(new Uri(_baseUri, "/test"));
+
+            // Act
+            var service = new CoapResourceHandler();
+            service.Resources.Add(mockResource.Object);
+
+            Assert.Throws<Exception>(()=> service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).GetAwaiter().GetResult());
 
             // Assert
             Mock.Verify(_endpoint);

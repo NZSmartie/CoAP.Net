@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,12 +11,7 @@ using CoAPNet.Utils;
 
 namespace CoAPNet
 {
-    public class CoapMessageReceivedEventArgs : EventArgs
-    {
-        public CoapMessage Message { get; set; }
-        public ICoapEndpoint Endpoint { get; set; }
-    }
-
+    [ExcludeFromCodeCoverage]
     public class CoapClientException : CoapException
     {
         public CoapClientException() : base() { }
@@ -202,7 +198,6 @@ namespace CoAPNet
             await Endpoint.SendAsync(new CoapPacket
             {
                 Payload = message.Serialise(),
-                MessageId = message.Id,
                 Endpoint = endpoint
             }, token).ConfigureAwait(false);
         }

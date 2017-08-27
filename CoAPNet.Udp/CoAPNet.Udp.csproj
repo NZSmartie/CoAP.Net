@@ -20,6 +20,7 @@ v0.2.4
  - Implemented a UDP example to use with NZSmartie.CoAPNet</PackageReleaseNotes>
     <AssemblyVersion>0.2.5.0</AssemblyVersion>
     <FileVersion>0.2.5.0</FileVersion>
+    <Configurations>Debug;Release;AppVeyor</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

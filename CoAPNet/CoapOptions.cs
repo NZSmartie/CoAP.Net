@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Linq;
 
 namespace CoAPNet
 {
+    [ExcludeFromCodeCoverage]
     public class CoapOptionException : CoapException
     {
         public CoapOptionException() : base() { }
@@ -328,7 +330,7 @@ namespace CoAPNet
             ValueUInt = value;
         }
 
-        protected CoapOption(int optionNumber, int minLength = 0, int maxLength = 0, bool isRepeatable = false, OptionType type = OptionType.Empty, object defaultValue = null)
+        protected internal CoapOption(int optionNumber, int minLength = 0, int maxLength = 0, bool isRepeatable = false, OptionType type = OptionType.Empty, object defaultValue = null)
         {
             _optionNumber = optionNumber;
             _type = type;

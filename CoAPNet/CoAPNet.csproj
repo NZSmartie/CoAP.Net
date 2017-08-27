@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net46;netstandard1.4</TargetFrameworks>
     <TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
-    <DebugType>full</DebugType>
+    <DebugType Condition="$(Configuration)=='AppVeyor'">full</DebugType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>NZSmartie.CoAPNet</PackageId>
     <Version>0.2.5</Version>
@@ -33,5 +33,6 @@ v0.2.0
 v0.1.1
  - Improve concurrency in CoapClient
  - Rename CoapResource to CoapResourceMetadata</PackageReleaseNotes>
+    <Configurations>Debug;Release;AppVeyor</Configurations>
   </PropertyGroup>
 </Project>
