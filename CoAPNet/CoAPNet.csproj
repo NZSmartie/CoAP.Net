@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net46;netstandard1.4</TargetFrameworks>
     <TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
+    <DebugType>full</DebugType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>NZSmartie.CoAPNet</PackageId>
     <Version>0.2.5</Version>
