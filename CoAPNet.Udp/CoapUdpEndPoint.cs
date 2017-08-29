@@ -81,7 +81,7 @@ namespace CoAPNet.Udp
             Client?.Dispose();
         }
 
-        public async Task<CoapPacket> ReceiveAsync(CancellationToken token = default (CancellationToken))
+        public async Task<CoapPacket> ReceiveAsync()
         {
             if (Client == null)
                 await BindAsync();
@@ -94,7 +94,7 @@ namespace CoAPNet.Udp
             };
         }
 
-        public async Task SendAsync(CoapPacket packet, CancellationToken token = default (CancellationToken))
+        public async Task SendAsync(CoapPacket packet)
         {
             if (Client == null)
                 await BindAsync();

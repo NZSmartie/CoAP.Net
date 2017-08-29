@@ -69,7 +69,7 @@ namespace CoAPNet
             {
                 while (true)
                 {
-                    var payload = await Endpoint.ReceiveAsync(CancellationToken.None);
+                    var payload = await Endpoint.ReceiveAsync();
                     var message = new CoapMessage(Endpoint.IsMulticast);
                     try
                     {
@@ -199,7 +199,7 @@ namespace CoAPNet
             {
                 Payload = message.Serialise(),
                 Endpoint = endpoint
-            }, token).ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         internal void SetNextMessageId(int value)

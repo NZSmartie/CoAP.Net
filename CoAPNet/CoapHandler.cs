@@ -169,8 +169,7 @@ namespace CoAPNet
                     {
                         Endpoint = connection.RemoteEndpoint,
                         Payload = result.Serialise()
-                    },
-                    CancellationToken.None);
+                    });
             }
         }
     }

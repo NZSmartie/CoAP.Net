@@ -48,13 +48,13 @@ namespace CoAPNet
         /// <param name="packet"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task SendAsync(CoapPacket packet, CancellationToken token);
+        Task SendAsync(CoapPacket packet);
 
         /// <summary>
         /// Called by [service] to receive data from the endpoint layer
         /// </summary>
         /// <returns></returns>
-        Task<CoapPacket> ReceiveAsync(CancellationToken token);
+        Task<CoapPacket> ReceiveAsync();
     }
 
     /// <summary>
@@ -69,12 +69,12 @@ namespace CoAPNet
         public bool IsSecure { get; internal set; }
         public bool IsMulticast { get; internal set; }
         public Uri BaseUri { get; internal set; }
-        public Task SendAsync(CoapPacket packet, CancellationToken token)
+        public Task SendAsync(CoapPacket packet)
         {
             throw new InvalidOperationException($"{nameof(CoapEndpoint)} can not be used to send and receive");
         }
 
-        public Task<CoapPacket> ReceiveAsync(CancellationToken token)
+        public Task<CoapPacket> ReceiveAsync()
         {
             throw new InvalidOperationException($"{nameof(CoapEndpoint)} can not be used to send and receive");
         }
