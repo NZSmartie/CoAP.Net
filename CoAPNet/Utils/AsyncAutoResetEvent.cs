@@ -6,96 +6,54 @@ using System.Threading.Tasks;
 
 namespace CoAPNet.Utils
 {
-    // Source: https://stackoverflow.com/a/43012490/2255933
-    // Edited and added AwaitAsync() without timespan parameter
+
     public class AsyncAutoResetEvent
     {
-        private readonly LinkedList<TaskCompletionSource<bool>> _waiters =
-            new LinkedList<TaskCompletionSource<bool>>();
-
-        private bool _isSignaled;
+        private readonly Queue<TaskCompletionSource<bool>> _waits = new Queue<TaskCompletionSource<bool>>();
+        private bool _signaled;
 
         public AsyncAutoResetEvent(bool signaled)
         {
-            _isSignaled = signaled;
+            _signaled = signaled;
         }
 
-        public Task<bool> WaitAsync(TimeSpan timeout)
+        public async Task WaitAsync(CancellationToken token)
         {
-            return WaitAsync(timeout, CancellationToken.None);
-        }
-
-        public async Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken)
-        {
-            TaskCompletionSource<bool> tcs;
-
-            lock (_waiters)
+            var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            lock (_waits)
             {
-                if (_isSignaled)
+                if (_signaled)
                 {
-                    _isSignaled = false;
-                    return true;
+                    _signaled = false;
+                    return;
                 }
 
-                if (timeout == TimeSpan.Zero)
-                    return _isSignaled;
-
-                tcs = new TaskCompletionSource<bool>();
-                _waiters.AddLast(tcs);
-
+                _waits.Enqueue(tcs);
             }
 
-            var winner = await Task.WhenAny(tcs.Task, Task.Delay(timeout, cancellationToken));
-
-            // The task was signaled.
-            if (winner == tcs.Task)
-                return true;
-
-            // We timed-out; remove our reference to the task.
-            // This is an O(n) operation since waiters is a LinkedList<T>.
-            lock (_waiters)
-            {
-                bool removed = _waiters.Remove(tcs);
-                Debug.Assert(removed);
-                return false;
-            }
+            token.Register(() => tcs.TrySetCanceled(token));
+            await tcs.Task;
         }
 
-        public Task<bool> WaitAsync(CancellationToken cancellationToken)
-        {
-            TaskCompletionSource<bool> tcs;
-
-            lock (_waiters)
-            {
-                if (_isSignaled)
-                {
-                    _isSignaled = false;
-                    return Task.FromResult(true);
-                }
-
-                tcs = new TaskCompletionSource<bool>();
-                _waiters.AddLast(tcs);
-                return Task.Run(() => tcs.Task.GetAwaiter().GetResult(), cancellationToken);
-            }
-        }
 
         public void Set()
         {
             TaskCompletionSource<bool> toRelease = null;
-
-            lock (_waiters)
+            lock (_waits)
             {
-                if (_waiters.Count > 0)
+                do
                 {
-                    // Signal the first task in the waiters list.
-                    toRelease = _waiters.First.Value;
-                    _waiters.RemoveFirst();
-                }
-                else if (!_isSignaled)
-                {
-                    // No tasks are pending
-                    _isSignaled = true;
-                }
+                    if (_waits.Count > 0)
+                    {
+                        toRelease = _waits.Dequeue();
+                    }
+                    else if (!_signaled)
+                    {
+                        toRelease = null;
+                        _signaled = true;
+                        break;
+                    }
+                } while (toRelease?.Task.IsCanceled ?? false);
             }
 
             toRelease?.SetResult(true);

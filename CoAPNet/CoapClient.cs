@@ -28,7 +28,7 @@ namespace CoAPNet
         private int _messageId;
 
         // I'm not particularly fond of the following _messageQueue and _messageResponses... Feels more like a hack. but it works? NEEDS MORE TESTING!!!
-        private readonly ConcurrentDictionary<int, TaskCompletionSource<CoapMessage>> _messageReponses 
+        private readonly ConcurrentDictionary<int, TaskCompletionSource<CoapMessage>> _messageResponses 
             = new ConcurrentDictionary<int, TaskCompletionSource<CoapMessage>>();
 
 
@@ -45,23 +45,60 @@ namespace CoAPNet
 
         private readonly Queue<Task<CoapReceiveResult>> _receiveQueue = new Queue<Task<CoapReceiveResult>>();
         private Task _receiveTask = Task.CompletedTask;
+
         private readonly AsyncAutoResetEvent _receiveEvent = new AsyncAutoResetEvent(false);
 
         public async Task<CoapReceiveResult> ReceiveAsync(CancellationToken token)
         {
-            if (_receiveTask.IsCompleted)
-                _receiveTask = ReceiveAsyncInternal();
+            Task<CoapReceiveResult> resultTask = null;
+            lock (_receiveQueue)
+            {
+                if (_receiveQueue.Count > 0)
+                {
+                    resultTask = _receiveQueue.Dequeue();
+                }
+            }
+            if (resultTask != null)
+                return resultTask.IsCanceled
+                    ? null
+                    : await resultTask;
+            
+            if (Endpoint == null)
+                throw new InvalidOperationException($"{nameof(CoapClient)} is in an invalid state");
+
+            StartReceiveAsyncInternal();
 
             await _receiveEvent.WaitAsync(token);
 
-            Task<CoapReceiveResult> resultTask;
+            if (token.IsCancellationRequested)
+                return null;
+
             lock (_receiveQueue)
             {
                 resultTask = _receiveQueue.Dequeue();
             }
+
             return await resultTask;
         }
 
+        private readonly object _receiveTaskLock = new object();
+        private void StartReceiveAsyncInternal()
+        {
+            lock (_receiveTaskLock)
+            {
+                if (!_receiveTask.IsCompleted)
+                    return;
+
+                var task = Task.Factory.StartNew(
+                    ReceiveAsyncInternal,
+                    CancellationToken.None,
+                    TaskCreationOptions.LongRunning,
+                    TaskScheduler.Default);
+
+
+                _receiveTask = task.Unwrap();
+            }
+        }
 
         private async Task ReceiveAsyncInternal()
         {
@@ -69,7 +106,11 @@ namespace CoAPNet
             {
                 while (true)
                 {
+                    if (Endpoint == null)
+                        return;
+
                     var payload = await Endpoint.ReceiveAsync();
+
                     var message = new CoapMessage(Endpoint.IsMulticast);
                     try
                     {
@@ -89,8 +130,10 @@ namespace CoAPNet
                         throw;
                     }
 
-                    if (_messageReponses.ContainsKey(message.Id))
-                        _messageReponses[message.Id].TrySetResult(message);
+                    if (_messageResponses.ContainsKey(message.Id))
+                    {
+                        _messageResponses[message.Id].TrySetResult(message);
+                    }
 
                     lock (_receiveQueue)
                     {
@@ -101,8 +144,14 @@ namespace CoAPNet
             }
             catch (Exception ex)
             {
-                if (Endpoint == null)
-                    return;
+                if (ex is CoapEndpointException)
+                {
+                    Endpoint?.Dispose();
+                    Endpoint = null;
+
+                    foreach (var response in _messageResponses.Values)
+                        response.TrySetCanceled();
+                }
 
                 lock (_receiveQueue)
                 {
@@ -110,29 +159,43 @@ namespace CoAPNet
                     _receiveQueue.Enqueue(Task.FromException<CoapReceiveResult>(ex));
                 }
                 _receiveEvent.Set();
+
             }
         }
 
         public void Dispose()
         {
-            // ReSharper disable once SuspiciousTypeConversion.Global
-            Endpoint.Dispose();
+            var endpoint = Endpoint;
             Endpoint = null;
-            _receiveTask?.Wait();
+
+            endpoint?.Dispose();
+
+            if (!_receiveTask.IsCompleted && !_receiveTask.IsCanceled && !_receiveTask.IsFaulted && !_receiveTask.Wait(5000))
+                throw new CoapClientException($"Took too long to dispose of the enclosed {nameof(Endpoint)}");
         }
 
-        public async Task<CoapMessage> GetResponseAsync(int messageId)
+        public async Task<CoapMessage> GetResponseAsync(int messageId, CancellationToken token = default(CancellationToken))
         {
-            if (!_messageReponses.TryGetValue(messageId, out var responseTask))
+            TaskCompletionSource<CoapMessage> responseTask = null;
+
+            if (!_messageResponses.TryGetValue(messageId, out responseTask))
                 throw new ArgumentOutOfRangeException($"The current message id ({messageId}) is not pending a due response");
 
+            if (responseTask.Task.IsCompleted)
+                return responseTask.Task.Result;
+
+            if (Endpoint == null)
+                throw new InvalidOperationException($"{nameof(CoapClient)} is in an invalid state");
 
             for (var attempt = 1; attempt <= MaxRetransmitAttempts; attempt++)
             {
-                if (_receiveTask.IsCompleted)
-                    _receiveTask = ReceiveAsyncInternal();
+                StartReceiveAsyncInternal();
 
-                await _receiveEvent.WaitAsync(TimeSpan.FromMilliseconds(RetransmitTimeout.TotalMilliseconds * attempt), CancellationToken.None);
+                var timeout = TimeSpan.FromMilliseconds(RetransmitTimeout.TotalMilliseconds * attempt);
+
+                await Task.WhenAny(responseTask.Task, Task.Delay(timeout, token)).ConfigureAwait(false);
+                token.ThrowIfCancellationRequested();
+
                 if (responseTask.Task.IsCompleted)
                     break;
             }
@@ -140,28 +203,28 @@ namespace CoAPNet
             if (responseTask.Task.Status != TaskStatus.RanToCompletion)
                 throw new CoapClientException($"Max timeout reached for Message Id: {messageId}");
 
-            _messageReponses.TryRemove(messageId, out responseTask);
+            Debug.Assert(_messageResponses.TryRemove(messageId, out responseTask));
 
-            return responseTask.Task.GetAwaiter().GetResult();
+            return responseTask.Task.Result;
         }
 
-        public virtual async Task<int> SendAsync(CoapMessage message)
-        {
-            return await SendAsync(message, null, CancellationToken.None);
-        }
+        public virtual async Task<int> SendAsync(CoapMessage message) => 
+            await SendAsync(message, null, CancellationToken.None);
 
-        public virtual async Task<int> SendAsync(CoapMessage message, ICoapEndpoint endpoint)
-        {
-            return await SendAsync(message, endpoint, CancellationToken.None);
-        }
+        public virtual async Task<int> SendAsync(CoapMessage message, CancellationToken token) =>
+            await SendAsync(message, null, token);
 
-        private int GetNextMessageId()
-        {
-            return Interlocked.Increment(ref _messageId) & ushort.MaxValue;
-        }
+        public virtual async Task<int> SendAsync(CoapMessage message, ICoapEndpoint endpoint) =>
+            await SendAsync(message, endpoint, CancellationToken.None);
+
+        private int GetNextMessageId() => 
+            Interlocked.Increment(ref _messageId) & ushort.MaxValue;
 
         public virtual async Task<int> SendAsync(CoapMessage message, ICoapEndpoint endpoint, CancellationToken token)
         {
+            if(Endpoint==null)
+                throw new InvalidOperationException($"{nameof(CoapClient)} is in an invalid state");
+
             if (message.Id == 0)
                 message.Id = GetNextMessageId();
 
@@ -171,35 +234,44 @@ namespace CoAPNet
                 return message.Id;
             }
 
-            _messageReponses.TryAdd(message.Id, new TaskCompletionSource<CoapMessage>());
-
+            _messageResponses.TryAdd(message.Id, new TaskCompletionSource<CoapMessage>(TaskCreationOptions.RunContinuationsAsynchronously));
+            var responseTaskSource = _messageResponses[message.Id];
 
             for (var attempt = 1; attempt <= MaxRetransmitAttempts; attempt++)
             {
-                if (_receiveTask.IsCompleted)
-                    _receiveTask = ReceiveAsyncInternal();
+                StartReceiveAsyncInternal();
 
                 await SendAsyncInternal(message, endpoint, token).ConfigureAwait(false);
-                await _receiveEvent.WaitAsync(TimeSpan.FromMilliseconds(RetransmitTimeout.TotalMilliseconds * attempt), token);
-                if(_messageReponses[message.Id].Task.IsCompleted)
+                token.ThrowIfCancellationRequested();
+
+                var timeout = TimeSpan.FromMilliseconds(RetransmitTimeout.TotalMilliseconds * attempt);
+
+                await Task.WhenAny(responseTaskSource.Task, Task.Delay(timeout, token)).ConfigureAwait(false);
+                token.ThrowIfCancellationRequested();
+
+
+                if (responseTaskSource.Task.IsCompleted)
                     return message.Id;
             }
             throw new CoapClientException($"Max retransmission attempts reached for Message Id: {message.Id}");
         }
 
-        private async Task SendAsyncInternal(CoapMessage message, ICoapEndpoint endpoint, CancellationToken token)
+        private async Task SendAsyncInternal(CoapMessage message, ICoapEndpoint remoteEndpoint, CancellationToken token)
         {
-            if (endpoint == null)
-                endpoint = new CoapEndpoint
+            if(Endpoint == null)
+                return;
+            
+            if (remoteEndpoint == null)
+                remoteEndpoint = new CoapEndpoint
                 {
                     BaseUri = new UriBuilder(message.GetUri()) {Path = "/", Fragment = "", Query = ""}.Uri
                 };
 
-            await Endpoint.SendAsync(new CoapPacket
+            await Task.Run(async () => await Endpoint.SendAsync(new CoapPacket
             {
                 Payload = message.Serialise(),
-                Endpoint = endpoint
-            }).ConfigureAwait(false);
+                Endpoint = remoteEndpoint
+            }), token).ConfigureAwait(false);
         }
 
         internal void SetNextMessageId(int value)
@@ -209,17 +281,19 @@ namespace CoAPNet
         
         #region Request Operations
 
-        public virtual async Task<int> GetAsync(string uri, ICoapEndpoint endpoint = null, CancellationToken token = default(CancellationToken))
+        public virtual async Task<int> GetAsync(string uri, CancellationToken token = default(CancellationToken))
+        {
+            return await GetAsync(uri, null, token);
+        }
+
+        public virtual async Task<int> GetAsync(string uri, ICoapEndpoint endpoint, CancellationToken token = default(CancellationToken))
         {
             var message = new CoapMessage
             {
-                Id = GetNextMessageId(),
                 Code = CoapMessageCode.Get,
                 Type = CoapMessageType.Confirmable
             };
             message.FromUri(uri);
-
-            _messageReponses.TryAdd(message.Id, new TaskCompletionSource<CoapMessage>());
 
             return await SendAsync(message, endpoint, token).ConfigureAwait(false);
         }
