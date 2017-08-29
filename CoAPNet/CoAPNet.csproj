@@ -5,7 +5,7 @@
     <DebugType Condition="$(Configuration)=='AppVeyor'">full</DebugType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>NZSmartie.CoAPNet</PackageId>
-    <Version>0.2.5</Version>
+    <Version>0.3.0</Version>
     <Authors>Roman Vaughan</Authors>
     <Company>NZSmartie</Company>
     <Product>CoAPNet</Product>
@@ -16,7 +16,10 @@
     <PackageTags>CoAP IoT sensors devices hardware network protocol</PackageTags>
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
-    <PackageReleaseNotes>v0.2.5
+    <PackageReleaseNotes>v0.3.0
+ - Improve async operations in CoapClient
+ - Remove CancellationToken from ICoapEndpoint
+v0.2.6
  - Include IP address in Coap Options.
  - Create CoapEndpoint for unknown endpoints
 v0.2.4
