@@ -14,21 +14,7 @@
 // limitations under the License.
 #endregion
 
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
-namespace CoAPNet
-{
-    public interface ICoapTransportFactory
-    {
-        ICoapTransport Create(ICoapEndpoint endPoint, ICoapHandler handler);
-    }
-
-    public interface ICoapTransport
-    {
-        Task BindAsync();
-
-        Task UnbindAsync();
-
-        Task StopAsync();
-    }
-}
+// Allow CoAPNet.Tests to access internal members for testing purposes
+[assembly: InternalsVisibleTo("CoAPNet.Tests")]
