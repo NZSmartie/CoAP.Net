@@ -5,7 +5,7 @@
     <DebugType Condition="$(Configuration)=='AppVeyor'">full</DebugType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>NZSmartie.CoAPNet</PackageId>
-    <Version>0.3.0</Version>
+    <Version>0.3.1</Version>
     <Authors>Roman Vaughan</Authors>
     <Company>NZSmartie</Company>
     <Product>CoAPNet</Product>
@@ -16,7 +16,9 @@
     <PackageTags>CoAP IoT sensors devices hardware network protocol</PackageTags>
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
-    <PackageReleaseNotes>v0.3.0
+    <PackageReleaseNotes>v0.3.1
+ - Added Apache License 2.0
+v0.3.0
  - Improve async operations in CoapClient
  - Remove CancellationToken from ICoapEndpoint
 v0.2.6
@@ -37,5 +39,7 @@ v0.1.1
  - Improve concurrency in CoapClient
  - Rename CoapResource to CoapResourceMetadata</PackageReleaseNotes>
     <Configurations>Debug;Release;AppVeyor</Configurations>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/NZSmartie/CoAP.Net/master/LICENSE</PackageLicenseUrl>
+    <Copyright>Copyright © Roman Vaughan 2017</Copyright>
   </PropertyGroup>
 </Project>

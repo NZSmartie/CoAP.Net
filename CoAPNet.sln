@@ -12,6 +12,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Tests", "CoAPNet.Te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5DEE3DA1-A0CD-4291-964E-4CE25FCDA74F}"
 	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
