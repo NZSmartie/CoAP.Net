@@ -16,12 +16,11 @@
 
 using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using CoAPNet.Options;
 using Moq;
 using NUnit.Framework;
 
+using CoAPNet.Tests.Mocks;
 using CoAPNet.Utils;
 
 namespace CoAPNet.Tests
@@ -273,17 +272,5 @@ namespace CoAPNet.Tests
             // Assert
             Mock.Verify(_endpoint);
         }
-    }
-
-    public class MockConnectionInformation : ICoapConnectionInformation
-    {
-        public MockConnectionInformation(ICoapEndpoint endPoint)
-        {
-            LocalEndpoint = endPoint;
-        }
-
-        public ICoapEndpoint LocalEndpoint { get; }
-
-        public ICoapEndpoint RemoteEndpoint => new Mock<ICoapEndpoint>().Object;
     }
 }

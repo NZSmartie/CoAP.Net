@@ -15,89 +15,32 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using CoAPNet.Options;
 using CoAPNet.Utils;
 
 namespace CoAPNet
 {
-    /// <summary>
-    /// Generates a /.well-known/core resource based on <see cref="CoapResourceHandler.Resources"/>
-    /// </summary>
-    public class CoapResourceCoreListing : CoapResource
-    {
-        private readonly CoapResourceHandler _resourceHandler;
-
-        public CoapResourceCoreListing(Uri uri, CoapResourceHandler resourceHandler) 
-            : base(new UriBuilder(uri) { Path = "/.well-known/core" }.Uri)
-        {
-            _resourceHandler = resourceHandler;
-            Metadata.SuggestedContentTypes.Add(ContentFormatType.ApplicationLinkFormat);
-        }
-
-        public override CoapMessage Get(CoapMessage request)
-        {
-            // TODO: Allow resources to opt out?
-            // TODO: filter result based on get paremeters
-            return new CoapMessage
-            {
-                Code = CoapMessageCode.Content,
-                Options = {new ContentFormat(ContentFormatType.ApplicationLinkFormat)},
-                Payload = Encoding.UTF8.GetBytes(
-                    CoreLinkFormat.ToCoreLinkFormat(_resourceHandler.Resources.Select(r => r.Metadata)))
-            };
-        }
-    }
-
-    public class CoapResourceHandler : CoapHandler
-    {
-        public readonly IList<CoapResource> Resources = new List<CoapResource>();
-
-        public override CoapResource GetResource(Uri requesstUri)
-        {
-            return Resources.FirstOrDefault(r =>
-                Uri.Compare(
-                    new Uri(BaseUri, r.Metadata.UriReference),
-                    requesstUri,
-                    UriComponents.Path,
-                    UriFormat.SafeUnescaped,
-                    UriPathComparison) == 0);
-        }
-
-        public override Uri BaseUri { get; }
-
-        public CoapResourceHandler()
-            : this(new Uri("coap://localhost/"))
-        { }
-
-        public CoapResourceHandler(Uri baseUri)
-        {
-            BaseUri = baseUri;
-            Resources.Add(new CoapResourceCoreListing(baseUri, this));
-        }
-    }
-
     public class CoapHandler : ICoapHandler
     {
-        public virtual CoapResource GetResource(Uri requesstUri)
-        {
-            throw new NotImplementedException();
-        }
-
-        public StringComparison UriPathComparison { get; set; } = StringComparison.Ordinal;
-
-        public virtual Uri BaseUri { get; } = new Uri("coap://localhost/");
+        public Uri BaseUri { get; }
 
         private int _messageId;
 
         public CoapHandler()
+            : this(new Uri("coap://localhost/"))
+        { }
+
+        public CoapHandler(Uri baseUri)
         {
+            BaseUri = baseUri;
             _messageId = new Random().Next() & 0xFFFF;
+        }
+
+        protected virtual CoapMessage HandleRequest(CoapMessage message)
+        {
+            return CoapMessageUtility.CreateMessage(CoapMessageCode.NotFound, $"Resouce {message.GetUri()} was not found");
         }
 
         private int GetNextMessageId()
@@ -121,32 +64,9 @@ namespace CoAPNet
                     throw new NotImplementedException("TODO: Send CoapMessageCode.Reset or ignore them");
                 }
 
-                var resource = GetResource(new Uri(BaseUri, message.GetUri()));
+                result = HandleRequest(message);
 
-                if (resource == null)
-                {
-                    result = CoapMessageUtility.CreateMessage(CoapMessageCode.NotFound,
-                        $"Resouce {message.GetUri()} was not found");
-                }
-                else
-                {
-                    // ReSharper disable once SwitchStatementMissingSomeCases
-                    switch (message.Code)
-                    {
-                        case CoapMessageCode.Get:
-                            result = resource.Get(message);
-                            break;
-                        case CoapMessageCode.Post:
-                            result = resource.Post(message);
-                            break;
-                        case CoapMessageCode.Put:
-                            result = resource.Put(message);
-                            break;
-                        case CoapMessageCode.Delete:
-                            result = resource.Delete(message);
-                            break;
-                    }
-                }
+                
             }
             catch (Exception ex)
             {
