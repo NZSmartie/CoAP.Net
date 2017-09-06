@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using CoAPNet.Options;
 using CoAPNet.Utils;
 
@@ -67,7 +68,7 @@ namespace CoAPNet
             Resources.Add(new CoapResourceCoreListing(baseUri, this));
         }
 
-        protected override CoapMessage HandleRequest(CoapMessage message)
+        protected override async Task<CoapMessage> HandleRequestAsync(ICoapConnectionInformation connectionInformation, CoapMessage message)
         {
             var resource = Resources.FirstOrDefault(r =>
                 Uri.Compare(
@@ -85,13 +86,13 @@ namespace CoAPNet
             switch (message.Code)
             {
                 case CoapMessageCode.Get:
-                    return resource.Get(message);
+                    return await resource.GetAsync(message);
                 case CoapMessageCode.Post:
-                    return resource.Post(message);
+                    return await resource.PostAsync(message);
                 case CoapMessageCode.Put:
-                    return resource.Put(message);
+                    return await resource.PutAsync(message);
                 case CoapMessageCode.Delete:
-                    return resource.Delete(message);
+                    return await resource.DeleteAsync(message);
             }
             throw new InvalidOperationException();
         }

@@ -54,7 +54,7 @@ namespace CoAPNet.Tests
                 .Returns(Task.FromResult(0))
                 .Verifiable();
 
-            var mockResource = new Mock<CoapResource>("/test");
+            var mockResource = new Mock<CoapResource>("/test") { CallBase = true };
             mockResource.Setup(r => r.Get(It.IsAny<CoapMessage>())).Returns(new CoapMessage());
 
             var request = new CoapMessage { Code = CoapMessageCode.Get };
@@ -75,7 +75,7 @@ namespace CoAPNet.Tests
         public void TestGetRequest()
         {
             // Arrange
-            var mockResource = new Mock<CoapResource>("/test");
+            var mockResource = new Mock<CoapResource>("/test") { CallBase = true };
             mockResource
                 .Setup(r => r.Get(It.IsAny<CoapMessage>()))
                 .Returns(new CoapMessage())
@@ -98,7 +98,7 @@ namespace CoAPNet.Tests
         public void TestPostRequest()
         {
             // Arrange
-            var mockResource = new Mock<CoapResource>("/test");
+            var mockResource = new Mock<CoapResource>("/test") { CallBase = true };
             mockResource
                 .Setup(r => r.Post(It.IsAny<CoapMessage>()))
                 .Returns(new CoapMessage())
@@ -121,7 +121,7 @@ namespace CoAPNet.Tests
         public void TestPutRequest()
         {
             // Arrange
-            var mockResource = new Mock<CoapResource>("/test");
+            var mockResource = new Mock<CoapResource>("/test") { CallBase = true };
             mockResource
                 .Setup(r => r.Put(It.IsAny<CoapMessage>()))
                 .Returns(new CoapMessage())
@@ -144,7 +144,7 @@ namespace CoAPNet.Tests
         public void TestDeleteRequest()
         {
             // Arrange
-            var mockResource = new Mock<CoapResource>("/test");
+            var mockResource = new Mock<CoapResource>("/test") { CallBase = true };
             mockResource
                 .Setup(r => r.Delete(It.IsAny<CoapMessage>()))
                 .Returns(new CoapMessage())
@@ -174,7 +174,7 @@ namespace CoAPNet.Tests
                 .Returns(Task.FromResult(0))
                 .Verifiable();
 
-            var mockResource = new Mock<CoapResource>("/test");
+            var mockResource = new Mock<CoapResource>("/test") { CallBase = true };
             mockResource
                 .Setup(r => r.Get(It.IsAny<CoapMessage>()))
                 .Throws(new NotImplementedException());
@@ -203,7 +203,7 @@ namespace CoAPNet.Tests
                 .Returns(Task.FromResult(0))
                 .Verifiable();
 
-            var mockResource = new Mock<CoapResource>("/test");
+            var mockResource = new Mock<CoapResource>("/test") { CallBase = true };
             mockResource
                 .Setup(r => r.Get(It.IsAny<CoapMessage>()))
                 .Throws(new NotImplementedException());
@@ -255,7 +255,7 @@ namespace CoAPNet.Tests
                 .Returns(Task.FromResult(0))
                 .Verifiable();
 
-            var mockResource = new Mock<CoapResource>("/test");
+            var mockResource = new Mock<CoapResource>("/test") { CallBase = true };
             mockResource
                 .Setup(r => r.Get(It.IsAny<CoapMessage>()))
                 .Throws(new Exception("Somne generic exception"));

@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CoAPNet
 {
@@ -38,6 +39,9 @@ namespace CoAPNet
             Metadata = metadata;
         }
 
+        public virtual Task<CoapMessage> GetAsync(CoapMessage request) 
+            => Task.FromResult(Get(request));
+
         public virtual CoapMessage Get(CoapMessage request)
         {
             return new CoapMessage
@@ -46,6 +50,9 @@ namespace CoAPNet
                 Token = request.Token
             };
         }
+
+        public virtual Task<CoapMessage> PutAsync(CoapMessage request) 
+            => Task.FromResult(Put(request));
 
         public virtual CoapMessage Put(CoapMessage request)
         {
@@ -56,6 +63,9 @@ namespace CoAPNet
             };
         }
 
+        public virtual Task<CoapMessage> PostAsync(CoapMessage request) 
+            => Task.FromResult(Post(request));
+        
         public virtual CoapMessage Post(CoapMessage request)
         {
             return new CoapMessage
@@ -64,6 +74,9 @@ namespace CoAPNet
                 Token = request.Token
             };
         }
+
+        public virtual Task<CoapMessage> DeleteAsync(CoapMessage request) 
+            => Task.FromResult(Delete(request));
 
         public virtual CoapMessage Delete(CoapMessage request)
         {

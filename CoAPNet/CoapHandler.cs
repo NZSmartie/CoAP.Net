@@ -38,7 +38,10 @@ namespace CoAPNet
             _messageId = new Random().Next() & 0xFFFF;
         }
 
-        protected virtual CoapMessage HandleRequest(CoapMessage message)
+        protected virtual Task<CoapMessage> HandleRequestAsync(ICoapConnectionInformation connectionInformation, CoapMessage message) 
+            => Task.FromResult(HandleRequest(connectionInformation, message));
+
+        protected virtual CoapMessage HandleRequest(ICoapConnectionInformation connectionInformation, CoapMessage message)
         {
             return CoapMessageUtility.CreateMessage(CoapMessageCode.NotFound, $"Resouce {message.GetUri()} was not found");
         }
@@ -64,7 +67,7 @@ namespace CoAPNet
                     throw new NotImplementedException("TODO: Send CoapMessageCode.Reset or ignore them");
                 }
 
-                result = HandleRequest(message);
+                result = await HandleRequestAsync(connection, message);
 
                 
             }
