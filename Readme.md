@@ -10,6 +10,10 @@ Since CoAP is designed for unreliable transport layers. (6LoWPAN, UDP, etc...) i
 
 If you're after a UDP transport example, see [CoAPNet.Udp](CoAPNet.Udp/) ([![NuGet](https://img.shields.io/nuget/v/NZSmartie.CoAPNet.Udp.svg)](https://www.nuget.org/packages/NZSmartie.CoAPNet.Udp/))
 
+## Changelog
+
+All relevant changes are logged in [Changelog.md](Changelog.md)
+
 ## Status
 
  - `CoapClient` - Simple client for communicating over the CoAP protocol

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.10
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet", "CoAPNet\CoAPNet.csproj", "{0D43122B-4D99-41B1-B855-5D780F85464A}"
 EndProject
@@ -12,6 +12,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Tests", "CoAPNet.Te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5DEE3DA1-A0CD-4291-964E-4CE25FCDA74F}"
 	ProjectSection(SolutionItems) = preProject
+		Changelog.md = Changelog.md
 		LICENSE = LICENSE
 		Readme.md = Readme.md
 	EndProjectSection
