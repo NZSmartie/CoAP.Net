@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CoAPNet.Utils;
 
 namespace CoAPNet
 {
@@ -217,14 +218,21 @@ namespace CoAPNet
 
         private static readonly Uri _throwAwayUri = new Uri("coap://localhost/");
 
-        public static string ToCoreLinkFormat(CoapResourceMetadata resource)
+        public static string ToCoreLinkFormat(CoapResourceMetadata resource, Uri baseUri = null)
         {
             var message = new StringBuilder();
             try
             {
-                message.Append(resource.UriReference.IsAbsoluteUri
-                    ? $"<{resource.UriReference.AbsolutePath}>"
-                    : $"<{new Uri(_throwAwayUri, resource.UriReference).AbsolutePath}>");
+                if (baseUri == null)
+                    baseUri = _throwAwayUri;
+
+                var uri = resource.UriReference.IsAbsoluteUri
+                    ? resource.UriReference
+                    : new Uri(baseUri, resource.UriReference);
+
+                message.Append(CoapUri.Compare(uri, baseUri, UriComponents.HostAndPort, UriFormat.SafeUnescaped, StringComparison.OrdinalIgnoreCase) == 0
+                    ? $"<{uri.AbsolutePath}>"
+                    : $"<{uri}>");
 
                 if(resource.InterfaceDescription.Count > 0)
                 message.AppendFormat(";if=\"{0}\"", string.Join(" ", resource.InterfaceDescription));
@@ -248,8 +256,8 @@ namespace CoAPNet
                 if (resource.Rel.Count > 1)
                     message.AppendFormat(";rel=\"{0}\"", string.Join(" ", resource.Rel));
 
-                if ((resource.Anchor ?? string.Empty) != string.Empty)
-                    message.Append($";anchor={resource.Anchor}");
+                if (!string.IsNullOrEmpty(resource.Anchor))
+                    message.Append($";anchor=\"{resource.Anchor}\"");
 
                 if ((resource.HrefLang ?? string.Empty) != string.Empty)
                     message.Append($";hreflang={resource.HrefLang?.ToLower()}");
@@ -317,9 +325,9 @@ namespace CoAPNet
             return message.ToString();
         }
 
-        public static string ToCoreLinkFormat(IEnumerable<CoapResourceMetadata> resources)
+        public static string ToCoreLinkFormat(IEnumerable<CoapResourceMetadata> resources, Uri baseUri = null)
         {
-            return string.Join(",", resources.Select(ToCoreLinkFormat));
+            return string.Join(",", resources.Select(r => ToCoreLinkFormat(r, baseUri)));
         }
     }
 }
