@@ -19,20 +19,23 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace CoAPNet
 {
     public class CoapServer
     {
         private readonly ICoapTransportFactory _transportFactory;
+        private readonly ILogger<CoapServer> _logger;
 
         private readonly ConcurrentBag<ICoapTransport> _transports = new ConcurrentBag<ICoapTransport>();
 
         private Queue<ICoapEndpoint> _bindToQueue = new Queue<ICoapEndpoint>();
 
-        public CoapServer(ICoapTransportFactory transportFactory)
+        public CoapServer(ICoapTransportFactory transportFactory, ILogger<CoapServer> logger = null)
         {
             _transportFactory = transportFactory;
+            _logger = logger;
         }
 
         public Task BindTo(ICoapEndpoint endpoint)
@@ -55,11 +58,14 @@ namespace CoAPNet
             if(Interlocked.CompareExchange(ref _serverState, (int)ServerState.Started, (int)ServerState.None) != (int)ServerState.None)
                 throw new InvalidOperationException($"{nameof(CoapServer)} has already started");
 
+            _logger?.LogDebug(CoapLoggingEvents.ServerStart, "Starting");
+
             var bindToQueue = Interlocked.Exchange(ref _bindToQueue, null);
             while (bindToQueue.Count > 0)
                 await BindToNextendpoint(bindToQueue.Dequeue(), handler);
 
             // TODO: Implement MaxRequests
+            _logger?.LogInformation(CoapLoggingEvents.ServerStart, "Started");
         }
 
         public async Task StopAsync(CancellationToken token)
@@ -67,15 +73,20 @@ namespace CoAPNet
             if(Interlocked.CompareExchange(ref _serverState, (int)ServerState.Stopped, (int)ServerState.Started) != (int)ServerState.Started)
                 throw new InvalidOperationException($"Unable to stop {nameof(CoapServer)} not in started state");
 
+            _logger?.LogDebug(CoapLoggingEvents.ServerStop, "Stopping");
+
             while (_transports.TryTake(out var transport))
             {
                 await transport.StopAsync();
                 await transport.UnbindAsync();
             }
+
+            _logger?.LogInformation(CoapLoggingEvents.ServerStop, "Stopped");
         }
 
         private async Task BindToNextendpoint(ICoapEndpoint endpoint, ICoapHandler handler)
         {
+            _logger?.LogDebug(CoapLoggingEvents.ServerBindTo, "Binding to", endpoint);
             var transport = _transportFactory.Create(endpoint, handler);
 
             await transport.BindAsync();

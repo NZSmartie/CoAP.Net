@@ -19,21 +19,24 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using CoAPNet.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace CoAPNet
 {
     public class CoapHandler : ICoapHandler
     {
+        private readonly ILogger<CoapHandler> _logger;
         public Uri BaseUri { get; }
 
         private int _messageId;
 
-        public CoapHandler()
-            : this(new Uri("coap://localhost/"))
+        public CoapHandler(ILogger<CoapHandler> logger = null)
+            : this(new Uri("coap://localhost/"), logger)
         { }
 
-        public CoapHandler(Uri baseUri)
+        public CoapHandler(Uri baseUri, ILogger<CoapHandler> logger = null)
         {
+            _logger = logger;
             BaseUri = baseUri;
             _messageId = new Random().Next() & 0xFFFF;
         }
@@ -57,6 +60,7 @@ namespace CoAPNet
             var message = new CoapMessage();
             try
             {
+                _logger?.LogDebug(CoapLoggingEvents.HandlerProcessRequest, "Deserialising payload");
                 message.Deserialise(payload);
 
                 //TODO: check if message is multicast, ignore Confirmable requests and delay response
@@ -67,12 +71,15 @@ namespace CoAPNet
                     throw new NotImplementedException("TODO: Send CoapMessageCode.Reset or ignore them");
                 }
 
+                _logger?.LogDebug(CoapLoggingEvents.HandlerProcessRequest, "Handling request");
                 result = await HandleRequestAsync(connection, message);
 
                 
             }
             catch (Exception ex)
             {
+                _logger?.LogError(CoapLoggingEvents.HandlerProcessRequest, ex, "Failed to handle incomming message");
+
                 if (ex is CoapException || ex is NotImplementedException)
                 {
                     result = CoapMessageUtility.FromException(ex);
@@ -99,10 +106,12 @@ namespace CoAPNet
                 else
                 {
                     result.Id = GetNextMessageId();
+                    _logger?.LogDebug(CoapLoggingEvents.HandlerProcessRequest, $"Setting message id to {result.Id}");
                 }
 
                 result.Token = message.Token;
 
+                _logger?.LogDebug(CoapLoggingEvents.HandlerProcessRequest, $"Sending");
                 await connection.LocalEndpoint.SendAsync(
                     new CoapPacket
                     {

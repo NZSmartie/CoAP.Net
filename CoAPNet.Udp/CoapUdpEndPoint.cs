@@ -21,6 +21,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace CoAPNet.Udp
 {
@@ -32,6 +33,7 @@ namespace CoAPNet.Udp
 
     public class CoapUdpEndPoint : ICoapEndpoint
     {
+        private readonly ILogger<CoapUdpEndPoint> _logger;
         private readonly IPEndPoint _endpoint;
         private readonly IPAddress _multicastAddressIPv4 = IPAddress.Parse(Coap.MulticastIPv4);
         private readonly IPAddress[] _multicastAddressIPv6 = Enumerable.Range(1,13).Select(n => IPAddress.Parse(Coap.GetMulticastIPv6ForScope(n))).ToArray();
@@ -50,26 +52,27 @@ namespace CoAPNet.Udp
 
         public bool IsSecure => false;
 
-        public CoapUdpEndPoint(UdpClient udpClient)
-            :this((IPEndPoint)udpClient.Client.LocalEndPoint)
+        public CoapUdpEndPoint(UdpClient udpClient, ILogger<CoapUdpEndPoint> logger = null)
+            :this((IPEndPoint)udpClient.Client.LocalEndPoint, logger)
         {
             Client = udpClient;
         }
 
-        public CoapUdpEndPoint(int port = 0)
-            : this(new IPEndPoint(IPAddress.Any, port))
+        public CoapUdpEndPoint(int port = 0, ILogger<CoapUdpEndPoint> logger = null)
+            : this(new IPEndPoint(IPAddress.Any, port), logger)
         { }
 
-        public CoapUdpEndPoint(IPAddress address, int port = 0)
-            : this(new IPEndPoint(address, port))
+        public CoapUdpEndPoint(IPAddress address, int port = 0, ILogger<CoapUdpEndPoint> logger = null)
+            : this(new IPEndPoint(address, port), logger)
         { }
 
-        public CoapUdpEndPoint(string ipAddress, int port = 0)
-            :this(new IPEndPoint(IPAddress.Parse(ipAddress), port))
+        public CoapUdpEndPoint(string ipAddress, int port = 0, ILogger<CoapUdpEndPoint> logger = null)
+            :this(new IPEndPoint(IPAddress.Parse(ipAddress), port), logger)
         { }
 
-        public CoapUdpEndPoint(IPEndPoint endpoint)
+        public CoapUdpEndPoint(IPEndPoint endpoint, ILogger<CoapUdpEndPoint> logger = null)
         {
+            _logger = logger;
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
             IsMulticast = endpoint.Address.Equals(_multicastAddressIPv4) || _multicastAddressIPv6.Contains(endpoint.Address);
 
@@ -139,7 +142,7 @@ namespace CoAPNet.Udp
             }
             catch (SocketException se)
             {
-                Debug.WriteLine($"Failed to send data. {se.GetType().FullName} (0x{se.HResult:x}): {se.Message}");
+                _logger?.LogInformation($"Failed to send data. {se.GetType().FullName} (0x{se.HResult:x}): {se.Message}", se);
             }
         }
 

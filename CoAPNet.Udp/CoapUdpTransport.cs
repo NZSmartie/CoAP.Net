@@ -17,14 +17,22 @@
 using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace CoAPNet.Udp
 {
     public class CoapUdpTransportFactory : ICoapTransportFactory
     {
+        private readonly ILoggerFactory _loggerFactory;
+
+        public CoapUdpTransportFactory(ILoggerFactory loggerFactory = null)
+        {
+            _loggerFactory = loggerFactory;
+        }
+
         public ICoapTransport Create(ICoapEndpoint endPoint, ICoapHandler handler)
         {
-            return new CoapUdpTransport(endPoint as CoapUdpEndPoint ?? throw new InvalidOperationException(), handler);
+            return new CoapUdpTransport(endPoint as CoapUdpEndPoint ?? throw new InvalidOperationException(), handler, _loggerFactory?.CreateLogger<CoapUdpTransport>());
         }
     }
 
@@ -33,13 +41,15 @@ namespace CoAPNet.Udp
         private CoapUdpEndPoint _endPoint;
 
         private readonly ICoapHandler _coapHandler;
+        private readonly ILogger<CoapUdpTransport> _logger;
 
         private Task _listenTask;
 
-        public CoapUdpTransport(CoapUdpEndPoint endPoint, ICoapHandler coapHandler)
+        public CoapUdpTransport(CoapUdpEndPoint endPoint, ICoapHandler coapHandler, ILogger<CoapUdpTransport> logger = null)
         {
             _endPoint = endPoint;
             _coapHandler = coapHandler;
+            _logger = logger;
         }
 
         public async Task BindAsync()
@@ -49,13 +59,15 @@ namespace CoAPNet.Udp
 
             try
             {
+                _logger?.LogDebug(CoapUdpLoggingEvents.TransportBind, $"Binding to {_endPoint}");
                 await _endPoint.BindAsync().ConfigureAwait(false);
 
+                _logger?.LogDebug(CoapUdpLoggingEvents.TransportBind, "Creating long running task");
                 _listenTask = RunRequestsLoopAsync();
             }
             catch (SocketException e) when (e.SocketErrorCode == SocketError.AddressAlreadyInUse)
             {
-                throw new Exception($"Can not bind to enpoint as address is already in use. {e.Message}", e);
+                throw new Exception($"Can not bind to enpoint as address may already be in use. {e.Message}", e);
             }
         }
 
@@ -74,6 +86,7 @@ namespace CoAPNet.Udp
 
         public Task StopAsync()
         {
+            // TODO: Cancellation token to stop RunRequestsLoopAsync
             return Task.CompletedTask;
         }
 
@@ -84,7 +97,9 @@ namespace CoAPNet.Udp
                 while (true)
                 {
                     var request = await _endPoint.ReceiveAsync();
-                    _ = _coapHandler.ProcessRequestAsync(new CoapConnectionInformation
+                    _logger?.LogDebug(CoapUdpLoggingEvents.TransportRequestsLoop, "Received message");
+
+                    _ = ProcessRequestAsync(new CoapConnectionInformation
                     {
                         LocalEndpoint = _endPoint,
                         RemoteEndpoint = request.Endpoint,
@@ -93,8 +108,23 @@ namespace CoAPNet.Udp
             }
             catch (Exception)
             {
+                _logger?.LogInformation(CoapUdpLoggingEvents.TransportRequestsLoop, "Shutting down");
+
                 if (_endPoint != null)
                     throw;
+                }
+        }
+
+        private async Task ProcessRequestAsync(ICoapConnectionInformation connection, byte[] payload)
+        {
+            try
+            {
+                await _coapHandler.ProcessRequestAsync(connection, payload);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(CoapUdpLoggingEvents.TransportRequestsLoop, ex , "Unexpected exception was thrown");
+                throw;
             }
         }
     }
