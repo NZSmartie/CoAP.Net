@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 using CoAPNet.Options;
 using CoAPNet.Utils;
 
-namespace CoAPNet
+namespace CoAPNet.Server
 {
     /// <summary>
     /// Generates a /.well-known/core resource based on <see cref="CoapResourceHandler.Resources"/>

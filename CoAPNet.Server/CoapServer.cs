@@ -21,7 +21,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace CoAPNet
+namespace CoAPNet.Server
 {
     public class CoapServer
     {

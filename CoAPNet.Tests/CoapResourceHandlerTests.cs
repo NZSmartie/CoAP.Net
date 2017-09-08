@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 
+using CoAPNet.Server;
 using CoAPNet.Tests.Mocks;
 using CoAPNet.Utils;
 

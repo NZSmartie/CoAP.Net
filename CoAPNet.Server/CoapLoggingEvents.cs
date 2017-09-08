@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-
-namespace CoAPNet
+﻿namespace CoAPNet.Server
 {
     public static class CoapLoggingEvents
     {

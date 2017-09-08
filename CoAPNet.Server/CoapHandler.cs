@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 using CoAPNet.Utils;
 using Microsoft.Extensions.Logging;
 
-namespace CoAPNet
+namespace CoAPNet.Server
 {
     public class CoapHandler : ICoapHandler
     {
