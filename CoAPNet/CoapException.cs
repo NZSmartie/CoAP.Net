@@ -22,13 +22,31 @@ namespace CoAPNet
     [ExcludeFromCodeCoverage]
     public class CoapException : Exception
     {
+        public CoapMessageCode ResponseCode { get; }
+
         public CoapException()
-        { }
+        {
+            ResponseCode = CoapMessageCode.InternalServerError;
+        }
 
         public CoapException(string message) : base(message)
-        { }
+        {
+            ResponseCode = CoapMessageCode.InternalServerError;
+        }
+
+        public CoapException(string message, CoapMessageCode responseCode) : base(message)
+        {
+            ResponseCode = responseCode;
+        }
 
         public CoapException(string message, Exception innerException) : base(message, innerException)
-        { }
+        {
+            ResponseCode = CoapMessageCode.InternalServerError;
+        }
+
+        public CoapException(string message, Exception innerException, CoapMessageCode responseCode) : base(message, innerException)
+        {
+            ResponseCode = responseCode;
+        }
     }
 }

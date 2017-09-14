@@ -73,19 +73,19 @@ namespace CoAPNet.Options
         {
             if (nameLookup.TryGetValue(name, out var result))
                 return result;
-            throw new InvalidCastException();
+            throw new CoapOptionException($"Unsupported content format \"{name}\"", CoapMessageCode.BadOption);
         }
 
         public static implicit operator ContentFormatType(int value)
         {
             if (valueLookup.TryGetValue(value, out var result))
                 return result;
-            throw new InvalidCastException();
+            throw new CoapOptionException($"Unsupported content format ({value})", CoapMessageCode.BadOption);
         }
 
         public static implicit operator ContentFormatType(uint value)
         {
-            return (ContentFormatType)((int)value);
+            return ((int)value);
         }
 
         public static implicit operator int(ContentFormatType type)

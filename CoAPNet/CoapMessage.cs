@@ -104,11 +104,16 @@ namespace CoAPNet
 
     [ExcludeFromCodeCoverage]
     public class CoapMessageFormatException : CoapException {
+
         public CoapMessageFormatException() :base() { }
 
         public CoapMessageFormatException(string message) : base(message) { }
 
+        public CoapMessageFormatException(string message, CoapMessageCode responseCode) : base(message, responseCode) { }
+
         public CoapMessageFormatException(string message, Exception innerException) : base(message, innerException) { }
+
+        public CoapMessageFormatException(string message, Exception innerException, CoapMessageCode responseCode, responseCode) : base(message, innerException) { }
     }
 
     public class CoapMessage

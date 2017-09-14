@@ -45,8 +45,8 @@ namespace CoAPNet.Utils
 
             switch (exception)
             {
-                case CoapOptionException _:
-                    result.Code = CoapMessageCode.BadOption;
+                case CoapException coapEx:
+                    result.Code = coapEx.ResponseCode;
                     break;
                 case NotImplementedException _:
                     result.Code = CoapMessageCode.NotImplemented;

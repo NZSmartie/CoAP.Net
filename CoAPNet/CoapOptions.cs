@@ -27,9 +27,9 @@ namespace CoAPNet
     {
         public CoapOptionException() : base() { }
 
-        public CoapOptionException(string message) : base(message) { }
+        public CoapOptionException(string message) : base(message, CoapMessageCode.BadOption) { }
 
-        public CoapOptionException(string message, Exception innerException) : base(message, innerException) { }
+        public CoapOptionException(string message, Exception innerException) : base(message, innerException, CoapMessageCode.BadOption) { }
     }
 
     public enum OptionType
