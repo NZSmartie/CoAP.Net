@@ -1,5 +1,9 @@
  # Change Log for CoAP.Net 
 
+### v0.3.5
+
+ - [`0c1e1cf`](https://github.com/NZSmartie/CoAP.Net/commit/0c1e1cf) Respond appropiately to unsupported content format option
+
 ### v0.3.4
 
  - [`c6111c0`](https://github.com/NZSmartie/CoAP.Net/commit/c6111c0) Split server classes into CoAPNet.Server to maintain zero dependency on CoAPNet

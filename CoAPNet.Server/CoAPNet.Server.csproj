@@ -6,7 +6,7 @@
     <DebugType Condition="$(Configuration)=='AppVeyor'">full</DebugType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>NZSmartie.CoAPNet.Server</PackageId>
-    <Version>0.3.4</Version>
+    <Version>0.3.5</Version>
     <Authors>Roman Vaughan</Authors>
     <Company>NZSmartie</Company>
     <Description>Server and handler implementation for NZSmartie.CoAPNet</Description>
