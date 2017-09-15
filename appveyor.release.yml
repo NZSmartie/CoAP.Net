@@ -1,0 +1,17 @@
+version: '{branch}-{build}'
+skip_non_tags: true
+image: Visual Studio 2017
+configuration: Release
+before_build:
+- cmd: nuget restore
+build:
+  publish_nuget: true
+  publish_nuget_symbols: true
+  verbosity: minimal
+test: off
+deploy:
+- provider: NuGet
+  api_key:
+    secure: fv6CJchPhPH4A2jDBx6rRGSj5u1MlbGxPd6vs5i8DxUEKDwkCQRyLP0igO5PT/W9
+  on:
+    branch: master
