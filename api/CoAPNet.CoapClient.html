@@ -1,0 +1,1056 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class CoapClient
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class CoapClient
+   ">
+    <meta name="generator" content="docfx 2.24.0.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="CoAPNet.CoapClient">
+  
+  
+  <h1 id="CoAPNet_CoapClient" data-uid="CoAPNet.CoapClient" class="text-break">Class CoapClient
+  </h1>
+  <div class="markdown level0 summary"><p>Connecting and interacting with remote CoAP endpoints can be achieved through creating a new instance of <a class="xref" href="CoAPNet.CoapClient.html">CoapClient</a> and <a class="xref" href="CoAPNet.ICoapEndpoint.html">ICoapEndpoint</a>.</p>
+<div class="NOTE"><h5>Note</h5><p>As it&#39;s required to implement <a class="xref" href="CoAPNet.ICoapEndpoint.html">ICoapEndpoint</a>, An application can use <a class="xref" href="CoAPNet.Udp.CoapUdpEndPoint.html">CoapUdpEndPoint</a> as a base example for getting started for your application&#39;s transport needs.</p>
+</div>
+<h3 id="example">Example</h3>
+<p>A new <a class="xref" href="CoAPNet.CoapClient.html">CoapClient</a> is created using a <a class="xref" href="CoAPNet.Udp.CoapUdpEndPoint.html">CoapUdpEndPoint</a> for transport over a UDP interface. Creating a new GET request for <code>/hello</code> to the remote endpoint <code>coap://127.0.0.1</code>. The result is written to the console before finishing.</p>
+<pre><code class="lang-C#">using CoAPNet;
+using CoAPNet.Udp;
+
+// ...
+
+public async Task RequestHello()
+{
+    // Create a new client using a UDP endpoint (defaults to 0.0.0.0 with any available port)
+    var client = new CoapClient(new CoapUdpEndPoint());
+
+    // New requests are assigned a numeric message Id by CoapClient
+    var messageId = await client.GetAsync(&quot;coap://127.0.0.1/hello&quot;);
+
+    // Wait for a response to our specific message Id
+    var response = await client.GetResponseAsync(messageId);
+
+    Console.WriteLine(&quot;got a response&quot;);
+    Console.WriteLine(Encoding.UTF8.GetString(response.Payload));
+}
+</code></pre></div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">CoapClient</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">System.IDisposable</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ToString()</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="CoAPNet.html">CoAPNet</a></h6>
+  <h6><strong>Assembly</strong>: CoAPNet.dll</h6>
+  <h5 id="CoAPNet_CoapClient_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class CoapClient : IDisposable</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient__ctor_CoAPNet_ICoapEndpoint_.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.%23ctor(CoAPNet.ICoapEndpoint)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L76">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient__ctor_" data-uid="CoAPNet.CoapClient.#ctor*"></a>
+  <h4 id="CoAPNet_CoapClient__ctor_CoAPNet_ICoapEndpoint_" data-uid="CoAPNet.CoapClient.#ctor(CoAPNet.ICoapEndpoint)">CoapClient(ICoapEndpoint)</h4>
+  <div class="markdown level1 summary"><p>Initiates a mew client and assigns a random message Id to be used in new CoAP requests.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CoapClient(ICoapEndpoint endpoint)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="CoAPNet.ICoapEndpoint.html">ICoapEndpoint</a></td>
+        <td><span class="parametername">endpoint</span></td>
+        <td><p>The local CoAP endpoint to bind to and perform Send/Receive operations on.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.ArgumentNullException</span></td>
+        <td><p>When <code data-dev-comment-type="paramref" class="paramref">endpoint</code> is <code>null</code></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_Endpoint.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.Endpoint%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L51">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_Endpoint_" data-uid="CoAPNet.CoapClient.Endpoint*"></a>
+  <h4 id="CoAPNet_CoapClient_Endpoint" data-uid="CoAPNet.CoapClient.Endpoint">Endpoint</h4>
+  <div class="markdown level1 summary"><p>The endpoint which this client is bound to, and performs Send/Receive through.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ICoapEndpoint Endpoint { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="CoAPNet.ICoapEndpoint.html">ICoapEndpoint</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_MaxRetransmitAttempts.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.MaxRetransmitAttempts%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L63">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_MaxRetransmitAttempts_" data-uid="CoAPNet.CoapClient.MaxRetransmitAttempts*"></a>
+  <h4 id="CoAPNet_CoapClient_MaxRetransmitAttempts" data-uid="CoAPNet.CoapClient.MaxRetransmitAttempts">MaxRetransmitAttempts</h4>
+  <div class="markdown level1 summary"><p>Maximum number of attempts at performing <a class="xref" href="CoAPNet.ICoapEndpoint.html#CoAPNet_ICoapEndpoint_SendAsync_CoAPNet_CoapPacket_">SendAsync(CoapPacket)</a> before throwing <a class="xref" href="CoAPNet.CoapClientException.html">CoapClientException</a></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int MaxRetransmitAttempts { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="CoAPNet_CoapClient_MaxRetransmitAttempts_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Default value is set to <a class="xref" href="CoAPNet.Coap.html#CoAPNet_Coap_MaxRestransmitAttempts">MaxRestransmitAttempts</a></p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_RetransmitTimeout.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.RetransmitTimeout%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L69">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_RetransmitTimeout_" data-uid="CoAPNet.CoapClient.RetransmitTimeout*"></a>
+  <h4 id="CoAPNet_CoapClient_RetransmitTimeout" data-uid="CoAPNet.CoapClient.RetransmitTimeout">RetransmitTimeout</h4>
+  <div class="markdown level1 summary"><p>Interval to wait after sending a CoAP packet.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TimeSpan RetransmitTimeout { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.TimeSpan</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="CoAPNet_CoapClient_RetransmitTimeout_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Default value is set to <a class="xref" href="CoAPNet.Coap.html#CoAPNet_Coap_RetransmitTimeout">RetransmitTimeout</a></p>
+</div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_DeleteAsync_System_String_CoAPNet_ICoapEndpoint_.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.DeleteAsync(System.String%2CCoAPNet.ICoapEndpoint)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L392">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_DeleteAsync_" data-uid="CoAPNet.CoapClient.DeleteAsync*"></a>
+  <h4 id="CoAPNet_CoapClient_DeleteAsync_System_String_CoAPNet_ICoapEndpoint_" data-uid="CoAPNet.CoapClient.DeleteAsync(System.String,CoAPNet.ICoapEndpoint)">DeleteAsync(String, ICoapEndpoint)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public virtual Task&lt;int&gt; DeleteAsync(string uri, ICoapEndpoint endpoint = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">uri</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="CoAPNet.ICoapEndpoint.html">ICoapEndpoint</a></td>
+        <td><span class="parametername">endpoint</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Int32</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_Dispose.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L212">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_Dispose_" data-uid="CoAPNet.CoapClient.Dispose*"></a>
+  <h4 id="CoAPNet_CoapClient_Dispose" data-uid="CoAPNet.CoapClient.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"><p>Disposed the underlying <a class="xref" href="CoAPNet.CoapClient.html#CoAPNet_CoapClient_Endpoint">Endpoint</a> and waits for any pending operations to finish.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="CoAPNet.CoapClientException.html">CoapClientException</a></td>
+        <td><p>If the internal Receive operation is blocked from exiting.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_GetAsync_System_String_CoAPNet_ICoapEndpoint_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.GetAsync(System.String%2CCoAPNet.ICoapEndpoint%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L370">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_GetAsync_" data-uid="CoAPNet.CoapClient.GetAsync*"></a>
+  <h4 id="CoAPNet_CoapClient_GetAsync_System_String_CoAPNet_ICoapEndpoint_System_Threading_CancellationToken_" data-uid="CoAPNet.CoapClient.GetAsync(System.String,CoAPNet.ICoapEndpoint,System.Threading.CancellationToken)">GetAsync(String, ICoapEndpoint, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public virtual Task&lt;int&gt; GetAsync(string uri, ICoapEndpoint endpoint, CancellationToken token = default (CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">uri</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="CoAPNet.ICoapEndpoint.html">ICoapEndpoint</a></td>
+        <td><span class="parametername">endpoint</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Threading.CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Int32</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_GetAsync_System_String_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.GetAsync(System.String%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L365">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_GetAsync_" data-uid="CoAPNet.CoapClient.GetAsync*"></a>
+  <h4 id="CoAPNet_CoapClient_GetAsync_System_String_System_Threading_CancellationToken_" data-uid="CoAPNet.CoapClient.GetAsync(System.String,System.Threading.CancellationToken)">GetAsync(String, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public virtual Task&lt;int&gt; GetAsync(string uri, CancellationToken token = default (CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">uri</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Threading.CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Int32</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_GetResponseAsync_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.GetResponseAsync(System.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L230">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_GetResponseAsync_" data-uid="CoAPNet.CoapClient.GetResponseAsync*"></a>
+  <h4 id="CoAPNet_CoapClient_GetResponseAsync_System_Int32_System_Threading_CancellationToken_" data-uid="CoAPNet.CoapClient.GetResponseAsync(System.Int32,System.Threading.CancellationToken)">GetResponseAsync(Int32, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Checks if a <a class="xref" href="CoAPNet.CoapReceiveResult.html">CoapReceiveResult</a> has been received with a coresponding <code data-dev-comment-type="paramref" class="paramref">messageId</code> and returns it. Otherwise waits until a new result is received unless cancelled by the <code data-dev-comment-type="paramref" class="paramref">token</code> or the <a class="xref" href="CoAPNet.CoapClient.html#CoAPNet_CoapClient_MaxRetransmitAttempts">MaxRetransmitAttempts</a> is reached.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;CoapMessage&gt; GetResponseAsync(int messageId, CancellationToken token = default (CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">messageId</span></td>
+        <td><p>Waits for a result with a coresponding message Id.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Threading.CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>Token to cancel the blocking Receive operation</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="CoAPNet.CoapMessage.html">CoapMessage</a>&gt;</td>
+        <td><p>Valid result if a result is received, <code>null</code> if canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="CoAPNet.CoapClientException.html">CoapClientException</a></td>
+        <td><p>If the timeout period * maximum retransmission attempts was reached.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_ObserveAsync_System_String_CoAPNet_ICoapEndpoint_.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.ObserveAsync(System.String%2CCoAPNet.ICoapEndpoint)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L397">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_ObserveAsync_" data-uid="CoAPNet.CoapClient.ObserveAsync*"></a>
+  <h4 id="CoAPNet_CoapClient_ObserveAsync_System_String_CoAPNet_ICoapEndpoint_" data-uid="CoAPNet.CoapClient.ObserveAsync(System.String,CoAPNet.ICoapEndpoint)">ObserveAsync(String, ICoapEndpoint)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public virtual Task&lt;int&gt; ObserveAsync(string uri, ICoapEndpoint endpoint = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">uri</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="CoAPNet.ICoapEndpoint.html">ICoapEndpoint</a></td>
+        <td><span class="parametername">endpoint</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Int32</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_PostAsync_System_String_CoAPNet_CoapMessage_CoAPNet_ICoapEndpoint_.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.PostAsync(System.String%2CCoAPNet.CoapMessage%2CCoAPNet.ICoapEndpoint)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L387">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_PostAsync_" data-uid="CoAPNet.CoapClient.PostAsync*"></a>
+  <h4 id="CoAPNet_CoapClient_PostAsync_System_String_CoAPNet_CoapMessage_CoAPNet_ICoapEndpoint_" data-uid="CoAPNet.CoapClient.PostAsync(System.String,CoAPNet.CoapMessage,CoAPNet.ICoapEndpoint)">PostAsync(String, CoapMessage, ICoapEndpoint)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public virtual Task&lt;int&gt; PostAsync(string uri, CoapMessage message, ICoapEndpoint endpoint = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">uri</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="CoAPNet.CoapMessage.html">CoapMessage</a></td>
+        <td><span class="parametername">message</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="CoAPNet.ICoapEndpoint.html">ICoapEndpoint</a></td>
+        <td><span class="parametername">endpoint</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Int32</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_PutAsync_System_String_CoAPNet_CoapMessage_CoAPNet_ICoapEndpoint_.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.PutAsync(System.String%2CCoAPNet.CoapMessage%2CCoAPNet.ICoapEndpoint)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L382">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_PutAsync_" data-uid="CoAPNet.CoapClient.PutAsync*"></a>
+  <h4 id="CoAPNet_CoapClient_PutAsync_System_String_CoAPNet_CoapMessage_CoAPNet_ICoapEndpoint_" data-uid="CoAPNet.CoapClient.PutAsync(System.String,CoAPNet.CoapMessage,CoAPNet.ICoapEndpoint)">PutAsync(String, CoapMessage, ICoapEndpoint)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public virtual Task&lt;int&gt; PutAsync(string uri, CoapMessage message, ICoapEndpoint endpoint = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">uri</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="CoAPNet.CoapMessage.html">CoapMessage</a></td>
+        <td><span class="parametername">message</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="CoAPNet.ICoapEndpoint.html">ICoapEndpoint</a></td>
+        <td><span class="parametername">endpoint</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Int32</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_ReceiveAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.ReceiveAsync(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L93">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_ReceiveAsync_" data-uid="CoAPNet.CoapClient.ReceiveAsync*"></a>
+  <h4 id="CoAPNet_CoapClient_ReceiveAsync_System_Threading_CancellationToken_" data-uid="CoAPNet.CoapClient.ReceiveAsync(System.Threading.CancellationToken)">ReceiveAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Checks if a <a class="xref" href="CoAPNet.CoapReceiveResult.html">CoapReceiveResult</a> has been received and returns it. Otherwise waits until a new result is received unless cancelled by the <code data-dev-comment-type="paramref" class="paramref">token</code></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;CoapReceiveResult&gt; ReceiveAsync(CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>Token to cancel the blocking Receive operation</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="CoAPNet.CoapReceiveResult.html">CoapReceiveResult</a>&gt;</td>
+        <td><p>Valid result if a result is received, <code>null</code> if canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_SendAsync_CoAPNet_CoapMessage_.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.SendAsync(CoAPNet.CoapMessage)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L269">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_SendAsync_" data-uid="CoAPNet.CoapClient.SendAsync*"></a>
+  <h4 id="CoAPNet_CoapClient_SendAsync_CoAPNet_CoapMessage_" data-uid="CoAPNet.CoapClient.SendAsync(CoAPNet.CoapMessage)">SendAsync(CoapMessage)</h4>
+  <div class="markdown level1 summary"><a class="xref" href="CoAPNet.CoapClient.html#CoAPNet_CoapClient_SendAsync_CoAPNet_CoapMessage_CoAPNet_ICoapEndpoint_System_Threading_CancellationToken_">SendAsync(CoapMessage, ICoapEndpoint, CancellationToken)</a>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public virtual Task&lt;int&gt; SendAsync(CoapMessage message)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="CoAPNet.CoapMessage.html">CoapMessage</a></td>
+        <td><span class="parametername">message</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Int32</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_SendAsync_CoAPNet_CoapMessage_CoAPNet_ICoapEndpoint_.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.SendAsync(CoAPNet.CoapMessage%2CCoAPNet.ICoapEndpoint)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L287">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_SendAsync_" data-uid="CoAPNet.CoapClient.SendAsync*"></a>
+  <h4 id="CoAPNet_CoapClient_SendAsync_CoAPNet_CoapMessage_CoAPNet_ICoapEndpoint_" data-uid="CoAPNet.CoapClient.SendAsync(CoAPNet.CoapMessage,CoAPNet.ICoapEndpoint)">SendAsync(CoapMessage, ICoapEndpoint)</h4>
+  <div class="markdown level1 summary"><a class="xref" href="CoAPNet.CoapClient.html#CoAPNet_CoapClient_SendAsync_CoAPNet_CoapMessage_CoAPNet_ICoapEndpoint_System_Threading_CancellationToken_">SendAsync(CoapMessage, ICoapEndpoint, CancellationToken)</a>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public virtual Task&lt;int&gt; SendAsync(CoapMessage message, ICoapEndpoint endpoint)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="CoAPNet.CoapMessage.html">CoapMessage</a></td>
+        <td><span class="parametername">message</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="CoAPNet.ICoapEndpoint.html">ICoapEndpoint</a></td>
+        <td><span class="parametername">endpoint</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Int32</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_SendAsync_CoAPNet_CoapMessage_CoAPNet_ICoapEndpoint_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.SendAsync(CoAPNet.CoapMessage%2CCoAPNet.ICoapEndpoint%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L304">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_SendAsync_" data-uid="CoAPNet.CoapClient.SendAsync*"></a>
+  <h4 id="CoAPNet_CoapClient_SendAsync_CoAPNet_CoapMessage_CoAPNet_ICoapEndpoint_System_Threading_CancellationToken_" data-uid="CoAPNet.CoapClient.SendAsync(CoAPNet.CoapMessage,CoAPNet.ICoapEndpoint,System.Threading.CancellationToken)">SendAsync(CoapMessage, ICoapEndpoint, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Assigns an incremented message id (if none is already set) and performs a blocking Send operation. 
+<p>If the mssage is <a class="xref" href="CoAPNet.CoapMessageType.html#CoAPNet_CoapMessageType_Confirmable">Confirmable</a>, the client will wait for a response with a coresponding message Id for the <a class="xref" href="CoAPNet.CoapClient.html#CoAPNet_CoapClient_RetransmitTimeout">RetransmitTimeout</a>* * <a class="xref" href="CoAPNet.CoapClient.html#CoAPNet_CoapClient_MaxRetransmitAttempts">MaxRetransmitAttempts</a></p></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public virtual Task&lt;int&gt; SendAsync(CoapMessage message, ICoapEndpoint endpoint, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="CoAPNet.CoapMessage.html">CoapMessage</a></td>
+        <td><span class="parametername">message</span></td>
+        <td><p>The CoAP message to send. It&apos;s <a class="xref" href="CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_Id">Id</a> may be set if it is unassigned.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="CoAPNet.ICoapEndpoint.html">ICoapEndpoint</a></td>
+        <td><span class="parametername">endpoint</span></td>
+        <td><p>The remote endpoint to send the message to.
+<p>The endpoint must implement the same underlying transport to succeed.</p></p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Threading.CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>A token used to cancel the blocking Send operation or retransmission attempts.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Int32</span>&gt;</td>
+        <td><p>The message Id</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="CoAPNet.CoapClientException.html">CoapClientException</a></td>
+        <td><p>If the timeout period * maximum retransmission attempts was reached.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_CoapClient_SendAsync_CoAPNet_CoapMessage_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20CoAPNet.CoapClient.SendAsync(CoAPNet.CoapMessage%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L278">View Source</a>
+  </span>
+  <a id="CoAPNet_CoapClient_SendAsync_" data-uid="CoAPNet.CoapClient.SendAsync*"></a>
+  <h4 id="CoAPNet_CoapClient_SendAsync_CoAPNet_CoapMessage_System_Threading_CancellationToken_" data-uid="CoAPNet.CoapClient.SendAsync(CoAPNet.CoapMessage,System.Threading.CancellationToken)">SendAsync(CoapMessage, CancellationToken)</h4>
+  <div class="markdown level1 summary"><a class="xref" href="CoAPNet.CoapClient.html#CoAPNet_CoapClient_SendAsync_CoAPNet_CoapMessage_CoAPNet_ICoapEndpoint_System_Threading_CancellationToken_">SendAsync(CoapMessage, ICoapEndpoint, CancellationToken)</a>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public virtual Task&lt;int&gt; SendAsync(CoapMessage message, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="CoAPNet.CoapMessage.html">CoapMessage</a></td>
+        <td><span class="parametername">message</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Threading.CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Int32</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">System.IDisposable</span>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/docs/apidoc/CoAPNet_CoapClient_summary.md/#L2" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet/CoapClient.cs/#L46" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Copyright © 2015-2017 Microsoft<br>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

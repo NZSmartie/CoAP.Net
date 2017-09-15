@@ -1,0 +1,698 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class CoapUdpEndPoint
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class CoapUdpEndPoint
+   ">
+    <meta name="generator" content="docfx 2.24.0.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="CoAPNet.Udp.CoapUdpEndPoint">
+  
+  
+  <h1 id="CoAPNet_Udp_CoapUdpEndPoint" data-uid="CoAPNet.Udp.CoapUdpEndPoint" class="text-break">Class CoapUdpEndPoint
+  </h1>
+  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">CoapUdpEndPoint</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="CoAPNet.ICoapEndpoint.html">ICoapEndpoint</a></div>
+    <div><span class="xref">System.IDisposable</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="CoAPNet.Udp.html">CoAPNet.Udp</a></h6>
+  <h6><strong>Assembly</strong>: CoAPNet.Udp.dll</h6>
+  <h5 id="CoAPNet_Udp_CoapUdpEndPoint_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class CoapUdpEndPoint : ICoapEndpoint, IDisposable</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint__ctor_System_Int32_Microsoft_Extensions_Logging_ILogger_CoAPNet_Udp_CoapUdpEndPoint__.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.%23ctor(System.Int32%2CMicrosoft.Extensions.Logging.ILogger%7BCoAPNet.Udp.CoapUdpEndPoint%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L61">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint__ctor_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.#ctor*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint__ctor_System_Int32_Microsoft_Extensions_Logging_ILogger_CoAPNet_Udp_CoapUdpEndPoint__" data-uid="CoAPNet.Udp.CoapUdpEndPoint.#ctor(System.Int32,Microsoft.Extensions.Logging.ILogger{CoAPNet.Udp.CoapUdpEndPoint})">CoapUdpEndPoint(Int32, ILogger&lt;CoapUdpEndPoint&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CoapUdpEndPoint(int port = 0, ILogger&lt;CoapUdpEndPoint&gt; logger = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">port</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Microsoft.Extensions.Logging.ILogger</span>&lt;<a class="xref" href="CoAPNet.Udp.CoapUdpEndPoint.html">CoapUdpEndPoint</a>&gt;</td>
+        <td><span class="parametername">logger</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint__ctor_System_Net_IPAddress_System_Int32_Microsoft_Extensions_Logging_ILogger_CoAPNet_Udp_CoapUdpEndPoint__.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.%23ctor(System.Net.IPAddress%2CSystem.Int32%2CMicrosoft.Extensions.Logging.ILogger%7BCoAPNet.Udp.CoapUdpEndPoint%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L65">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint__ctor_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.#ctor*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint__ctor_System_Net_IPAddress_System_Int32_Microsoft_Extensions_Logging_ILogger_CoAPNet_Udp_CoapUdpEndPoint__" data-uid="CoAPNet.Udp.CoapUdpEndPoint.#ctor(System.Net.IPAddress,System.Int32,Microsoft.Extensions.Logging.ILogger{CoAPNet.Udp.CoapUdpEndPoint})">CoapUdpEndPoint(IPAddress, Int32, ILogger&lt;CoapUdpEndPoint&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CoapUdpEndPoint(IPAddress address, int port = 0, ILogger&lt;CoapUdpEndPoint&gt; logger = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Net.IPAddress</span></td>
+        <td><span class="parametername">address</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">port</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Microsoft.Extensions.Logging.ILogger</span>&lt;<a class="xref" href="CoAPNet.Udp.CoapUdpEndPoint.html">CoapUdpEndPoint</a>&gt;</td>
+        <td><span class="parametername">logger</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint__ctor_System_Net_IPEndPoint_Microsoft_Extensions_Logging_ILogger_CoAPNet_Udp_CoapUdpEndPoint__.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.%23ctor(System.Net.IPEndPoint%2CMicrosoft.Extensions.Logging.ILogger%7BCoAPNet.Udp.CoapUdpEndPoint%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L73">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint__ctor_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.#ctor*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint__ctor_System_Net_IPEndPoint_Microsoft_Extensions_Logging_ILogger_CoAPNet_Udp_CoapUdpEndPoint__" data-uid="CoAPNet.Udp.CoapUdpEndPoint.#ctor(System.Net.IPEndPoint,Microsoft.Extensions.Logging.ILogger{CoAPNet.Udp.CoapUdpEndPoint})">CoapUdpEndPoint(IPEndPoint, ILogger&lt;CoapUdpEndPoint&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CoapUdpEndPoint(IPEndPoint endpoint, ILogger&lt;CoapUdpEndPoint&gt; logger = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Net.IPEndPoint</span></td>
+        <td><span class="parametername">endpoint</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Microsoft.Extensions.Logging.ILogger</span>&lt;<a class="xref" href="CoAPNet.Udp.CoapUdpEndPoint.html">CoapUdpEndPoint</a>&gt;</td>
+        <td><span class="parametername">logger</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint__ctor_System_Net_Sockets_UdpClient_Microsoft_Extensions_Logging_ILogger_CoAPNet_Udp_CoapUdpEndPoint__.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.%23ctor(System.Net.Sockets.UdpClient%2CMicrosoft.Extensions.Logging.ILogger%7BCoAPNet.Udp.CoapUdpEndPoint%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L55">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint__ctor_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.#ctor*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint__ctor_System_Net_Sockets_UdpClient_Microsoft_Extensions_Logging_ILogger_CoAPNet_Udp_CoapUdpEndPoint__" data-uid="CoAPNet.Udp.CoapUdpEndPoint.#ctor(System.Net.Sockets.UdpClient,Microsoft.Extensions.Logging.ILogger{CoAPNet.Udp.CoapUdpEndPoint})">CoapUdpEndPoint(UdpClient, ILogger&lt;CoapUdpEndPoint&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CoapUdpEndPoint(UdpClient udpClient, ILogger&lt;CoapUdpEndPoint&gt; logger = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Net.Sockets.UdpClient</span></td>
+        <td><span class="parametername">udpClient</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Microsoft.Extensions.Logging.ILogger</span>&lt;<a class="xref" href="CoAPNet.Udp.CoapUdpEndPoint.html">CoapUdpEndPoint</a>&gt;</td>
+        <td><span class="parametername">logger</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint__ctor_System_String_System_Int32_Microsoft_Extensions_Logging_ILogger_CoAPNet_Udp_CoapUdpEndPoint__.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.%23ctor(System.String%2CSystem.Int32%2CMicrosoft.Extensions.Logging.ILogger%7BCoAPNet.Udp.CoapUdpEndPoint%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L69">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint__ctor_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.#ctor*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint__ctor_System_String_System_Int32_Microsoft_Extensions_Logging_ILogger_CoAPNet_Udp_CoapUdpEndPoint__" data-uid="CoAPNet.Udp.CoapUdpEndPoint.#ctor(System.String,System.Int32,Microsoft.Extensions.Logging.ILogger{CoAPNet.Udp.CoapUdpEndPoint})">CoapUdpEndPoint(String, Int32, ILogger&lt;CoapUdpEndPoint&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CoapUdpEndPoint(string ipAddress, int port = 0, ILogger&lt;CoapUdpEndPoint&gt; logger = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">ipAddress</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">port</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">Microsoft.Extensions.Logging.ILogger</span>&lt;<a class="xref" href="CoAPNet.Udp.CoapUdpEndPoint.html">CoapUdpEndPoint</a>&gt;</td>
+        <td><span class="parametername">logger</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint_BaseUri.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.BaseUri%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L47">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint_BaseUri_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.BaseUri*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint_BaseUri" data-uid="CoAPNet.Udp.CoapUdpEndPoint.BaseUri">BaseUri</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Uri BaseUri { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Uri</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint_CanReceive.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.CanReceive%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L49">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint_CanReceive_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.CanReceive*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint_CanReceive" data-uid="CoAPNet.Udp.CoapUdpEndPoint.CanReceive">CanReceive</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool CanReceive { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint_Client.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.Client%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L43">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint_Client_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.Client*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint_Client" data-uid="CoAPNet.Udp.CoapUdpEndPoint.Client">Client</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public UdpClient Client { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Net.Sockets.UdpClient</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint_Endpoint.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.Endpoint%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L41">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint_Endpoint_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.Endpoint*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint_Endpoint" data-uid="CoAPNet.Udp.CoapUdpEndPoint.Endpoint">Endpoint</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IPEndPoint Endpoint { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Net.IPEndPoint</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint_IsMulticast.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.IsMulticast%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L51">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint_IsMulticast_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.IsMulticast*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint_IsMulticast" data-uid="CoAPNet.Udp.CoapUdpEndPoint.IsMulticast">IsMulticast</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsMulticast { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint_IsSecure.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.IsSecure%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L53">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint_IsSecure_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.IsSecure*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint_IsSecure" data-uid="CoAPNet.Udp.CoapUdpEndPoint.IsSecure">IsSecure</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsSecure { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint_BindAsync.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.BindAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L87">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint_BindAsync_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.BindAsync*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint_BindAsync" data-uid="CoAPNet.Udp.CoapUdpEndPoint.BindAsync">BindAsync()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task BindAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint_Dispose.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L98">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint_Dispose_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.Dispose*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint_Dispose" data-uid="CoAPNet.Udp.CoapUdpEndPoint.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint_ReceiveAsync.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.ReceiveAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L103">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint_ReceiveAsync_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.ReceiveAsync*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint_ReceiveAsync" data-uid="CoAPNet.Udp.CoapUdpEndPoint.ReceiveAsync">ReceiveAsync()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;CoapPacket&gt; ReceiveAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="CoAPNet.CoapPacket.html">CoapPacket</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint_SendAsync_CoAPNet_CoapPacket_.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.SendAsync(CoAPNet.CoapPacket)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L116">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint_SendAsync_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.SendAsync*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint_SendAsync_CoAPNet_CoapPacket_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.SendAsync(CoAPNet.CoapPacket)">SendAsync(CoapPacket)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task SendAsync(CoapPacket packet)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="CoAPNet.CoapPacket.html">CoapPacket</a></td>
+        <td><span class="parametername">packet</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint_ToString.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L149">View Source</a>
+  </span>
+  <a id="CoAPNet_Udp_CoapUdpEndPoint_ToString_" data-uid="CoAPNet.Udp.CoapUdpEndPoint.ToString*"></a>
+  <h4 id="CoAPNet_Udp_CoapUdpEndPoint_ToString" data-uid="CoAPNet.Udp.CoapUdpEndPoint.ToString">ToString()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.Object.ToString()</span></div>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="CoAPNet.ICoapEndpoint.html">ICoapEndpoint</a>
+  </div>
+  <div>
+      <span class="xref">System.IDisposable</span>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/NZSmartie/CoAP.Net/new/master/apiSpec/new?filename=CoAPNet_Udp_CoapUdpEndPoint.md&amp;value=---%0Auid%3A%20CoAPNet.Udp.CoapUdpEndPoint%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/src/CoAPNet.Udp/CoapUdpEndPoint.cs/#L34" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Copyright © 2015-2017 Microsoft<br>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

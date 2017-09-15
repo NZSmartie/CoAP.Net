@@ -1,0 +1,870 @@
+{
+  "homepages": [],
+  "source_base_path": "C:/Users/nzsma/Documents/Visual Studio 2017/Projects/CoAP.Net/docs",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Coap.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Coap.html",
+          "hash": "mbEhhZgfin2kuTgJr0sL1Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapClient.html",
+          "hash": "v9A8bF9flDphQYIohYnMVg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapClientException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapClientException.html",
+          "hash": "Al4rwrQtbPv5HntNIAne7Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapEndpoint.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapEndpoint.html",
+          "hash": "Wjvbn1ZwyeO+WZrt0afXiw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapEndpointException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapEndpointException.html",
+          "hash": "skPEY/zPHTBfg7oS0Wb8yA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapException.html",
+          "hash": "zGkemruRSBgBL6MGLKXzCw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapMessage.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapMessage.html",
+          "hash": "//stlNk9VIvH2sNEQImVlw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapMessageCode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapMessageCode.html",
+          "hash": "c/PuRE8dJbYUEyX8Nd1qdg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapMessageCodeClass.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapMessageCodeClass.html",
+          "hash": "zGar+nX9ae+wMfeVOaEj0Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapMessageFormatException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapMessageFormatException.html",
+          "hash": "8dOcUGAlyQQwdmn5Al/VWw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapMessageType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapMessageType.html",
+          "hash": "QQ5f/Qer6XLI/v3j0Y72Vg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapOption.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapOption.html",
+          "hash": "mn+yYUyCifkANzg3h5inRA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapOptionException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapOptionException.html",
+          "hash": "f6/ImvpH49UuLl5UH1Ea+w=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapOptionExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapOptionExtensions.html",
+          "hash": "Z1/jmjAX617wBu5XXcIzJw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapPacket.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapPacket.html",
+          "hash": "qkAT3uQmrywQiY20Nfgc5A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapReceiveResult.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapReceiveResult.html",
+          "hash": "WSUxG9c6e23oCkgrY38e6w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapRegisteredOptionNumber.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapRegisteredOptionNumber.html",
+          "hash": "4GSocSB7KBD4Jd/B5Fm2WQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapResource.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapResource.html",
+          "hash": "mKGkrx4hVDk9+Zo8wCMGSQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoapResourceMetadata.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoapResourceMetadata.html",
+          "hash": "k3JRY5ysOh6s6kCyeTJazg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.CoreLinkFormat.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.CoreLinkFormat.html",
+          "hash": "JHqthnCjNu8u3EMB+y1qYg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.ICoapConnectionInformation.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.ICoapConnectionInformation.html",
+          "hash": "9ASeqLYvgHRnWruvGSkTxA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.ICoapEndpoint.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.ICoapEndpoint.html",
+          "hash": "dJf261+bpAk+rHh1+sBThQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.ICoapHandler.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.ICoapHandler.html",
+          "hash": "vX8kV6XOK1Duu4gxqTA/6A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.ICoapTransport.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.ICoapTransport.html",
+          "hash": "bAuKOqzC6SC7IgG8ojte2g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.ICoapTransportFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.ICoapTransportFactory.html",
+          "hash": "GBADp+6/pe2hO6mihU9gfQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.MessageExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.MessageExtensions.html",
+          "hash": "lZnVfe8FBjG9DTUwivTM6w=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.OptionType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.OptionType.html",
+          "hash": "Dll2/oEUhKDZG+/UiSWgBw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.Accept.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.Accept.html",
+          "hash": "tPjcBgcBPG0DBX35E7/T7Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.ContentFormat.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.ContentFormat.html",
+          "hash": "YxQC0pSySPNYK1e6SDWl9g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.ContentFormatType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.ContentFormatType.html",
+          "hash": "Qzh7YpM8pab+IHWLHttEfg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.ETag.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.ETag.html",
+          "hash": "aymgo36PFK6sCiwDWmGURw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.Factory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.Factory.html",
+          "hash": "2ZKqIguA8/C50UZydQroXg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.IfMatch.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.IfMatch.html",
+          "hash": "bk4tyFDnP8duUT+1yq685g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.IfNoneMatch.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.IfNoneMatch.html",
+          "hash": "k1bJ3jg+kxQDLGP823lhRg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.LocationPath.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.LocationPath.html",
+          "hash": "UMKUOGY3XDfVW29rDmqhGA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.LocationQuery.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.LocationQuery.html",
+          "hash": "pAjCXGtG5aGF3zFMGvqBcg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.MaxAge.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.MaxAge.html",
+          "hash": "LTREg/VOLsTYVulaJ2BFTQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.ProxyScheme.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.ProxyScheme.html",
+          "hash": "RTyG2wVs39pDkUxulbEigg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.ProxyUri.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.ProxyUri.html",
+          "hash": "m0Icb8sbAG+pImBS32dZkw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.Size1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.Size1.html",
+          "hash": "IOMz3bod79rZWBHXeD2CSg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.UriHost.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.UriHost.html",
+          "hash": "cu/yzrSwFuUYXJsrJxspLQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.UriPath.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.UriPath.html",
+          "hash": "RFA9yI6O2uEMvt4EqTIZGg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.UriPort.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.UriPort.html",
+          "hash": "DiyBBhNR0TOALCpdDY81Sg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.UriQuery.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.UriQuery.html",
+          "hash": "F8CCuwu2LN0Mvk05cgZDWg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Options.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Options.html",
+          "hash": "LVspbsoWNeLkaQ9N4PQqiw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Server.CoapHandler.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Server.CoapHandler.html",
+          "hash": "ggOkFzPFoNv0r+odlvfjLA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Server.CoapLoggingEvents.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Server.CoapLoggingEvents.html",
+          "hash": "2ghmwLmVOSDurJ8Mf+MbxA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Server.CoapResourceCoreListing.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Server.CoapResourceCoreListing.html",
+          "hash": "cxZR1cFgvEXly3bqUm60sw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Server.CoapResourceHandler.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Server.CoapResourceHandler.html",
+          "hash": "noBbHuEvF3xY3EjpqIOUCQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Server.CoapServer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Server.CoapServer.html",
+          "hash": "xumYX2gwV3L94Ve/7l1RQg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Server.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Server.html",
+          "hash": "REjvXsy8pblwF+Az5p7LVA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Udp.CoapConnectionInformation.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Udp.CoapConnectionInformation.html",
+          "hash": "4ODmraEo4HKjUJA9eAmXLg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Udp.CoapUdpEndPoint.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Udp.CoapUdpEndPoint.html",
+          "hash": "9XqiyzkUt2HMTTsmqOOh/w=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Udp.CoapUdpLoggingEvents.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Udp.CoapUdpLoggingEvents.html",
+          "hash": "uHjSehn9xlEr2rANVeCSpQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Udp.CoapUdpTransport.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Udp.CoapUdpTransport.html",
+          "hash": "T+zsvJA7fWVTIpn8UeozPA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Udp.CoapUdpTransportFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Udp.CoapUdpTransportFactory.html",
+          "hash": "g/1Nczp7VfH0wg7iYoO3hA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Udp.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Udp.html",
+          "hash": "J/45NHbNqLsIjxJCBxW3Dw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Utils.AsyncAutoResetEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Utils.AsyncAutoResetEvent.html",
+          "hash": "/KkVNrlT9LUJ1Mzj9NM44Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Utils.CoapMessageUtility.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Utils.CoapMessageUtility.html",
+          "hash": "xamVhrsffbnDacpai+Ca+A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Utils.CoapUri.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Utils.CoapUri.html",
+          "hash": "Ryizqhgi7y4gdBt712iDrw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Utils.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Utils.html",
+          "hash": "pc9sReIHfuSLcKoU5j75Wg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.html",
+          "hash": "0X0ygQ3GPcRT139cg1libg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/index.html",
+          "hash": "fHIh/MX9USt2ucM6TxHkDQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html",
+          "hash": "hGcM4z7LA7cq/4QSK6iI3g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/intro.html",
+          "hash": "TjRr1A5ljU0fE21F6KRg2Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "articles/toc.html",
+          "hash": "0yzuuVy+60kUBBdZdYKonA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "ao1ely67HNXEz9khIBAnfA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html",
+          "hash": "pUROgNiBe9RHc6NK05+dMw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": true,
+        "incrementalPhase": "build"
+      },
+      "processors": {
+        "RestApiDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor RestApiDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build"
+        },
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build"
+        },
+        "ResourceDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor ResourceDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build"
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build"
+        },
+        "ConceptualDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build"
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": true,
+        "details": "Can support incremental post processing.",
+        "incrementalPhase": "postProcessing"
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}
