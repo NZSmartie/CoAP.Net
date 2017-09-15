@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet", "CoAPNet\CoAPNet.csproj", "{0D43122B-4D99-41B1-B855-5D780F85464A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet", "src/CoAPNet\CoAPNet.csproj", "{0D43122B-4D99-41B1-B855-5D780F85464A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Tests", "CoAPNet.Tests\CoAPNet.Tests.csproj", "{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Tests", "tests/CoAPNet.Tests\CoAPNet.Tests.csproj", "{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0D43122B-4D99-41B1-B855-5D780F85464A} = {0D43122B-4D99-41B1-B855-5D780F85464A}
 	EndProjectSection
@@ -17,9 +17,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Udp", "CoAPNet.Udp\CoAPNet.Udp.csproj", "{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Udp", "src/CoAPNet.Udp\CoAPNet.Udp.csproj", "{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Server", "CoAPNet.Server\CoAPNet.Server.csproj", "{0484D42B-8BC9-42E4-9C70-DB505779F1E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Server", "src/CoAPNet.Server\CoAPNet.Server.csproj", "{0484D42B-8BC9-42E4-9C70-DB505779F1E0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{52B2CE1E-A7E7-4680-A8A5-77D57FC85BAC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{27BE0661-DCC9-431F-B162-F0C557216818}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,6 +113,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0D43122B-4D99-41B1-B855-5D780F85464A} = {52B2CE1E-A7E7-4680-A8A5-77D57FC85BAC}
+		{F0CD0A8A-9772-4482-9526-D2EEE29E37D1} = {27BE0661-DCC9-431F-B162-F0C557216818}
+		{5A4DEFAA-29CB-432F-83BF-5970304DCD6C} = {52B2CE1E-A7E7-4680-A8A5-77D57FC85BAC}
+		{0484D42B-8BC9-42E4-9C70-DB505779F1E0} = {52B2CE1E-A7E7-4680-A8A5-77D57FC85BAC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B787D906-3CA5-478D-BCE3-E8B7556B55B8}
