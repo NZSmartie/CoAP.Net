@@ -1,6 +1,6 @@
 {
   "homepages": [],
-  "source_base_path": "C:/Users/nzsma/Documents/Visual Studio 2017/Projects/CoAP.Net/docs",
+  "source_base_path": "C:/projects/coap-net-iu0to/docs",
   "xrefmap": "xrefmap.yml",
   "files": [
     {
@@ -9,7 +9,7 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Coap.html",
-          "hash": "mbEhhZgfin2kuTgJr0sL1Q=="
+          "hash": "vfjeNHVyuiUfYWOuBG4kbg=="
         }
       },
       "is_incremental": false,
@@ -21,7 +21,7 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapClient.html",
-          "hash": "v9A8bF9flDphQYIohYnMVg=="
+          "hash": "Vn80OXa4Y6LzarTxhzpnDQ=="
         }
       },
       "is_incremental": false,
@@ -33,7 +33,7 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapClientException.html",
-          "hash": "Al4rwrQtbPv5HntNIAne7Q=="
+          "hash": "0zkp3WmaugKhuTAxLFgY1w=="
         }
       },
       "is_incremental": false,
@@ -45,10 +45,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapEndpoint.html",
-          "hash": "Wjvbn1ZwyeO+WZrt0afXiw=="
+          "hash": "KLrMJo7zqhK42m3tezY3Sw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -57,10 +57,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapEndpointException.html",
-          "hash": "skPEY/zPHTBfg7oS0Wb8yA=="
+          "hash": "pPyzLNvl7SFzmrK0wB8DIg=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -69,10 +69,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapException.html",
-          "hash": "zGkemruRSBgBL6MGLKXzCw=="
+          "hash": "5Xw6tvVx9zPH6QKgIYlhMQ=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -81,10 +81,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapMessage.html",
-          "hash": "//stlNk9VIvH2sNEQImVlw=="
+          "hash": "aC9ah7VoeGjt06jfFS3bxg=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -93,10 +93,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapMessageCode.html",
-          "hash": "c/PuRE8dJbYUEyX8Nd1qdg=="
+          "hash": "We9kuh7j3gU+D9bPTYCYvg=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -105,10 +105,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapMessageCodeClass.html",
-          "hash": "zGar+nX9ae+wMfeVOaEj0Q=="
+          "hash": "SCDd9bhAUTK/XCOIN21pdQ=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -117,10 +117,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapMessageFormatException.html",
-          "hash": "8dOcUGAlyQQwdmn5Al/VWw=="
+          "hash": "h3GsggHuouoFeaqi9Ih60w=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -129,10 +129,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapMessageType.html",
-          "hash": "QQ5f/Qer6XLI/v3j0Y72Vg=="
+          "hash": "IeWIIc4V2yYbGBeoJ1/4Pg=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -141,10 +141,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapOption.html",
-          "hash": "mn+yYUyCifkANzg3h5inRA=="
+          "hash": "LlVLZAWKDA7gMO+PNQq0Ew=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -153,10 +153,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapOptionException.html",
-          "hash": "f6/ImvpH49UuLl5UH1Ea+w=="
+          "hash": "77I9lLlfae8neAaT3+SiQw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -165,10 +165,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapOptionExtensions.html",
-          "hash": "Z1/jmjAX617wBu5XXcIzJw=="
+          "hash": "yKKMxP5w3EulL3vmyo6rGQ=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -177,10 +177,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapPacket.html",
-          "hash": "qkAT3uQmrywQiY20Nfgc5A=="
+          "hash": "sdPzio0Jk+blJ4YYA0KdVw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -189,7 +189,7 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapReceiveResult.html",
-          "hash": "WSUxG9c6e23oCkgrY38e6w=="
+          "hash": "hGdtexEKxpemVr9scNocYA=="
         }
       },
       "is_incremental": false,
@@ -201,10 +201,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapRegisteredOptionNumber.html",
-          "hash": "4GSocSB7KBD4Jd/B5Fm2WQ=="
+          "hash": "SXJdyJaMkyJwauRNgw4xWg=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -213,10 +213,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapResource.html",
-          "hash": "mKGkrx4hVDk9+Zo8wCMGSQ=="
+          "hash": "izCA5c3sWhnItjHW9ENs1w=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -225,10 +225,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapResourceMetadata.html",
-          "hash": "k3JRY5ysOh6s6kCyeTJazg=="
+          "hash": "Okra+5g0cCMX50FkSkxljA=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -237,10 +237,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoreLinkFormat.html",
-          "hash": "JHqthnCjNu8u3EMB+y1qYg=="
+          "hash": "maz2OYquT1rbaYE3rtVw2A=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -249,10 +249,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.ICoapConnectionInformation.html",
-          "hash": "9ASeqLYvgHRnWruvGSkTxA=="
+          "hash": "y+qM5V0onKwNO0FaOfNJ6Q=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -261,10 +261,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.ICoapEndpoint.html",
-          "hash": "dJf261+bpAk+rHh1+sBThQ=="
+          "hash": "RlcMGv1Zt7aqd0WsiPgTdw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -273,10 +273,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.ICoapHandler.html",
-          "hash": "vX8kV6XOK1Duu4gxqTA/6A=="
+          "hash": "ms83KDhC9LnHUzBrXuFHFQ=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -285,10 +285,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.ICoapTransport.html",
-          "hash": "bAuKOqzC6SC7IgG8ojte2g=="
+          "hash": "zUEz+Ksn+lS0l7lVNohzBQ=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -297,10 +297,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.ICoapTransportFactory.html",
-          "hash": "GBADp+6/pe2hO6mihU9gfQ=="
+          "hash": "okoaOEAm1VYPdvEZ9ba4gQ=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -309,10 +309,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.MessageExtensions.html",
-          "hash": "lZnVfe8FBjG9DTUwivTM6w=="
+          "hash": "uLjLoZk6IFzEHW9nRKkXvw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -321,10 +321,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.OptionType.html",
-          "hash": "Dll2/oEUhKDZG+/UiSWgBw=="
+          "hash": "Javw4ghb3X1F6q9pU47tMA=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -333,10 +333,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.Accept.html",
-          "hash": "tPjcBgcBPG0DBX35E7/T7Q=="
+          "hash": "9AT4ZkxYKDyumSonbZusEg=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -345,10 +345,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.ContentFormat.html",
-          "hash": "YxQC0pSySPNYK1e6SDWl9g=="
+          "hash": "ztXn8fTwRe9d3ntDbtnkVA=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -357,10 +357,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.ContentFormatType.html",
-          "hash": "Qzh7YpM8pab+IHWLHttEfg=="
+          "hash": "g7Boesm+jadQ8s4xzBnNPw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -369,10 +369,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.ETag.html",
-          "hash": "aymgo36PFK6sCiwDWmGURw=="
+          "hash": "4odQMyci0vBsn9FBrtbA9w=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -381,10 +381,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.Factory.html",
-          "hash": "2ZKqIguA8/C50UZydQroXg=="
+          "hash": "Cd/XTE9P8NyOmK4LAJnzEA=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -393,10 +393,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.IfMatch.html",
-          "hash": "bk4tyFDnP8duUT+1yq685g=="
+          "hash": "mB48XWiJk6j4DuGnD7tISg=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -405,10 +405,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.IfNoneMatch.html",
-          "hash": "k1bJ3jg+kxQDLGP823lhRg=="
+          "hash": "3c9tLDciRTyEqpFuWg0ylg=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -417,10 +417,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.LocationPath.html",
-          "hash": "UMKUOGY3XDfVW29rDmqhGA=="
+          "hash": "3d4ljGDu/v0LWN5xVvkAHg=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -429,10 +429,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.LocationQuery.html",
-          "hash": "pAjCXGtG5aGF3zFMGvqBcg=="
+          "hash": "LhFV/lKtRIK4s2Te+GjP+g=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -441,10 +441,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.MaxAge.html",
-          "hash": "LTREg/VOLsTYVulaJ2BFTQ=="
+          "hash": "JyqEgSgvwkHoPp07QZ4Ybw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -453,10 +453,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.ProxyScheme.html",
-          "hash": "RTyG2wVs39pDkUxulbEigg=="
+          "hash": "UCFAro9N9ikFAgncUVhRRg=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -465,10 +465,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.ProxyUri.html",
-          "hash": "m0Icb8sbAG+pImBS32dZkw=="
+          "hash": "+KaNzJ942Xz+JWwyNqcskg=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -477,10 +477,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.Size1.html",
-          "hash": "IOMz3bod79rZWBHXeD2CSg=="
+          "hash": "34B99Wke1muaBeOmHpVsCQ=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -489,10 +489,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.UriHost.html",
-          "hash": "cu/yzrSwFuUYXJsrJxspLQ=="
+          "hash": "dp4gSCkmEvGQaC4QQ3iVuA=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -501,10 +501,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.UriPath.html",
-          "hash": "RFA9yI6O2uEMvt4EqTIZGg=="
+          "hash": "je6uRAeqX9JQJu5yyqoVTw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -513,10 +513,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.UriPort.html",
-          "hash": "DiyBBhNR0TOALCpdDY81Sg=="
+          "hash": "wm/NJPTARzLuEiV8mgCXuQ=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -525,10 +525,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Options.UriQuery.html",
-          "hash": "F8CCuwu2LN0Mvk05cgZDWg=="
+          "hash": "dk7EkRmNRrDHPgBOtjM7Ag=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -540,7 +540,7 @@
           "hash": "LVspbsoWNeLkaQ9N4PQqiw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -549,10 +549,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Server.CoapHandler.html",
-          "hash": "ggOkFzPFoNv0r+odlvfjLA=="
+          "hash": "wIiB19r8BGn41IVGFxVV5A=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -561,10 +561,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Server.CoapLoggingEvents.html",
-          "hash": "2ghmwLmVOSDurJ8Mf+MbxA=="
+          "hash": "JEClX/hIX59jK96sTqBo8w=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -573,10 +573,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Server.CoapResourceCoreListing.html",
-          "hash": "cxZR1cFgvEXly3bqUm60sw=="
+          "hash": "+L54SmF6jhqDfqtLeBQQEA=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -585,10 +585,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Server.CoapResourceHandler.html",
-          "hash": "noBbHuEvF3xY3EjpqIOUCQ=="
+          "hash": "zFU7DWM2ZtLPoP15AldzuA=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -597,10 +597,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Server.CoapServer.html",
-          "hash": "xumYX2gwV3L94Ve/7l1RQg=="
+          "hash": "P84Kt6f4RUp4yg5bfpZx8A=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -612,7 +612,7 @@
           "hash": "REjvXsy8pblwF+Az5p7LVA=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -621,10 +621,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Udp.CoapConnectionInformation.html",
-          "hash": "4ODmraEo4HKjUJA9eAmXLg=="
+          "hash": "Va+fy4Qph7jzw7B2xtPAOA=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -633,10 +633,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Udp.CoapUdpEndPoint.html",
-          "hash": "9XqiyzkUt2HMTTsmqOOh/w=="
+          "hash": "dYaNEfa3OrwesytjxqrMDw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -645,10 +645,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Udp.CoapUdpLoggingEvents.html",
-          "hash": "uHjSehn9xlEr2rANVeCSpQ=="
+          "hash": "Wt2eU+qvgRyd42Yqy49JrQ=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -657,10 +657,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Udp.CoapUdpTransport.html",
-          "hash": "T+zsvJA7fWVTIpn8UeozPA=="
+          "hash": "/+WuBZ6mc5cp8OL21ZahOA=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -669,10 +669,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Udp.CoapUdpTransportFactory.html",
-          "hash": "g/1Nczp7VfH0wg7iYoO3hA=="
+          "hash": "J/neyObIxvxr29RKOGKJbw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -684,7 +684,7 @@
           "hash": "J/45NHbNqLsIjxJCBxW3Dw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -693,10 +693,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Utils.AsyncAutoResetEvent.html",
-          "hash": "/KkVNrlT9LUJ1Mzj9NM44Q=="
+          "hash": "CndC3RVf/kAkvRl3PTRN+A=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -705,10 +705,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Utils.CoapMessageUtility.html",
-          "hash": "xamVhrsffbnDacpai+Ca+A=="
+          "hash": "EpJm2pGXcJNYxALnq/SVPg=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -717,10 +717,10 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Utils.CoapUri.html",
-          "hash": "Ryizqhgi7y4gdBt712iDrw=="
+          "hash": "ehSXzmzg/NB6ThXvU6+1YQ=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -732,7 +732,7 @@
           "hash": "pc9sReIHfuSLcKoU5j75Wg=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -753,10 +753,10 @@
       "output": {
         ".html": {
           "relative_path": "api/index.html",
-          "hash": "fHIh/MX9USt2ucM6TxHkDQ=="
+          "hash": "PPzL0LQUzRpPFxQIQMvs1w=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -777,10 +777,10 @@
       "output": {
         ".html": {
           "relative_path": "articles/intro.html",
-          "hash": "TjRr1A5ljU0fE21F6KRg2Q=="
+          "hash": "/yOluQiZk8pe+MMF5MsYYQ=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -801,10 +801,10 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "ao1ely67HNXEz9khIBAnfA=="
+          "hash": "81oG2A1xiB1LlnT8GCFnnA=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -823,7 +823,8 @@
   "incremental_info": [
     {
       "status": {
-        "can_incremental": true,
+        "can_incremental": false,
+        "details": "Cannot build incrementally because last build info is missing.",
         "incrementalPhase": "build"
       },
       "processors": {
@@ -832,30 +833,30 @@
           "details": "Processor RestApiDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build"
         },
+        "ConceptualDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build"
+        },
         "TocDocumentProcessor": {
           "can_incremental": false,
           "details": "Processor TocDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build"
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": false,
           "incrementalPhase": "build"
         },
         "ResourceDocumentProcessor": {
           "can_incremental": false,
           "details": "Processor ResourceDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build"
-        },
-        "ManagedReferenceDocumentProcessor": {
-          "can_incremental": true,
-          "incrementalPhase": "build"
-        },
-        "ConceptualDocumentProcessor": {
-          "can_incremental": true,
-          "incrementalPhase": "build"
         }
       }
     },
     {
       "status": {
-        "can_incremental": true,
-        "details": "Can support incremental post processing.",
+        "can_incremental": false,
+        "details": "Cannot support incremental post processing, the reason is: last post processor info is null.",
         "incrementalPhase": "postProcessing"
       },
       "processors": {}
