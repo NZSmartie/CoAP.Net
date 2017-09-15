@@ -113,7 +113,7 @@ namespace CoAPNet
 
         public CoapMessageFormatException(string message, Exception innerException) : base(message, innerException) { }
 
-        public CoapMessageFormatException(string message, Exception innerException, CoapMessageCode responseCode, responseCode) : base(message, innerException) { }
+        public CoapMessageFormatException(string message, Exception innerException, CoapMessageCode responseCode) : base(message, innerException, responseCode) { }
     }
 
     public class CoapMessage
