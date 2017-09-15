@@ -37,20 +37,52 @@ namespace CoAPNet
         public const int Size1 = 60;
     }
 
+    /// <summary>
+    /// Constants and Defaults derrived from RFC 7252
+    /// </summary>
     public static class Coap
     {
+        /// <summary>
+        /// IPv4 muilticast address as registered with IANA
+        /// </summary>
         public const string MulticastIPv4 = "224.0.1.187";
+
+        /// <summary>
+        /// IPv6 multicast address where X is replaced with the desired scope. 
+        /// <para>See <see cref="GetMulticastIPv6ForScope(int)"/> for getting the IPv6 multicast address for a desired scope.</para>
+        /// </summary>
         public const string MulticastIPv6 = "FF0X::FD";
+
+        /// <summary>
+        /// The default UDP port for <c>coap://</c> schema
+        /// </summary>
         public const ushort Port = 5683;
+
+        /// <summary>
+        /// The default UDP port for <c>coaps://</c> schema for secure connections over DTLS
+        /// </summary>
         public const ushort PortDTLS = 5684;
 
+        /// <summary>
+        /// Default amount of re-transmission attempts when sending a message from <see cref="CoapClient"/>
+        /// </summary>
         public const int MaxRestransmitAttempts = 3;
+
+        /// <summary>
+        /// Default period between transmission attempts when sending a message from <see cref="CoapClient"/>
+        /// </summary>
         public static readonly TimeSpan RetransmitTimeout = TimeSpan.FromSeconds(2);
 
+        /// <summary>
+        /// IPv6 multicast address for a specific IPv6 scope.
+        /// </summary>
+        /// <param name="scope">The IPv6 scope in numberic representation.</param>
+        /// <returns>The IPv6 multicast address for the specifiec scope.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Scope must be in the range from 1 to 14. 0 and 15 are reserved. (See RFC 7346)</exception>
         public static string GetMulticastIPv6ForScope(int scope)
         {
             if(scope < 1 || scope >= 15)
-                throw new ArgumentOutOfRangeException(nameof(scope), "Scope is in the range from 1 to 14. 0 and 15 are reserved. (See RFC 7346)");
+                throw new ArgumentOutOfRangeException(nameof(scope), "Scope must be in the range from 1 to 14. 0 and 15 are reserved. (See RFC 7346)");
             return MulticastIPv6.Replace("X", scope.ToString("X"));
         }
     }

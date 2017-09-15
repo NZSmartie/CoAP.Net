@@ -19,6 +19,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace CoAPNet
 {
+    /// <summary>
+    /// Represents CoAP specific errors that occur during application execution.
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class CoapException : Exception
     {

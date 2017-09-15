@@ -27,6 +27,9 @@ using CoAPNet.Utils;
 
 namespace CoAPNet
 {
+    /// <summary>
+    /// Represents CoAP specific errors that occur during calls inside of <see cref="CoapClient"/>.
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class CoapClientException : CoapException
     {
@@ -37,8 +40,14 @@ namespace CoAPNet
         public CoapClientException(string message, Exception innerException) : base(message, innerException) { }
     }
 
+    /// <summary>
+    /// Client interface for interacting with CoAP endpoints with the provided <see cref="ICoapEndpoint"/>
+    /// </summary>
     public class CoapClient : IDisposable
     {
+        /// <summary>
+        /// The endpoint which this client is bound to, and performs Send/Receive through.
+        /// </summary>
         public ICoapEndpoint Endpoint { get; private set; }
 
         private int _messageId;
@@ -47,11 +56,23 @@ namespace CoAPNet
         private readonly ConcurrentDictionary<int, TaskCompletionSource<CoapMessage>> _messageResponses 
             = new ConcurrentDictionary<int, TaskCompletionSource<CoapMessage>>();
 
-
+        /// <summary>
+        /// Maximum number of attempts at performing <see cref="ICoapEndpoint.SendAsync(CoapPacket)"/> before throwing <see cref="CoapClientException"/>
+        /// </summary>
+        /// <remarks>Default value is set to <see cref="Coap.MaxRestransmitAttempts"/></remarks>
         public int MaxRetransmitAttempts { get; set; } = Coap.MaxRestransmitAttempts;
 
+        /// <summary>
+        /// Interval to wait after sending a CoAP packet.
+        /// </summary>
+        /// <remarks>Default value is set to <see cref="Coap.RetransmitTimeout"/></remarks>
         public TimeSpan RetransmitTimeout { get; set; } = Coap.RetransmitTimeout;
 
+        /// <summary>
+        /// Initiates a mew client and assigns a random message Id to be used in new CoAP requests.
+        /// </summary>
+        /// <param name="endpoint">The local CoAP endpoint to bind to and perform Send/Receive operations on.</param>
+        /// <exception cref="ArgumentNullException">When <paramref name="endpoint"/> is <c>null</c></exception>
         public CoapClient(ICoapEndpoint endpoint)
         {
             Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
@@ -64,6 +85,11 @@ namespace CoAPNet
 
         private readonly AsyncAutoResetEvent _receiveEvent = new AsyncAutoResetEvent(false);
 
+        /// <summary>
+        /// Checks if a <see cref="CoapReceiveResult"/> has been received and returns it. Otherwise waits until a new result is received unless cancelled by the <paramref name="token"/>
+        /// </summary>
+        /// <param name="token">Token to cancel the blocking Receive operation</param>
+        /// <returns>Valid result if a result is received, <c>null</c> if canceled.</returns>
         public async Task<CoapReceiveResult> ReceiveAsync(CancellationToken token)
         {
             Task<CoapReceiveResult> resultTask = null;
@@ -179,6 +205,10 @@ namespace CoAPNet
             }
         }
 
+        /// <summary>
+        /// Disposed the underlying <see cref="Endpoint"/> and waits for any pending operations to finish.
+        /// </summary>
+        /// <exception cref="CoapClientException">If the internal Receive operation is blocked from exiting.</exception>
         public void Dispose()
         {
             var endpoint = Endpoint;
@@ -190,6 +220,13 @@ namespace CoAPNet
                 throw new CoapClientException($"Took too long to dispose of the enclosed {nameof(Endpoint)}");
         }
 
+        /// <summary>
+        /// Checks if a <see cref="CoapReceiveResult"/> has been received with a coresponding <paramref name="messageId"/> and returns it. Otherwise waits until a new result is received unless cancelled by the <paramref name="token"/> or the <see cref="MaxRetransmitAttempts"/> is reached.
+        /// </summary>
+        /// <param name="messageId">Waits for a result with a coresponding message Id.</param>
+        /// <param name="token">Token to cancel the blocking Receive operation</param>
+        /// <returns>Valid result if a result is received, <c>null</c> if canceled.</returns>
+        /// <exception cref="CoapClientException">If the timeout period * maximum retransmission attempts was reached.</exception>
         public async Task<CoapMessage> GetResponseAsync(int messageId, CancellationToken token = default(CancellationToken))
         {
             TaskCompletionSource<CoapMessage> responseTask = null;
@@ -224,18 +261,46 @@ namespace CoAPNet
             return responseTask.Task.Result;
         }
 
+        /// <summary>
+        /// <see cref="SendAsync(CoapMessage, ICoapEndpoint, CancellationToken)"/>
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public virtual async Task<int> SendAsync(CoapMessage message) => 
             await SendAsync(message, null, CancellationToken.None);
 
+        /// <summary>
+        /// <see cref="SendAsync(CoapMessage, ICoapEndpoint, CancellationToken)"/>
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public virtual async Task<int> SendAsync(CoapMessage message, CancellationToken token) =>
             await SendAsync(message, null, token);
 
+        /// <summary>
+        /// <see cref="SendAsync(CoapMessage, ICoapEndpoint, CancellationToken)"/>
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="endpoint"></param>
+        /// <returns></returns>
         public virtual async Task<int> SendAsync(CoapMessage message, ICoapEndpoint endpoint) =>
             await SendAsync(message, endpoint, CancellationToken.None);
 
         private int GetNextMessageId() => 
             Interlocked.Increment(ref _messageId) & ushort.MaxValue;
 
+        /// <summary>
+        /// Assigns an incremented message id (if none is already set) and performs a blocking Send operation. 
+        /// <para>If the mssage is <see cref="CoapMessageType.Confirmable"/>, the client will wait for a response with a coresponding message Id for the <see cref="RetransmitTimeout"/>* * <see cref="MaxRetransmitAttempts"/></para>
+        /// </summary>
+        /// <param name="message">The CoAP message to send. It's <see cref="CoapMessage.Id"/> may be set if it is unassigned.</param>
+        /// <param name="endpoint">The remote endpoint to send the message to.
+        /// <para>The endpoint must implement the same underlying transport to succeed.</para>
+        /// </param>
+        /// <param name="token">A token used to cancel the blocking Send operation or retransmission attempts.</param>
+        /// <returns>The message Id</returns>
+        /// <exception cref="CoapClientException">If the timeout period * maximum retransmission attempts was reached.</exception>
         public virtual async Task<int> SendAsync(CoapMessage message, ICoapEndpoint endpoint, CancellationToken token)
         {
             if(Endpoint==null)
