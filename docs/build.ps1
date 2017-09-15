@@ -1,5 +1,6 @@
 Param(
-	[Switch]$Deploy
+	[Switch]$Deploy,
+	[Switch]$Serve
 )
 $docfxVersion = "2.24.0"
 $VisualStudioVersion = "15.0";
@@ -39,7 +40,8 @@ if($Deploy){
 
 # Build our docs
 Write-Host "`n[Build our docs]" -ForegroundColor Green
-& .\docfx.console.$docfxVersion\tools\docfx docfx.json
+
+& .\docfx.console.$docfxVersion\tools\docfx docfx.json (&{If($Serve) {"--serve"}})
 
 if($Deploy){
 	git -C gh-pages status
