@@ -4,25 +4,46 @@ image: Visual Studio 2017
 environment:
   COVERALLS_REPO_TOKEN:
     secure: o3Oj2doUP9AbvI5Phn28o+JHMk9W9P39yiyq1b3d96g0FoJ1loUm7PJ7GytUzxyO
+  git_access_token:
+    secure: kFNrVQrkAApceG8qiKcsgXAFx50qkY4Lfl2OLczSxwhEYbHh78AdPqyBn3P/JEjo
+  git_email: nzsmartie@gmail.com
+  git_user: NZSmartie
+
 before_build:
 - cmd: nuget restore
-build:
-  publish_nuget: true
-  publish_nuget_symbols: true
-  verbosity: minimal
-test_script:
-- ps: >-
-    & msbuild /t:restore /p:Configuration=AppVeyor
-    
-    & $env:USERPROFILE\.nuget\packages\opencover\4.6.519\tools\OpenCover.Console.exe -oldstyle -register:user -target:"C:/Program Files/dotnet/dotnet.exe" -targetargs:"test tests/CoAPNet.Tests -c AppVeyor --logger:trx" -filter:"+[CoAPNet*]* -[*.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -excludebyfile:*\*Designer.cs -hideskipped:All -output:".\CoAPNet.coverage.xml"
-    
-    & $env:USERPROFILE\.nuget\packages\coveralls.io\1.3.4\tools\coveralls.net.exe --opencover CoAPNet.coverage.xml
-    
-    # upload results to AppVeyor
-    $wc = New-Object 'System.Net.WebClient'
-    $wc.UploadFile("https://ci.appveyor.com/api/testresults/mstest/$($env:APPVEYOR_JOB_ID)", (Resolve-Path tests\CoAPNet.Tests\TestResults\*.trx))
-artifacts:
-- path: '**/coverage.xml'
-  name: Code Coverage
-- path: '**/*.trx'
-  name: Unit Test Results
+for:
+- branches:
+    except:
+      - docs
+  build:
+    publish_nuget: true
+    publish_nuget_symbols: true
+    verbosity: minimal
+  test_script:
+  - ps: >-
+      & msbuild /t:restore /p:Configuration=AppVeyor
+      
+      & $env:USERPROFILE\.nuget\packages\opencover\4.6.519\tools\OpenCover.Console.exe -oldstyle -register:user -target:"C:/Program Files/dotnet/dotnet.exe" -targetargs:"test tests/CoAPNet.Tests -c AppVeyor --logger:trx" -filter:"+[CoAPNet*]* -[*.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -excludebyfile:*\*Designer.cs -hideskipped:All -output:".\CoAPNet.coverage.xml"
+      
+      & $env:USERPROFILE\.nuget\packages\coveralls.io\1.3.4\tools\coveralls.net.exe --opencover CoAPNet.coverage.xml
+      
+      # upload results to AppVeyor
+      $wc = New-Object 'System.Net.WebClient'
+      $wc.UploadFile("https://ci.appveyor.com/api/testresults/mstest/$($env:APPVEYOR_JOB_ID)", (Resolve-Path tests\CoAPNet.Tests\TestResults\*.trx))
+  artifacts:
+  - path: '**/coverage.xml'
+    name: Code Coverage
+  - path: '**/*.trx'
+    name: Unit Test Results
+
+- branches:
+    only:
+      - docs
+
+  build_script:
+    - ps: |
+          Push-Location ./docs
+          ./build.ps1
+          Pop-Location
+
+  test: off

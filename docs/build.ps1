@@ -17,5 +17,37 @@ $env:VSINSTALLDIR = $VSINSTALLDIR;
 $env:MSBuildExtensionsPath = $MSBuildExtensionsPath;
 $env:MSBuildSDKsPath = $MSBuildSDKsPath;
 
+# Install docfx
+& nuget install docfx.console -Version $docfxVersion
+
+# Checkout gh-pages
+Write-Host "- Set config settings...."
+
+& git config --global credential.helper store
+Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:git_access_token):x-oauth-basic@github.com`n"
+
+& git config --global user.email "$env:git_email"
+& git config --global user.name "$env:git_user"
+
+Write-Host "- Clone gh-pages branch...."
+git clone --quiet --no-checkout --branch=gh-pages https://github.com/NZSmartie/CoAP.Net gh-pages
+
+Write-Host "- Generate the site contents..."
 # Build our docs
-& .\docfx.console.$docfxVersion\tools\docfx @args
+& .\docfx.console.$docfxVersion\tools\docfx docfx.json
+
+git -C gh-pages status
+$thereAreChanges = git -C gh-pages status | select-string -pattern "Changes not staged for commit:","Untracked files:" -simplematch
+if ($thereAreChanges -ne $null) { 
+    Write-host "- Committing changes to documentation..."
+    git -C gh-pages add --all
+    git -C gh-pages status
+    git -C gh-pages commit -m "static site regeneration"
+    git -C gh-pages status
+    Write-Host "- Push it...."
+    git -C gh-pages push origin gh-pages --quiet
+    Write-Host "- Pushed it good!"
+} 
+else { 
+    write-host "- No changes to documentation to commit"
+}

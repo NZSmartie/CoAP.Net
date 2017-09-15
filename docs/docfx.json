@@ -10,7 +10,7 @@
           "exclude": [
             "**/obj/**",
             "**/bin/**",
-            "_site/**"
+            "gh-pages/**"
           ]
         }
       ],
@@ -37,7 +37,7 @@
         ],
         "exclude": [
           "obj/**",
-          "_site/**"
+          "gh-pages/**"
         ]
       }
     ],
@@ -48,7 +48,7 @@
         ],
         "exclude": [
           "obj/**",
-          "_site/**"
+          "gh-pages/**"
         ]
       }
     ],
@@ -59,11 +59,11 @@
         ],
         "exclude": [
           "obj/**",
-          "_site/**"
+          "gh-pages/**"
         ]
       }
     ],
-    "dest": "_site",
+    "dest": "gh-pages",
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
     "template": [
