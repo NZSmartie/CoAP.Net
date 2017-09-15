@@ -1,3 +1,6 @@
+Param(
+	[Switch]$Deploy
+)
 $docfxVersion = "2.24.0"
 $VisualStudioVersion = "15.0";
 $DotnetSDKVersion = "2.0.0";
@@ -20,34 +23,38 @@ $env:MSBuildSDKsPath = $MSBuildSDKsPath;
 # Install docfx
 & nuget install docfx.console -Version $docfxVersion
 
-# Checkout gh-pages
-Write-Host "- Set config settings...."
+if($Deploy){
+	# Configuring git credentials
+	Write-Host "`n[Configuring git credentials]" -ForegroundColor Green
+	& git config --global credential.helper store
+	Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:git_access_token):x-oauth-basic@github.com`n"
 
-& git config --global credential.helper store
-Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:git_access_token):x-oauth-basic@github.com`n"
+	& git config --global user.email "$env:git_email"
+	& git config --global user.name "$env:git_user"
 
-& git config --global user.email "$env:git_email"
-& git config --global user.name "$env:git_user"
+	# Checkout gh-pages
+	Write-Host "`n[Checkout gh-pages]" -ForegroundColor Green
+	git clone --quiet --no-checkout --branch=gh-pages https://github.com/NZSmartie/CoAP.Net gh-pages
+}
 
-Write-Host "- Clone gh-pages branch...."
-git clone --quiet --no-checkout --branch=gh-pages https://github.com/NZSmartie/CoAP.Net gh-pages
-
-Write-Host "- Generate the site contents..."
 # Build our docs
+Write-Host "`n[Build our docs]" -ForegroundColor Green
 & .\docfx.console.$docfxVersion\tools\docfx docfx.json
 
-git -C gh-pages status
-$thereAreChanges = git -C gh-pages status | select-string -pattern "Changes not staged for commit:","Untracked files:" -simplematch
-if ($thereAreChanges -ne $null) { 
-    Write-host "- Committing changes to documentation..."
-    git -C gh-pages add --all
-    git -C gh-pages status
-    git -C gh-pages commit -m "static site regeneration"
-    git -C gh-pages status
-    Write-Host "- Push it...."
-    git -C gh-pages push origin gh-pages --quiet
-    Write-Host "- Pushed it good!"
-} 
-else { 
-    write-host "- No changes to documentation to commit"
+if($Deploy){
+	git -C gh-pages status
+	$pendingChanges = git -C gh-pages status | select-string -pattern "Changes not staged for commit:","Untracked files:" -simplematch
+	if ($pendingChanges -ne $null) { 
+		# Committing changes
+		Write-host "`n[Committing changes]" -ForegroundColor Green
+		git -C gh-pages add -A
+		git -C gh-pages commit -m "static site regeneration"
+		# Pushing changes
+		Write-host "`n[Pushing changes]" -ForegroundColor Green
+		git -C gh-pages push origin gh-pages --quiet
+		Write-Host "`n[Success!]" -ForegroundColor Green
+	} 
+	else { 
+		write-host "`nNo changes to documentation" -ForegroundColor Yellow
+	}
 }

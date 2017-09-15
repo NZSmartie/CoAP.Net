@@ -11,7 +11,7 @@ build:
 build_script:
 - ps: |
       Push-Location ./docs
-      ./build.ps1
+      ./build.ps1 -Deploy
       Pop-Location
 
 test: off
