@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet", "src/CoAPNet\CoAPNet.csproj", "{0D43122B-4D99-41B1-B855-5D780F85464A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet", "src\CoAPNet\CoAPNet.csproj", "{0D43122B-4D99-41B1-B855-5D780F85464A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Tests", "tests/CoAPNet.Tests\CoAPNet.Tests.csproj", "{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Tests", "tests\CoAPNet.Tests\CoAPNet.Tests.csproj", "{F0CD0A8A-9772-4482-9526-D2EEE29E37D1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0D43122B-4D99-41B1-B855-5D780F85464A} = {0D43122B-4D99-41B1-B855-5D780F85464A}
 	EndProjectSection
@@ -17,13 +17,34 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Udp", "src/CoAPNet.Udp\CoAPNet.Udp.csproj", "{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Udp", "src\CoAPNet.Udp\CoAPNet.Udp.csproj", "{5A4DEFAA-29CB-432F-83BF-5970304DCD6C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Server", "src/CoAPNet.Server\CoAPNet.Server.csproj", "{0484D42B-8BC9-42E4-9C70-DB505779F1E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet.Server", "src\CoAPNet.Server\CoAPNet.Server.csproj", "{0484D42B-8BC9-42E4-9C70-DB505779F1E0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{52B2CE1E-A7E7-4680-A8A5-77D57FC85BAC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{27BE0661-DCC9-431F-B162-F0C557216818}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "docs", "docs\", "{8B703C8D-4F8C-4362-96A6-EE4F58E41878}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_7096"
+		Debug.AspNetCompiler.PhysicalPath = "docs\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_7096\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_7096"
+		Release.AspNetCompiler.PhysicalPath = "docs\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_7096\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "7096"
+		SlnRelativePath = "docs\"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -110,6 +131,21 @@ Global
 		{0484D42B-8BC9-42E4-9C70-DB505779F1E0}.Release|x64.Build.0 = Release|Any CPU
 		{0484D42B-8BC9-42E4-9C70-DB505779F1E0}.Release|x86.ActiveCfg = Release|Any CPU
 		{0484D42B-8BC9-42E4-9C70-DB505779F1E0}.Release|x86.Build.0 = Release|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.AppVeyor|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.AppVeyor|x64.ActiveCfg = Debug|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.AppVeyor|x64.Build.0 = Debug|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.AppVeyor|x86.ActiveCfg = Debug|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.AppVeyor|x86.Build.0 = Debug|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.Debug|x64.Build.0 = Debug|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.Debug|x86.Build.0 = Debug|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.Release|x64.ActiveCfg = Debug|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.Release|x64.Build.0 = Debug|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.Release|x86.ActiveCfg = Debug|Any CPU
+		{8B703C8D-4F8C-4362-96A6-EE4F58E41878}.Release|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
