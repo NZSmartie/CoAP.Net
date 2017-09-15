@@ -8,6 +8,12 @@ build:
   publish_nuget: true
   publish_nuget_symbols: true
   verbosity: minimal
+build_script:
+- ps: |
+      Push-Location ./docs
+      ./build.ps1
+      Pop-Location
+
 test: off
 deploy:
 - provider: NuGet
