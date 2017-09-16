@@ -76,6 +76,9 @@
     "postProcessors": [],
     "noLangKeyword": false,
     "keepFileLink": false,
-    "cleanupCacheHistory": false
+    "cleanupCacheHistory": false,
+    "xref": [
+      "https://docs.microsoft.com/dotnet/xrefmap.yml"
+    ]
   }
 }
