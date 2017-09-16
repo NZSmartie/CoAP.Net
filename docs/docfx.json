@@ -39,6 +39,10 @@
           "obj/**",
           "gh-pages/**"
         ]
+      },
+      {
+        "files": "Changelog.md",
+        "src": ".."
       }
     ],
     "resource": [
