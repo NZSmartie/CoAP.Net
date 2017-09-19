@@ -52,6 +52,8 @@ namespace CoAPNet.Udp
 
         public bool IsSecure => false;
 
+        public bool JoinMulticast { get; set; }
+
         public CoapUdpEndPoint(UdpClient udpClient, ILogger<CoapUdpEndPoint> logger = null)
             :this((IPEndPoint)udpClient.Client.LocalEndPoint, logger)
         {
@@ -91,7 +93,25 @@ namespace CoAPNet.Udp
             if(!Bindable)
                 throw new InvalidOperationException("Can not bind to remote endpoint");
 
+
             Client = new UdpClient(_endpoint) { EnableBroadcast = true };
+
+            if (JoinMulticast)
+            {
+                switch (Client.Client.AddressFamily)
+                {
+                    case AddressFamily.InterNetworkV6:
+                        _logger?.LogInformation("TODO: Join multicast group with the correct IPv6 scope.");
+                        break;
+                    case AddressFamily.InterNetwork:
+                        Client.JoinMulticastGroup(_multicastAddressIPv4);
+                        break;
+                    default:
+                        _logger?.LogError($"Can not join multicast group for the address family {Client.Client.AddressFamily:G}.");
+                        break;
+                }
+            }
+
             return Task.CompletedTask;
         }
 
