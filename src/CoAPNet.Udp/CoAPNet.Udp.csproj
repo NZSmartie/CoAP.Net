@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.4</TargetFramework>
     <PackageId>NZSmartie.CoAPNet.Udp</PackageId>
-    <Version>0.3.5</Version>
+    <Version>0.3.6</Version>
     <Authors>Roman Vaughan</Authors>
     <Company>NZSmartie</Company>
     <Description>UDP Socket implementation for NZSmartie.CoAPNet</Description>
