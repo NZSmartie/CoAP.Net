@@ -8,7 +8,7 @@ build:
   publish_nuget: true
   publish_nuget_symbols: true
   verbosity: minimal
-build_script:
+after_build:
 - ps: |
       Push-Location ./docs
       ./build.ps1 -Deploy
