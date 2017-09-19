@@ -39,6 +39,10 @@
           "obj/**",
           "gh-pages/**"
         ]
+      },
+      {
+        "files": "Changelog.md",
+        "src": ".."
       }
     ],
     "resource": [
@@ -64,7 +68,7 @@
       }
     ],
     "dest": "gh-pages",
-    "globalMetadataFiles": [],
+    "globalMetadataFiles": ["metadata.json"],
     "fileMetadataFiles": [],
     "template": [
       "default"
@@ -72,6 +76,9 @@
     "postProcessors": [],
     "noLangKeyword": false,
     "keepFileLink": false,
-    "cleanupCacheHistory": false
+    "cleanupCacheHistory": false,
+    "xref": [
+      "https://docs.microsoft.com/dotnet/xrefmap.yml"
+    ]
   }
 }
