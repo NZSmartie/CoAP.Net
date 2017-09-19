@@ -21,33 +21,73 @@ using CoAPNet.Options;
 
 namespace CoAPNet
 {
+    /// <summary>
+    /// Metadata about a CoAP resource to be used by <see cref="CoreLinkFormat"/> when generating CoRE Link-Format data at <c>/.well-known/core</c>
+    /// </summary>
     public class CoapResourceMetadata
     {
+        /// <summary>
+        /// Relative (to this host) or absolute (external host) 
+        /// </summary>
         public Uri UriReference { get; }
 
-        public virtual IList<string> Rel { get; } = new List<string>();
+        /// <summary>
+        /// Link relation type identifies the semantics of a link. They can also be used to indicate that the target resource has particular attributes, or exhibits particular behaviours.
+        /// </summary>
+        public virtual IList<string> Rel { get; set; } = new List<string>();
 
+        /// <summary>
+        /// When present, is used to associate a link's context with another resource
+        /// </summary>
         public virtual string Anchor { get; set; }
 
+        [Obsolete("Is deprecated by this specification because it often confuses authors and readers; in most cases, using a separate relation type is preferable.")]
         public virtual IList<string> Rev { get; } = new List<string>();
 
+        /// <summary>
+        /// When present, is a hint indicating what the language of the result of dereferencing the link should be. Note that this is only a hint
+        /// </summary>
         public virtual string HrefLang { get; set; }
 
+        /// <summary>
+        /// When present, is used to indicate intended destination medium or media for style information.
+        /// </summary>
         public virtual string Media { get; set; }
 
+        /// <summary>
+        /// When present, is used to label the destination of a link such that it can be used as a human-readable identifier (e.g., a menu entry).
+        /// </summary>
         public virtual string Title { get; set; }
 
+        /// <summary>
+        /// The <c>title*</c> parameter can be used to encode this label in a different character set, and/or contain language information
+        /// </summary>
         public virtual string TitleExt { get; set; }
 
+        /// <summary>
+        /// When present, is a hint indicating what the media type of the result of dereferencing the link should be. Note that this is only a hint
+        /// </summary>
         public virtual string Type { get; set; }
 
-        public virtual IList<string> ResourceTypes { get; } = new List<string>();
+        /// <summary>
+        ///  The Resource Type <c>rt</c> attribute is an opaque string used to assign an application-specific semantic type to a resource.
+        /// </summary>
+        public virtual IList<string> ResourceTypes { get; set; } = new List<string>();
 
-        public virtual IList<string> InterfaceDescription { get; } = new List<string>();
+        /// <summary>
+        /// The Interface Description <c>if</c> attribute is an opaque string used to provide a name or URI indicating a specific interface definition used to interact with the target resource.
+        /// </summary>
+        public virtual IList<string> InterfaceDescription { get; set; } = new List<string>();
 
+        /// <summary>
+        /// The maximum size estimate attribute <c>sz</c> gives an indication of the maximum size of the resource representation returned by performing a GET on the target URI.
+        /// </summary>
         public virtual ulong MaxSize { get; set; }
 
-        public virtual IList<ContentFormatType> SuggestedContentTypes { get; } = new List<ContentFormatType>();
+        /// <summary>
+        /// The Content-Format code "ct" attribute provides a hint about the Content-Formats this resource returns. Note that this is only a hint, and it does not override the Content-Format Option of a CoAP response obtained by actually requesting the representation of the resource.
+        /// </summary>
+        public virtual IList<ContentFormatType> SuggestedContentTypes { get; set; } = new List<ContentFormatType>();
 
         public virtual Dictionary<string, string> Extentions { get; set; } = new Dictionary<string, string>();
 
@@ -80,8 +120,6 @@ namespace CoAPNet
             if (Type != other.Type)
                 return false;
             if (!Rel.SequenceEqual(other.Rel))
-                return false;
-            if (!Rev.SequenceEqual(other.Rev))
                 return false;
             if (!ResourceTypes.SequenceEqual(other.ResourceTypes))
                 return false;

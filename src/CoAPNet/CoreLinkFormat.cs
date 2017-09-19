@@ -78,14 +78,6 @@ namespace CoAPNet
                                     foreach (var s in value.Split(' '))
                                         currentResourceMetadata.ResourceTypes.Add(s);
                                     break;
-                                case "rev":
-                                    if (currentResourceMetadata.Rev.Count == 0)
-                                    {
-                                        value = value.Substring(1, value.Length - 2);
-                                        foreach (var s in value.Split(' '))
-                                            currentResourceMetadata.Rev.Add(s);
-                                    }
-                                    break;
                                 case "rel":
                                     if (currentResourceMetadata.Rel.Count == 0)
                                     {
@@ -246,11 +238,6 @@ namespace CoAPNet
                 if (resource.ResourceTypes.Count > 0)
                     message.AppendFormat(";rt=\"{0}\"", string.Join(" ", resource.ResourceTypes));
 
-                if (resource.Rev.Count == 1)
-                    message.AppendFormat(";rev={0}", resource.Rev.First());
-                if (resource.Rev.Count > 1)
-                    message.AppendFormat(";rev=\"{0}\"", string.Join(" ", resource.Rev));
-
                 if (resource.Rel.Count == 1)
                     message.AppendFormat(";rel={0}", resource.Rel.First());
                 if (resource.Rel.Count > 1)
@@ -263,7 +250,7 @@ namespace CoAPNet
                     message.Append($";hreflang={resource.HrefLang?.ToLower()}");
 
                 if ((resource.Media ?? string.Empty) != string.Empty)
-                    message.Append(resource.Media.Contains(" ")
+                    message.Append(resource.Media.Any(c => c == ';' || c == ',')
                         ? $";media=\"{resource.Media}\""
                         : $";media={resource.Media}");
 

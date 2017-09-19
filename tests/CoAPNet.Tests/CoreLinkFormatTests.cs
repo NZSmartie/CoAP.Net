@@ -64,7 +64,6 @@ namespace CoAPNet.Tests
                 {
                     InterfaceDescription = {"sensor", "read"},
                     ResourceTypes = { "temperature-c", "temperature-f" },
-                    Rev = {"one", "two" },
                     Rel = {"one", "two" },
                     HrefLang = "en-nz",
                     Media = "none",
@@ -88,7 +87,7 @@ namespace CoAPNet.Tests
                 }
             };
 
-            var message = "</sensor/temp>;if=\"sensor read\";ct=\"0 50\";rt=\"temperature-c temperature-f\";rev=\"one two\";rel=\"one two\";hreflang=en-nz;media=none;title=\"Outside Temperature\";title*=utf-8'en-nz'\"Primo Sensor\""
+            var message = "</sensor/temp>;if=\"sensor read\";ct=\"0 50\";rt=\"temperature-c temperature-f\";rel=\"one two\";hreflang=en-nz;media=none;title=\"Outside Temperature\";title*=utf-8'en-nz'\"Primo Sensor\""
                 + ",<http://stupid.schema.io/temperature.json>;anchor=\"/sensor/temp\""
                 + ",</firmware/v2.1>;rt=\"firmware\";ct=42;sz=262144";
 
@@ -130,7 +129,7 @@ namespace CoAPNet.Tests
         public void ExtensiveLinkFormat()
         {
             // Arrange
-            var expected = "</sensor/temp>;if=\"sensor read\";ct=\"0 50\";rt=\"temperature-c temperature-f\";rev=\"one two\";rel=\"one two\";hreflang=en-nz;media=none;title=\"Outside Temperature\""
+            var expected = "</sensor/temp>;if=\"sensor read\";ct=\"0 50\";rt=\"temperature-c temperature-f\";rel=\"one two\";hreflang=en-nz;media=none;title=\"Outside Temperature\""
                            + ",</firmware/v2.1>;ct=42;rt=\"firmware\";sz=262144";
 
             var resources = new List<CoapResourceMetadata>
@@ -139,7 +138,6 @@ namespace CoAPNet.Tests
                 {
                     InterfaceDescription = {"sensor", "read"},
                     ResourceTypes = { "temperature-c", "temperature-f" },
-                    Rev = {"one", "two" },
                     Rel = {"one", "two" },
                     HrefLang = "en-nz",
                     Media = "none",
