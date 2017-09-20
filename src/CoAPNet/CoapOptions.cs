@@ -39,7 +39,7 @@ namespace CoAPNet
         /// </summary>
         Empty,
         /// <summary>
-        /// Defines the <see cref="CoapOption"/>'s data is an <see cref="byte[]"/>
+        /// Defines the <see cref="CoapOption"/>'s data is an <c><see cref="byte"/>[]</c>
         /// </summary>
         Opaque,
         /// <summary>
@@ -137,7 +137,6 @@ namespace CoAPNet
         /// Gets if this resource is unsafe to proxy through the CoAP endpoint
         /// <para>See Section 5.4.2 of [RFC7252]</para>
         /// </summary>
-        /// <se
         public bool IsUnsafe
         {
             get

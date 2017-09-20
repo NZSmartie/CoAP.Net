@@ -99,6 +99,7 @@ namespace CoAPNet
             UriReference = uri;
         }
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             var other = obj as CoapResourceMetadata;
@@ -134,6 +135,7 @@ namespace CoAPNet
             return true;
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             return UriReference.GetHashCode();

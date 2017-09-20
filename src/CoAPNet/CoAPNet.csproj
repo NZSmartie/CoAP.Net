@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net46;netstandard1.4</TargetFrameworks>
+    <TargetFramework>netstandard1.4</TargetFramework>
     <DebugType Condition="$(Configuration)=='AppVeyor'">full</DebugType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>NZSmartie.CoAPNet</PackageId>
@@ -19,5 +19,8 @@
     <Configurations>Debug;Release;AppVeyor</Configurations>
     <PackageLicenseUrl>https://raw.githubusercontent.com/NZSmartie/CoAP.Net/master/LICENSE</PackageLicenseUrl>
     <Copyright>Copyright © Roman Vaughan 2017</Copyright>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\CoAPNet.xml</DocumentationFile>
   </PropertyGroup>
 </Project>

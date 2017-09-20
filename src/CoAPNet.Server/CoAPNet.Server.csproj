@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net46;netstandard1.4</TargetFrameworks>
-    <TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
+    <TargetFrameworks>netstandard1.4;netstandard2.0</TargetFrameworks>
     <DebugType Condition="$(Configuration)=='AppVeyor'">full</DebugType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>NZSmartie.CoAPNet.Server</PackageId>
@@ -22,8 +21,16 @@
     <Copyright>Copyright © Roman Vaughan 2017</Copyright>
   </PropertyGroup>
 
-  <ItemGroup>
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\CoAPNet.Server.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.4'">
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>

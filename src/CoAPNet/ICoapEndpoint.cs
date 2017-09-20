@@ -62,7 +62,6 @@ namespace CoAPNet
         /// Called by [Service] to send a <see cref="CoapPacket.Payload"/> to the specified <see cref="CoapPacket.Endpoint"/> using the endpoint layer provided by the Application Layer
         /// </summary>
         /// <param name="packet"></param>
-        /// <param name="token"></param>
         /// <returns></returns>
         Task SendAsync(CoapPacket packet);
 

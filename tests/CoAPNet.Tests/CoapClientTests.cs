@@ -327,7 +327,7 @@ namespace CoAPNet.Tests
 
         [Test]
         [Category("[RFC7252] Section 4.2")]
-        public async Task TestRetransmissionMaxAttempts()
+        public void TestRetransmissionMaxAttempts()
         {
             // Arrange
             var requestMessage = new CoapMessage

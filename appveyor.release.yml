@@ -2,6 +2,13 @@ version: '{branch}-{build}'
 skip_non_tags: true
 image: Visual Studio 2017
 configuration: Release
+
+environment:
+  git_access_token:
+    secure: kFNrVQrkAApceG8qiKcsgXAFx50qkY4Lfl2OLczSxwhEYbHh78AdPqyBn3P/JEjo
+  git_email: nzsmartie@gmail.com
+  git_user: NZSmartie
+
 before_build:
 - cmd: nuget restore
 build:

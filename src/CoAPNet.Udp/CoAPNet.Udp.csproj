@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.4</TargetFramework>
+    <TargetFrameworks>netstandard1.4;netstandard2.0</TargetFrameworks>
     <PackageId>NZSmartie.CoAPNet.Udp</PackageId>
     <Version>0.3.6</Version>
     <Authors>Roman Vaughan</Authors>
@@ -20,8 +20,16 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/NZSmartie/CoAP.Net/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
-  <ItemGroup>
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$TargetFramework)\CoAPNet.Udp.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.4'">
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
