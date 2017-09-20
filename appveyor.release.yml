@@ -9,6 +9,10 @@ environment:
   git_email: nzsmartie@gmail.com
   git_user: NZSmartie
 
+# Installed nughet 4.3 to support .Net Standard 2.0 and .Net Core 2.0
+install:
+ - cmd: appveyor downloadfile https://dist.nuget.org/win-x86-commandline/v4.3.0/nuget.exe
+
 before_build:
 - cmd: nuget restore
 build:

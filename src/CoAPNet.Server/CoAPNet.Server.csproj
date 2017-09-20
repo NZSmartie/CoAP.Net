@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.4;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard1.4;netstandard2.0;netcoreapp2.0</TargetFrameworks>
     <DebugType Condition="$(Configuration)=='AppVeyor'">full</DebugType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>NZSmartie.CoAPNet.Server</PackageId>
-    <Version>0.3.6</Version>
+    <Version>0.3.7</Version>
     <Authors>Roman Vaughan</Authors>
     <Company>NZSmartie</Company>
     <Description>Server and handler implementation for NZSmartie.CoAPNet</Description>
@@ -26,11 +26,11 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.4'">
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0' Or '$(TargetFramework)'=='netcoreapp2.0'">
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
