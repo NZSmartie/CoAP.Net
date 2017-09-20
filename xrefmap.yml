@@ -3095,6 +3095,18 @@ references:
   commentId: Overload:CoAPNet.Udp.CoapUdpEndPoint.IsSecure
   fullName: CoAPNet.Udp.CoapUdpEndPoint.IsSecure
   nameWithType: CoapUdpEndPoint.IsSecure
+- uid: CoAPNet.Udp.CoapUdpEndPoint.JoinMulticast
+  name: JoinMulticast
+  href: api/CoAPNet.Udp.CoapUdpEndPoint.html#CoAPNet_Udp_CoapUdpEndPoint_JoinMulticast
+  commentId: P:CoAPNet.Udp.CoapUdpEndPoint.JoinMulticast
+  fullName: CoAPNet.Udp.CoapUdpEndPoint.JoinMulticast
+  nameWithType: CoapUdpEndPoint.JoinMulticast
+- uid: CoAPNet.Udp.CoapUdpEndPoint.JoinMulticast*
+  name: JoinMulticast
+  href: api/CoAPNet.Udp.CoapUdpEndPoint.html#CoAPNet_Udp_CoapUdpEndPoint_JoinMulticast_
+  commentId: Overload:CoAPNet.Udp.CoapUdpEndPoint.JoinMulticast
+  fullName: CoAPNet.Udp.CoapUdpEndPoint.JoinMulticast
+  nameWithType: CoapUdpEndPoint.JoinMulticast
 - uid: CoAPNet.Udp.CoapUdpEndPoint.ReceiveAsync
   name: ReceiveAsync()
   href: api/CoAPNet.Udp.CoapUdpEndPoint.html#CoAPNet_Udp_CoapUdpEndPoint_ReceiveAsync
