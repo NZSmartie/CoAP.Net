@@ -11,7 +11,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
   </ItemGroup>
   <ItemGroup Condition="$(Configuration)=='AppVeyor'">
-    <PackageReference Include="coveralls.io" Version="1.4.1" />
+    <PackageReference Include="coveralls.io" Version="1.3.4" />
     <PackageReference Include="Mono.Cecil" Version="0.10.0-beta6" />
     <PackageReference Include="OpenCover" Version="4.6.519" />
   </ItemGroup>
