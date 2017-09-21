@@ -15,44 +15,29 @@
 #endregion
 
 using System;
-using System.Text;
-using CoAPNet.Options;
 
 namespace CoAPNet.Utils
 {
+    /// <summary>
+    /// See <see cref="CoapMessage"/>
+    /// </summary>
+    [Obsolete]
     public static class CoapMessageUtility
     {
+        /// <summary>
+        /// Use <see cref="CoapMessage.Create(CoapMessageCode, string, CoapMessageType)"/> instead
+        /// </summary>
+        [Obsolete]
         public static CoapMessage CreateMessage(CoapMessageCode code, string message, CoapMessageType type = CoapMessageType.Confirmable)
-        {
-            return new CoapMessage
-            {
-                Code = code,
-                Type = type,
-                Options = {new ContentFormat(ContentFormatType.TextPlain)},
-                Payload = Encoding.UTF8.GetBytes(message)
-            };
-        }
+            => CoapMessage.Create(code, message, type);
 
+        /// <summary>
+        /// Use <see cref="CoapMessage.FromException(Exception)"/> instead
+        /// </summary>
+        /// <param name="exception"></param>
+        /// <returns></returns>
+        [Obsolete]
         public static CoapMessage FromException(Exception exception)
-        {
-            var result = new CoapMessage
-            {
-                Type = CoapMessageType.Reset,
-                Code = CoapMessageCode.InternalServerError,
-                Options = {new ContentFormat(ContentFormatType.TextPlain)},
-                Payload = Encoding.UTF8.GetBytes(exception.Message)
-            };
-
-            switch (exception)
-            {
-                case CoapException coapEx:
-                    result.Code = coapEx.ResponseCode;
-                    break;
-                case NotImplementedException _:
-                    result.Code = CoapMessageCode.NotImplemented;
-                    break;
-            }
-            return result;
-        }
+            => CoapMessage.FromException(exception);
     }
 }

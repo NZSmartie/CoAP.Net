@@ -41,7 +41,7 @@ namespace CoAPNet
     public interface ICoapEndpoint : IDisposable
     {
         /// <summary>
-        /// Gets if this enpoint is encrypted using DTLS
+        /// Gets if this enpoint is encrypted using (e.g. DTLS when the endpoint uses UDP)
         /// </summary>
         bool IsSecure { get; }
 

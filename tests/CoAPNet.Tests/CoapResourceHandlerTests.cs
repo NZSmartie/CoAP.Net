@@ -168,8 +168,8 @@ namespace CoAPNet.Tests
         public void TestResourceMethodNotImplemented()
         {
             // Arrange
-            var expectedMessage = CoapMessageUtility
-                .FromException(new NotImplementedException()).Serialise();
+            var expectedMessage = CoapMessage.FromException(new NotImplementedException()).Serialise();
+
             _endpoint
                 .Setup(c => c.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage))))
                 .Returns(Task.FromResult(0))
@@ -197,8 +197,8 @@ namespace CoAPNet.Tests
         public void TestResourceMethodBadOption()
         {
             // Arrange
-            var expectedMessage = CoapMessageUtility
-                .FromException(new CoapOptionException("Unsupported critical option (45575)")).Serialise();
+            var expectedMessage = CoapMessage.FromException(new CoapOptionException("Unsupported critical option (45575)")).Serialise();
+
             _endpoint
                 .Setup(c => c.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage))))
                 .Returns(Task.FromResult(0))
@@ -226,7 +226,7 @@ namespace CoAPNet.Tests
         public void TestResourceNotFound()
         {
             // Arrange
-            var expectedMessage = CoapMessageUtility.CreateMessage(CoapMessageCode.NotFound, $"Resouce {new Uri(_baseUri, "/test")} was not found", CoapMessageType.Acknowledgement).Serialise();
+            var expectedMessage = CoapMessage.Create(CoapMessageCode.NotFound, $"Resouce {new Uri(_baseUri, "/test")} was not found", CoapMessageType.Acknowledgement).Serialise();
 
             _endpoint
                 .Setup(e => e.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage))))
@@ -249,7 +249,7 @@ namespace CoAPNet.Tests
         public void TestResourceInternalError()
         {
             // Arrange
-            var expectedMessage = CoapMessageUtility.CreateMessage(CoapMessageCode.InternalServerError, "An unexpected error occured", CoapMessageType.Reset).Serialise();
+            var expectedMessage = CoapMessage.Create(CoapMessageCode.InternalServerError, "An unexpected error occured", CoapMessageType.Reset).Serialise();
 
             _endpoint
                 .Setup(e => e.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage))))

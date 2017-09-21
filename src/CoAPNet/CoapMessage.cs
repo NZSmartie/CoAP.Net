@@ -23,7 +23,7 @@ using CoAPNet.Options;
 namespace CoAPNet
 {
     /// <summary>
-    /// <see cref="CoapMessage.Type"/>
+    /// See <see cref="CoapMessage"/>.<see cref="CoapMessage.Type"/>
     /// </summary>
     public enum CoapMessageType
     {
@@ -50,11 +50,26 @@ namespace CoAPNet
     /// </summary>
     public enum CoapMessageCode
     {
+        /// <summary>
+        /// Placeholder and will throw <see cref="InvalidOperationException"/> when used.
+        /// </summary>
         None = 0,
         // 0.xx Request
+        /// <summary>
+        /// GET request from a client to a server used for retreiving resources
+        /// </summary>
         Get = 1,
+        /// <summary>
+        /// Post request from a client to a server used for creating or updating resources
+        /// </summary>
         Post = 2,
+        /// <summary>
+        /// Put request from a client to a server used for updating resources
+        /// </summary>
         Put = 3,
+        /// <summary>
+        /// DELETE request from a client to a server used to delete resources
+        /// </summary>
         Delete = 4,
         // 2.xx Success
         Created = 201,
@@ -82,26 +97,39 @@ namespace CoAPNet
         ProxyingNotSupported = 505
     }
 
-    public static class MessageExtensions
+    /// <summary>
+    /// Extension methods for quickly deciding which logic to apply to CoAP messages.
+    /// </summary>
+    public static class CoapMessageCodeExtensions
     {
+        /// <summary>
+        /// indicates if the CoAP message is a Request from a client.
+        /// </summary>
         public static bool IsRequest(this CoapMessageCode code)
-        {
-            return ((int) code / 100) == 0 && code != CoapMessageCode.None;
-        }
+            => ((int) code / 100) == 0 && code != CoapMessageCode.None;
+
+        /// <summary>
+        /// indicates if the CoAP message is a successful response from a server.
+        /// </summary>
         public static bool IsSuccess(this CoapMessageCode code)
-        {
-            return ((int)code / 100) == 2;
-        }
+            => ((int)code / 100) == 2;
+
+        /// <summary>
+        /// indicates if the CoAP message is a error due to a client's request.
+        /// </summary>
         public static bool IsClientError(this CoapMessageCode code)
-        {
-            return ((int)code / 100) == 4;
-        }
+            => ((int)code / 100) == 4;
+
+        /// <summary>
+        /// indicates if the CoAP message is a error due to internal server issues.
+        /// </summary>
         public static bool IsServerError(this CoapMessageCode code)
-        {
-            return ((int)code / 100) == 5;
-        }
+            => ((int)code / 100) == 5;
     }
 
+    /// <summary>
+    /// Represents CoAP errors that arise during parsing or serialising operations.
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class CoapMessageFormatException : CoapException {
 
@@ -116,10 +144,14 @@ namespace CoAPNet
         public CoapMessageFormatException(string message, Exception innerException, CoapMessageCode responseCode) : base(message, innerException, responseCode) { }
     }
 
-    public class CoapMessage
+    /// <summary>
+    /// An object to represent an CoAP message received or to be sent.
+    /// </summary>
+    public partial class CoapMessage
     {
 
         private int _version = 1;
+
         /// <summary>
         /// Gets or sets the protocol version. 
         /// As of [RFC7252], only version 1 is supported. any other value is reserved.
@@ -137,8 +169,14 @@ namespace CoAPNet
 
         /// <summary>
         /// Gets or Sets if the message should be responded to by the server. 
-        /// <para>When set to <see cref="CoapMessageType.Reset"/>, this message indicates that a <see cref="CoapMessageType.Confirmable"/> message was rejected by the server endpoint.</para>
-        /// <para>When set to <see cref="CoapMessageType.Acknowledgement"/>, this message indicates it was accepted (and responded) by the server enpoint.</para>
+        /// <list type="bullet">
+        ///   <item>
+        ///     <description>When set to <see cref="CoapMessageType.Reset"/>, this message indicates that a <see cref="CoapMessageType.Confirmable"/> message was rejected by the server endpoint.</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>When set to <see cref="CoapMessageType.Acknowledgement"/>, this message indicates it was accepted (and responded) by the server enpoint.</description>
+        ///   </item>
+        /// </list>
         /// </summary>
         public CoapMessageType Type { get; set; }
 
@@ -192,8 +230,15 @@ namespace CoAPNet
         /// <remarks>Check (or add) <see cref="ContentFormat"/> in <see cref="CoapMessage.Options"/> for the format of the payload.</remarks>
         public byte[] Payload { get; set; }
 
+        /// <summary>
+        /// Indicates if this CoAP message is received from a multicast endpoint or intended to be sent to a multicast endpoint
+        /// </summary>
         public readonly bool IsMulticast;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="multicast"></param>
         public CoapMessage(bool multicast = false)
         {
             IsMulticast = multicast;
@@ -389,34 +434,34 @@ namespace CoAPNet
         }
 
         /// <summary>
-        /// Shortcut method to create a <see cref="CoapMessage"/> with its optinos pre-populated to match the Uri.
+        /// Obsolete: See <see cref="SetUri(string)"/>
         /// </summary>
         /// <param name="input"></param>
-        /// <returns></returns>
-        public static CoapMessage CreateFromUri(string input)
-        {
-            var message = new CoapMessage();
-            message.FromUri(input);
-            return message;
-        }
+        [Obsolete]
+        public void FromUri(string input)
+            => SetUri(new Uri(input));
 
         /// <summary>
-        /// Popualtes <see cref="CoapMessage.Options"/> to match the Uri.
+        /// Obsolete: See <see cref="SetUri(Uri)"/>
+        /// </summary>
+        [Obsolete]
+        public void FromUri(Uri uri)
+            => SetUri(uri);
+
+        /// <summary>
+        /// Popualtes <see cref="Options"/> to match the Uri.
         /// </summary>
         /// <remarks>Any potentially conflicting <see cref="CoapOption"/>s are stripped after URI validation and before processing.</remarks>
         /// <param name="input"></param>
-        public void FromUri(string input)
-        {
-            // Will throw exceptions that the application code can handle
-            FromUri(new Uri(input));
-        }
+        public void SetUri(string input)
+            => SetUri(new Uri(input));
 
         /// <summary>
-        /// Popualtes <see cref="CoapMessage.Options"/> to match the Uri.
+        /// Popualtes <see cref="Options"/> to match the Uri.
         /// </summary>
         /// <remarks>Any potentially conflicting <see cref="CoapOption"/>s are stripped after URI validation and before processing.</remarks>
         /// <param name="uri"></param>
-        public void FromUri(Uri uri) { 
+        public void SetUri(Uri uri) { 
 
             if (!uri.IsAbsoluteUri)
                 throw new UriFormatException("URI is not absolute and unsupported by the CoAP scheme");
@@ -454,6 +499,10 @@ namespace CoAPNet
                 _options.AddRange(uri.Query.Substring(1).Split(new[] { '&' }).Select(p => new Options.UriQuery(Uri.UnescapeDataString(p))));
         }
 
+        /// <summary>
+        /// Generates an <see cref="Uri"/> based on the uri-sub-classed <see cref="CoapOption"/> in <see cref="Options"/>
+        /// </summary>
+        /// <returns></returns>
         public Uri GetUri()
         {
             var uri = new UriBuilder();
@@ -478,6 +527,10 @@ namespace CoAPNet
             return uri.Uri;
         }
 
+        /// <summary>
+        /// For debug purposes mostly: Represents a CoAP Message in human readable form.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             var result = Type == CoapMessageType.Acknowledgement ? "ACK" :

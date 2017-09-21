@@ -46,7 +46,7 @@ namespace CoAPNet.Server
 
         protected virtual CoapMessage HandleRequest(ICoapConnectionInformation connectionInformation, CoapMessage message)
         {
-            return CoapMessageUtility.CreateMessage(CoapMessageCode.NotFound, $"Resouce {message.GetUri()} was not found");
+            return CoapMessage.Create(CoapMessageCode.NotFound, $"Resouce {message.GetUri()} was not found");
         }
 
         private int GetNextMessageId()
@@ -82,11 +82,11 @@ namespace CoAPNet.Server
 
                 if (ex is CoapException || ex is NotImplementedException)
                 {
-                    result = CoapMessageUtility.FromException(ex);
+                    result = CoapMessage.FromException(ex);
                 }
                 else
                 {
-                    result = CoapMessageUtility.CreateMessage(CoapMessageCode.InternalServerError,
+                    result = CoapMessage.Create(CoapMessageCode.InternalServerError,
                         "An unexpected error occured", CoapMessageType.Reset);
                     throw;
                 }

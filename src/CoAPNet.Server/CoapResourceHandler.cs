@@ -79,7 +79,7 @@ namespace CoAPNet.Server
                     UriPathComparison) == 0);
 
             if (resource == null)
-                return CoapMessageUtility.CreateMessage(CoapMessageCode.NotFound,
+                return CoapMessage.Create(CoapMessageCode.NotFound,
                     $"Resouce {message.GetUri()} was not found");
 
             // ReSharper disable once SwitchStatementMissingSomeCases
