@@ -1,7 +1,10 @@
-version: '{branch}-{build}'
+version: 'v$(package_version).{build}-{branch}'
 skip_tags: true
 image: Visual Studio 2017
+
 environment:
+  package_version: '0.3.7'
+
   COVERALLS_REPO_TOKEN:
     secure: o3Oj2doUP9AbvI5Phn28o+JHMk9W9P39yiyq1b3d96g0FoJ1loUm7PJ7GytUzxyO
   git_access_token:
@@ -19,10 +22,19 @@ for:
 - branches:
     except:
       - docs
+
+  # Patch package version to all match
+  dotnet_csproj:
+    patch: true
+    file: '**\*.csproj'
+    version: '$(package_version).$(APPVEYOR_BUILD_NUMBER)'
+    package_version: '$(package_version)-pre$(APPVEYOR_BUILD_NUMBER)'
+
   build:
     publish_nuget: true
     publish_nuget_symbols: true
     verbosity: minimal
+
   test_script:
   - ps: >-
       & msbuild /t:restore /p:Configuration=AppVeyor
