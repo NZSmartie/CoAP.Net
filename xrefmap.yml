@@ -193,12 +193,30 @@ references:
   commentId: Overload:CoAPNet.CoapClient.PutAsync
   fullName: CoAPNet.CoapClient.PutAsync
   nameWithType: CoapClient.PutAsync
+- uid: CoAPNet.CoapClient.ReceiveAsync
+  name: ReceiveAsync()
+  href: api/CoAPNet.CoapClient.html#CoAPNet_CoapClient_ReceiveAsync
+  commentId: M:CoAPNet.CoapClient.ReceiveAsync
+  fullName: CoAPNet.CoapClient.ReceiveAsync()
+  nameWithType: CoapClient.ReceiveAsync()
+- uid: CoAPNet.CoapClient.ReceiveAsync(System.Int32)
+  name: ReceiveAsync(Int32)
+  href: api/CoAPNet.CoapClient.html#CoAPNet_CoapClient_ReceiveAsync_System_Int32_
+  commentId: M:CoAPNet.CoapClient.ReceiveAsync(System.Int32)
+  fullName: CoAPNet.CoapClient.ReceiveAsync(System.Int32)
+  nameWithType: CoapClient.ReceiveAsync(Int32)
 - uid: CoAPNet.CoapClient.ReceiveAsync(System.Threading.CancellationToken)
   name: ReceiveAsync(CancellationToken)
   href: api/CoAPNet.CoapClient.html#CoAPNet_CoapClient_ReceiveAsync_System_Threading_CancellationToken_
   commentId: M:CoAPNet.CoapClient.ReceiveAsync(System.Threading.CancellationToken)
   fullName: CoAPNet.CoapClient.ReceiveAsync(System.Threading.CancellationToken)
   nameWithType: CoapClient.ReceiveAsync(CancellationToken)
+- uid: CoAPNet.CoapClient.ReceiveAsync(System.TimeSpan)
+  name: ReceiveAsync(TimeSpan)
+  href: api/CoAPNet.CoapClient.html#CoAPNet_CoapClient_ReceiveAsync_System_TimeSpan_
+  commentId: M:CoAPNet.CoapClient.ReceiveAsync(System.TimeSpan)
+  fullName: CoAPNet.CoapClient.ReceiveAsync(System.TimeSpan)
+  nameWithType: CoapClient.ReceiveAsync(TimeSpan)
 - uid: CoAPNet.CoapClient.ReceiveAsync*
   name: ReceiveAsync
   href: api/CoAPNet.CoapClient.html#CoAPNet_CoapClient_ReceiveAsync_
@@ -469,6 +487,18 @@ references:
   commentId: Overload:CoAPNet.CoapMessage.Code
   fullName: CoAPNet.CoapMessage.Code
   nameWithType: CoapMessage.Code
+- uid: CoAPNet.CoapMessage.Create(CoAPNet.CoapMessageCode,System.String,CoAPNet.CoapMessageType)
+  name: Create(CoapMessageCode, String, CoapMessageType)
+  href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_Create_CoAPNet_CoapMessageCode_System_String_CoAPNet_CoapMessageType_
+  commentId: M:CoAPNet.CoapMessage.Create(CoAPNet.CoapMessageCode,System.String,CoAPNet.CoapMessageType)
+  fullName: CoAPNet.CoapMessage.Create(CoAPNet.CoapMessageCode, System.String, CoAPNet.CoapMessageType)
+  nameWithType: CoapMessage.Create(CoapMessageCode, String, CoapMessageType)
+- uid: CoAPNet.CoapMessage.Create*
+  name: Create
+  href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_Create_
+  commentId: Overload:CoAPNet.CoapMessage.Create
+  fullName: CoAPNet.CoapMessage.Create
+  nameWithType: CoapMessage.Create
 - uid: CoAPNet.CoapMessage.CreateFromUri(System.String)
   name: CreateFromUri(String)
   href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_CreateFromUri_System_String_
@@ -496,6 +526,18 @@ references:
   commentId: Overload:CoAPNet.CoapMessage.Deserialise
   fullName: CoAPNet.CoapMessage.Deserialise
   nameWithType: CoapMessage.Deserialise
+- uid: CoAPNet.CoapMessage.FromException(System.Exception)
+  name: FromException(Exception)
+  href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_FromException_System_Exception_
+  commentId: M:CoAPNet.CoapMessage.FromException(System.Exception)
+  fullName: CoAPNet.CoapMessage.FromException(System.Exception)
+  nameWithType: CoapMessage.FromException(Exception)
+- uid: CoAPNet.CoapMessage.FromException*
+  name: FromException
+  href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_FromException_
+  commentId: Overload:CoAPNet.CoapMessage.FromException
+  fullName: CoAPNet.CoapMessage.FromException
+  nameWithType: CoapMessage.FromException
 - uid: CoAPNet.CoapMessage.FromUri(System.String)
   name: FromUri(String)
   href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_FromUri_System_String_
@@ -541,7 +583,13 @@ references:
 - uid: CoAPNet.CoapMessage.IsMulticast
   name: IsMulticast
   href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_IsMulticast
-  commentId: F:CoAPNet.CoapMessage.IsMulticast
+  commentId: P:CoAPNet.CoapMessage.IsMulticast
+  fullName: CoAPNet.CoapMessage.IsMulticast
+  nameWithType: CoapMessage.IsMulticast
+- uid: CoAPNet.CoapMessage.IsMulticast*
+  name: IsMulticast
+  href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_IsMulticast_
+  commentId: Overload:CoAPNet.CoapMessage.IsMulticast
   fullName: CoAPNet.CoapMessage.IsMulticast
   nameWithType: CoapMessage.IsMulticast
 - uid: CoAPNet.CoapMessage.Options
@@ -556,6 +604,21 @@ references:
   commentId: Overload:CoAPNet.CoapMessage.Options
   fullName: CoAPNet.CoapMessage.Options
   nameWithType: CoapMessage.Options
+- uid: CoAPNet.CoapMessage.Parse(System.Byte[],System.Boolean)
+  name: Parse(Byte[], Boolean)
+  href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_Parse_System_Byte___System_Boolean_
+  commentId: M:CoAPNet.CoapMessage.Parse(System.Byte[],System.Boolean)
+  name.vb: Parse(Byte(), Boolean)
+  fullName: CoAPNet.CoapMessage.Parse(System.Byte[], System.Boolean)
+  fullName.vb: CoAPNet.CoapMessage.Parse(System.Byte(), System.Boolean)
+  nameWithType: CoapMessage.Parse(Byte[], Boolean)
+  nameWithType.vb: CoapMessage.Parse(Byte(), Boolean)
+- uid: CoAPNet.CoapMessage.Parse*
+  name: Parse
+  href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_Parse_
+  commentId: Overload:CoAPNet.CoapMessage.Parse
+  fullName: CoAPNet.CoapMessage.Parse
+  nameWithType: CoapMessage.Parse
 - uid: CoAPNet.CoapMessage.Payload
   name: Payload
   href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_Payload
@@ -580,6 +643,24 @@ references:
   commentId: Overload:CoAPNet.CoapMessage.Serialise
   fullName: CoAPNet.CoapMessage.Serialise
   nameWithType: CoapMessage.Serialise
+- uid: CoAPNet.CoapMessage.SetUri(System.String,System.UriComponents)
+  name: SetUri(String, UriComponents)
+  href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_SetUri_System_String_System_UriComponents_
+  commentId: M:CoAPNet.CoapMessage.SetUri(System.String,System.UriComponents)
+  fullName: CoAPNet.CoapMessage.SetUri(System.String, System.UriComponents)
+  nameWithType: CoapMessage.SetUri(String, UriComponents)
+- uid: CoAPNet.CoapMessage.SetUri(System.Uri,System.UriComponents)
+  name: SetUri(Uri, UriComponents)
+  href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_SetUri_System_Uri_System_UriComponents_
+  commentId: M:CoAPNet.CoapMessage.SetUri(System.Uri,System.UriComponents)
+  fullName: CoAPNet.CoapMessage.SetUri(System.Uri, System.UriComponents)
+  nameWithType: CoapMessage.SetUri(Uri, UriComponents)
+- uid: CoAPNet.CoapMessage.SetUri*
+  name: SetUri
+  href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_SetUri_
+  commentId: Overload:CoAPNet.CoapMessage.SetUri
+  fullName: CoAPNet.CoapMessage.SetUri
+  nameWithType: CoapMessage.SetUri
 - uid: CoAPNet.CoapMessage.Token
   name: Token
   href: api/CoAPNet.CoapMessage.html#CoAPNet_CoapMessage_Token
@@ -820,6 +901,60 @@ references:
   commentId: F:CoAPNet.CoapMessageCodeClass.Success
   fullName: CoAPNet.CoapMessageCodeClass.Success
   nameWithType: CoapMessageCodeClass.Success
+- uid: CoAPNet.CoapMessageCodeExtensions
+  name: CoapMessageCodeExtensions
+  href: api/CoAPNet.CoapMessageCodeExtensions.html
+  commentId: T:CoAPNet.CoapMessageCodeExtensions
+  fullName: CoAPNet.CoapMessageCodeExtensions
+  nameWithType: CoapMessageCodeExtensions
+- uid: CoAPNet.CoapMessageCodeExtensions.IsClientError(CoAPNet.CoapMessageCode)
+  name: IsClientError(CoapMessageCode)
+  href: api/CoAPNet.CoapMessageCodeExtensions.html#CoAPNet_CoapMessageCodeExtensions_IsClientError_CoAPNet_CoapMessageCode_
+  commentId: M:CoAPNet.CoapMessageCodeExtensions.IsClientError(CoAPNet.CoapMessageCode)
+  fullName: CoAPNet.CoapMessageCodeExtensions.IsClientError(CoAPNet.CoapMessageCode)
+  nameWithType: CoapMessageCodeExtensions.IsClientError(CoapMessageCode)
+- uid: CoAPNet.CoapMessageCodeExtensions.IsClientError*
+  name: IsClientError
+  href: api/CoAPNet.CoapMessageCodeExtensions.html#CoAPNet_CoapMessageCodeExtensions_IsClientError_
+  commentId: Overload:CoAPNet.CoapMessageCodeExtensions.IsClientError
+  fullName: CoAPNet.CoapMessageCodeExtensions.IsClientError
+  nameWithType: CoapMessageCodeExtensions.IsClientError
+- uid: CoAPNet.CoapMessageCodeExtensions.IsRequest(CoAPNet.CoapMessageCode)
+  name: IsRequest(CoapMessageCode)
+  href: api/CoAPNet.CoapMessageCodeExtensions.html#CoAPNet_CoapMessageCodeExtensions_IsRequest_CoAPNet_CoapMessageCode_
+  commentId: M:CoAPNet.CoapMessageCodeExtensions.IsRequest(CoAPNet.CoapMessageCode)
+  fullName: CoAPNet.CoapMessageCodeExtensions.IsRequest(CoAPNet.CoapMessageCode)
+  nameWithType: CoapMessageCodeExtensions.IsRequest(CoapMessageCode)
+- uid: CoAPNet.CoapMessageCodeExtensions.IsRequest*
+  name: IsRequest
+  href: api/CoAPNet.CoapMessageCodeExtensions.html#CoAPNet_CoapMessageCodeExtensions_IsRequest_
+  commentId: Overload:CoAPNet.CoapMessageCodeExtensions.IsRequest
+  fullName: CoAPNet.CoapMessageCodeExtensions.IsRequest
+  nameWithType: CoapMessageCodeExtensions.IsRequest
+- uid: CoAPNet.CoapMessageCodeExtensions.IsServerError(CoAPNet.CoapMessageCode)
+  name: IsServerError(CoapMessageCode)
+  href: api/CoAPNet.CoapMessageCodeExtensions.html#CoAPNet_CoapMessageCodeExtensions_IsServerError_CoAPNet_CoapMessageCode_
+  commentId: M:CoAPNet.CoapMessageCodeExtensions.IsServerError(CoAPNet.CoapMessageCode)
+  fullName: CoAPNet.CoapMessageCodeExtensions.IsServerError(CoAPNet.CoapMessageCode)
+  nameWithType: CoapMessageCodeExtensions.IsServerError(CoapMessageCode)
+- uid: CoAPNet.CoapMessageCodeExtensions.IsServerError*
+  name: IsServerError
+  href: api/CoAPNet.CoapMessageCodeExtensions.html#CoAPNet_CoapMessageCodeExtensions_IsServerError_
+  commentId: Overload:CoAPNet.CoapMessageCodeExtensions.IsServerError
+  fullName: CoAPNet.CoapMessageCodeExtensions.IsServerError
+  nameWithType: CoapMessageCodeExtensions.IsServerError
+- uid: CoAPNet.CoapMessageCodeExtensions.IsSuccess(CoAPNet.CoapMessageCode)
+  name: IsSuccess(CoapMessageCode)
+  href: api/CoAPNet.CoapMessageCodeExtensions.html#CoAPNet_CoapMessageCodeExtensions_IsSuccess_CoAPNet_CoapMessageCode_
+  commentId: M:CoAPNet.CoapMessageCodeExtensions.IsSuccess(CoAPNet.CoapMessageCode)
+  fullName: CoAPNet.CoapMessageCodeExtensions.IsSuccess(CoAPNet.CoapMessageCode)
+  nameWithType: CoapMessageCodeExtensions.IsSuccess(CoapMessageCode)
+- uid: CoAPNet.CoapMessageCodeExtensions.IsSuccess*
+  name: IsSuccess
+  href: api/CoAPNet.CoapMessageCodeExtensions.html#CoAPNet_CoapMessageCodeExtensions_IsSuccess_
+  commentId: Overload:CoAPNet.CoapMessageCodeExtensions.IsSuccess
+  fullName: CoAPNet.CoapMessageCodeExtensions.IsSuccess
+  nameWithType: CoapMessageCodeExtensions.IsSuccess
 - uid: CoAPNet.CoapMessageFormatException
   name: CoapMessageFormatException
   href: api/CoAPNet.CoapMessageFormatException.html
@@ -2027,60 +2162,6 @@ references:
   commentId: Overload:CoAPNet.ICoapTransportFactory.Create
   fullName: CoAPNet.ICoapTransportFactory.Create
   nameWithType: ICoapTransportFactory.Create
-- uid: CoAPNet.MessageExtensions
-  name: MessageExtensions
-  href: api/CoAPNet.MessageExtensions.html
-  commentId: T:CoAPNet.MessageExtensions
-  fullName: CoAPNet.MessageExtensions
-  nameWithType: MessageExtensions
-- uid: CoAPNet.MessageExtensions.IsClientError(CoAPNet.CoapMessageCode)
-  name: IsClientError(CoapMessageCode)
-  href: api/CoAPNet.MessageExtensions.html#CoAPNet_MessageExtensions_IsClientError_CoAPNet_CoapMessageCode_
-  commentId: M:CoAPNet.MessageExtensions.IsClientError(CoAPNet.CoapMessageCode)
-  fullName: CoAPNet.MessageExtensions.IsClientError(CoAPNet.CoapMessageCode)
-  nameWithType: MessageExtensions.IsClientError(CoapMessageCode)
-- uid: CoAPNet.MessageExtensions.IsClientError*
-  name: IsClientError
-  href: api/CoAPNet.MessageExtensions.html#CoAPNet_MessageExtensions_IsClientError_
-  commentId: Overload:CoAPNet.MessageExtensions.IsClientError
-  fullName: CoAPNet.MessageExtensions.IsClientError
-  nameWithType: MessageExtensions.IsClientError
-- uid: CoAPNet.MessageExtensions.IsRequest(CoAPNet.CoapMessageCode)
-  name: IsRequest(CoapMessageCode)
-  href: api/CoAPNet.MessageExtensions.html#CoAPNet_MessageExtensions_IsRequest_CoAPNet_CoapMessageCode_
-  commentId: M:CoAPNet.MessageExtensions.IsRequest(CoAPNet.CoapMessageCode)
-  fullName: CoAPNet.MessageExtensions.IsRequest(CoAPNet.CoapMessageCode)
-  nameWithType: MessageExtensions.IsRequest(CoapMessageCode)
-- uid: CoAPNet.MessageExtensions.IsRequest*
-  name: IsRequest
-  href: api/CoAPNet.MessageExtensions.html#CoAPNet_MessageExtensions_IsRequest_
-  commentId: Overload:CoAPNet.MessageExtensions.IsRequest
-  fullName: CoAPNet.MessageExtensions.IsRequest
-  nameWithType: MessageExtensions.IsRequest
-- uid: CoAPNet.MessageExtensions.IsServerError(CoAPNet.CoapMessageCode)
-  name: IsServerError(CoapMessageCode)
-  href: api/CoAPNet.MessageExtensions.html#CoAPNet_MessageExtensions_IsServerError_CoAPNet_CoapMessageCode_
-  commentId: M:CoAPNet.MessageExtensions.IsServerError(CoAPNet.CoapMessageCode)
-  fullName: CoAPNet.MessageExtensions.IsServerError(CoAPNet.CoapMessageCode)
-  nameWithType: MessageExtensions.IsServerError(CoapMessageCode)
-- uid: CoAPNet.MessageExtensions.IsServerError*
-  name: IsServerError
-  href: api/CoAPNet.MessageExtensions.html#CoAPNet_MessageExtensions_IsServerError_
-  commentId: Overload:CoAPNet.MessageExtensions.IsServerError
-  fullName: CoAPNet.MessageExtensions.IsServerError
-  nameWithType: MessageExtensions.IsServerError
-- uid: CoAPNet.MessageExtensions.IsSuccess(CoAPNet.CoapMessageCode)
-  name: IsSuccess(CoapMessageCode)
-  href: api/CoAPNet.MessageExtensions.html#CoAPNet_MessageExtensions_IsSuccess_CoAPNet_CoapMessageCode_
-  commentId: M:CoAPNet.MessageExtensions.IsSuccess(CoAPNet.CoapMessageCode)
-  fullName: CoAPNet.MessageExtensions.IsSuccess(CoAPNet.CoapMessageCode)
-  nameWithType: MessageExtensions.IsSuccess(CoapMessageCode)
-- uid: CoAPNet.MessageExtensions.IsSuccess*
-  name: IsSuccess
-  href: api/CoAPNet.MessageExtensions.html#CoAPNet_MessageExtensions_IsSuccess_
-  commentId: Overload:CoAPNet.MessageExtensions.IsSuccess
-  fullName: CoAPNet.MessageExtensions.IsSuccess
-  nameWithType: MessageExtensions.IsSuccess
 - uid: CoAPNet.Options
   name: CoAPNet.Options
   href: api/CoAPNet.Options.html
