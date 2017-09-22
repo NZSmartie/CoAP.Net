@@ -1,4 +1,4 @@
-version: 'v$(package_version).$(APPVEYOR_BUILD_NUMBER)'
+version: 'v$(package_version).{build}'
 skip_non_tags: true
 image: Visual Studio 2017
 configuration: Release
@@ -40,4 +40,4 @@ deploy:
   api_key:
     secure: fv6CJchPhPH4A2jDBx6rRGSj5u1MlbGxPd6vs5i8DxUEKDwkCQRyLP0igO5PT/W9
   on:
-    branch: master
+    appveyor_repo_tag: true
