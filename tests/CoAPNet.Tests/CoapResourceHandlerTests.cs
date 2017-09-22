@@ -59,7 +59,7 @@ namespace CoAPNet.Tests
             mockResource.Setup(r => r.Get(It.IsAny<CoapMessage>())).Returns(new CoapMessage());
 
             var request = new CoapMessage { Code = CoapMessageCode.Get };
-            request.FromUri(new Uri(_baseUri, "/test"));
+            request.SetUri(new Uri(_baseUri, "/test"));
 
             // Act
             var service = new CoapResourceHandler();
@@ -83,7 +83,7 @@ namespace CoAPNet.Tests
                 .Verifiable();
 
             var request = new CoapMessage { Code = CoapMessageCode.Get };
-            request.FromUri(new Uri(_baseUri, "/test"));
+            request.SetUri(new Uri(_baseUri, "/test"));
 
             // Act
             var service = new CoapResourceHandler();
@@ -106,7 +106,7 @@ namespace CoAPNet.Tests
                 .Verifiable();
 
             var request = new CoapMessage { Code = CoapMessageCode.Post };
-            request.FromUri(new Uri(_baseUri, "/test"));
+            request.SetUri(new Uri(_baseUri, "/test"));
 
             // Act
             var service = new CoapResourceHandler();
@@ -129,7 +129,7 @@ namespace CoAPNet.Tests
                 .Verifiable();
 
             var request = new CoapMessage { Code = CoapMessageCode.Put };
-            request.FromUri(new Uri(_baseUri, "/test"));
+            request.SetUri(new Uri(_baseUri, "/test"));
 
             // Act
             var service = new CoapResourceHandler();
@@ -152,7 +152,7 @@ namespace CoAPNet.Tests
                 .Verifiable();
 
             var request = new CoapMessage { Code = CoapMessageCode.Delete };
-            request.FromUri(new Uri(_baseUri, "/test"));
+            request.SetUri(new Uri(_baseUri, "/test"));
 
             // Act
             var service = new CoapResourceHandler();
@@ -181,7 +181,7 @@ namespace CoAPNet.Tests
                 .Throws(new NotImplementedException());
 
             var request = new CoapMessage { Code = CoapMessageCode.Get };
-            request.FromUri(new Uri(_baseUri, "/test"));
+            request.SetUri(new Uri(_baseUri, "/test"));
 
             // Act
             var service = new CoapResourceHandler();
@@ -210,7 +210,7 @@ namespace CoAPNet.Tests
                 .Throws(new NotImplementedException());
 
             var request = new CoapMessage {Code = CoapMessageCode.Get, Options = {new CoapOption(111111)}};
-            request.FromUri(new Uri(_baseUri, "/test"));
+            request.SetUri(new Uri(_baseUri, "/test"));
 
             // Act
             var service = new CoapResourceHandler();
@@ -234,7 +234,7 @@ namespace CoAPNet.Tests
                 .Verifiable();
 
             var request = new CoapMessage { Code = CoapMessageCode.Get };
-            request.FromUri(new Uri(_baseUri, "/test"));
+            request.SetUri(new Uri(_baseUri, "/test"));
 
             // Act
             var service = new CoapResourceHandler();
@@ -262,7 +262,7 @@ namespace CoAPNet.Tests
                 .Throws(new Exception("Somne generic exception"));
 
             var request = new CoapMessage { Code = CoapMessageCode.Get };
-            request.FromUri(new Uri(_baseUri, "/test"));
+            request.SetUri(new Uri(_baseUri, "/test"));
 
             // Act
             var service = new CoapResourceHandler();
