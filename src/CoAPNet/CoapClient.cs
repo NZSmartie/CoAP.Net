@@ -85,6 +85,15 @@ namespace CoAPNet
 
         private readonly AsyncAutoResetEvent _receiveEvent = new AsyncAutoResetEvent(false);
 
+        public async Task<CoapReceiveResult> ReceiveAsync()
+            => await ReceiveAsync(RetransmitTimeout.Milliseconds * MaxRetransmitAttempts);
+
+        public async Task<CoapReceiveResult> ReceiveAsync(int milliseconds)
+            => await ReceiveAsync(new CancellationTokenSource(milliseconds).Token);
+
+        public async Task<CoapReceiveResult> ReceiveAsync(TimeSpan timeout)
+            => await ReceiveAsync(new CancellationTokenSource(timeout).Token);
+
         /// <summary>
         /// Checks if a <see cref="CoapReceiveResult"/> has been received and returns it. Otherwise waits until a new result is received unless cancelled by the <paramref name="token"/>
         /// </summary>
@@ -380,7 +389,7 @@ namespace CoAPNet
                 Code = CoapMessageCode.Get,
                 Type = CoapMessageType.Confirmable
             };
-            message.FromUri(uri);
+            message.SetUri(uri);
 
             return await SendAsync(message, endpoint, token).ConfigureAwait(false);
         }

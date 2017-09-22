@@ -439,7 +439,7 @@ namespace CoAPNet
         /// <param name="input"></param>
         [Obsolete]
         public void FromUri(string input)
-            => SetUri(new Uri(input));
+            => SetUri(new Uri(input, UriKind.RelativeOrAbsolute));
 
         /// <summary>
         /// Obsolete: See <see cref="SetUri(Uri)"/>
@@ -453,49 +453,72 @@ namespace CoAPNet
         /// </summary>
         /// <remarks>Any potentially conflicting <see cref="CoapOption"/>s are stripped after URI validation and before processing.</remarks>
         /// <param name="input"></param>
-        public void SetUri(string input)
-            => SetUri(new Uri(input));
+        /// <param name="parts"></param>
+        public void SetUri(string input, UriComponents parts = UriComponents.HttpRequestUrl)
+            => SetUri(new Uri(input, UriKind.RelativeOrAbsolute), parts);
 
         /// <summary>
         /// Popualtes <see cref="Options"/> to match the Uri.
         /// </summary>
         /// <remarks>Any potentially conflicting <see cref="CoapOption"/>s are stripped after URI validation and before processing.</remarks>
         /// <param name="uri"></param>
-        public void SetUri(Uri uri) { 
+        /// <param name="parts"></param>
+        public void SetUri(Uri uri, UriComponents parts = UriComponents.HttpRequestUrl) { 
 
-            if (!uri.IsAbsoluteUri)
-                throw new UriFormatException("URI is not absolute and unsupported by the CoAP scheme");
+            //if (!uri.IsAbsoluteUri)
+            //    throw new UriFormatException("URI is not absolute and unsupported by the CoAP scheme");
 
-            if (uri.Scheme != "coap" && uri.Scheme != "coaps")
+            if (parts.HasFlag(UriComponents.Scheme) && uri.Scheme != "coap" && uri.Scheme != "coaps")
                 throw new UriFormatException("Input URI scheme is not coap:// or coaps://");
 
-            if (uri.Fragment.Length > 0)
+            if (parts.HasFlag(UriComponents.Fragment) && uri.Fragment.Length > 0)
                 throw new UriFormatException("Fragments are unsupported in the CoAP scheme");
 
             // Strip out any existing URI Options 
-            var optionsToDiscard = new int[] { CoapRegisteredOptionNumber.UriHost, CoapRegisteredOptionNumber.UriPort, CoapRegisteredOptionNumber.UriPath, CoapRegisteredOptionNumber.UriQuery };
+            var optionsToDiscard = new List<int>();
+            if (parts.HasFlag(UriComponents.Host))
+                optionsToDiscard.Add(CoapRegisteredOptionNumber.UriHost);
+            if (parts.HasFlag(UriComponents.Port))
+                optionsToDiscard.Add(CoapRegisteredOptionNumber.UriPort);
+            if (parts.HasFlag(UriComponents.Path))
+                optionsToDiscard.Add(CoapRegisteredOptionNumber.UriPath);
+            if (parts.HasFlag(UriComponents.Query))
+                optionsToDiscard.Add(CoapRegisteredOptionNumber.UriQuery);
+
             _options = _options.Where(kv => !optionsToDiscard.Contains(kv.OptionNumber)).ToList();
 
-            switch (uri.HostNameType)
+            if (parts.HasFlag(UriComponents.Host))
             {
-                case UriHostNameType.Dns:
-                    _options.Add(new Options.UriHost(uri.IdnHost));
-                    break;
-                case UriHostNameType.IPv4:
-                case UriHostNameType.IPv6:
-                    _options.Add(new Options.UriHost(uri.Host));
-                    break;
-                default:
-                    throw new UriFormatException("Unknown Hostname");
+                switch (uri.HostNameType)
+                {
+                    case UriHostNameType.Dns:
+                        _options.Add(new Options.UriHost(uri.IdnHost));
+                        break;
+                    case UriHostNameType.IPv4:
+                    case UriHostNameType.IPv6:
+                        _options.Add(new Options.UriHost(uri.Host));
+                        break;
+                    default:
+                        throw new UriFormatException("Unknown Hostname");
+                }
             }
 
-            if ((uri.Scheme == "coap" && !uri.IsDefaultPort && uri.Port != 5683) ||
+            if (parts.HasFlag(UriComponents.Port))
+            {
+
+                if ((uri.Scheme == "coap" && !uri.IsDefaultPort && uri.Port != 5683) ||
                 (uri.Scheme == "coaps" && !uri.IsDefaultPort && uri.Port != 5684))
-                _options.Add(new Options.UriPort((ushort)uri.Port));
+                    _options.Add(new Options.UriPort((ushort)uri.Port));
+            }
 
-            _options.AddRange(uri.AbsolutePath.Substring(1).Split(new[] { '/' }).Select(p => new Options.UriPath(Uri.UnescapeDataString(p))));
+            // Can't access path parameters if uri is not absolute....
+            if (!uri.IsAbsoluteUri)
+                uri = new Uri(new Uri("coap://localhost/"), uri);
 
-            if (uri.Query.Length > 0)
+            if (parts.HasFlag(UriComponents.Path))
+                _options.AddRange(uri.AbsolutePath.Substring(1).Split(new[] { '/' }).Select(p => new Options.UriPath(Uri.UnescapeDataString(p))));
+
+            if (parts.HasFlag(UriComponents.Query) && uri.Query.Length > 0)
                 _options.AddRange(uri.Query.Substring(1).Split(new[] { '&' }).Select(p => new Options.UriQuery(Uri.UnescapeDataString(p))));
         }
 
