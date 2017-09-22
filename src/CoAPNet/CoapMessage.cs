@@ -233,7 +233,7 @@ namespace CoAPNet
         /// <summary>
         /// Indicates if this CoAP message is received from a multicast endpoint or intended to be sent to a multicast endpoint
         /// </summary>
-        public readonly bool IsMulticast;
+        public bool IsMulticast { get; set; }
 
         /// <summary>
         /// 

@@ -266,8 +266,8 @@ namespace CoAPNet
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public virtual async Task<int> SendAsync(CoapMessage message) => 
-            await SendAsync(message, null, CancellationToken.None);
+        public virtual async Task<int> SendAsync(CoapMessage message) 
+            => await SendAsync(message, null, CancellationToken.None);
 
         /// <summary>
         /// <see cref="SendAsync(CoapMessage, ICoapEndpoint, CancellationToken)"/>
@@ -275,8 +275,8 @@ namespace CoAPNet
         /// <param name="message"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public virtual async Task<int> SendAsync(CoapMessage message, CancellationToken token) =>
-            await SendAsync(message, null, token);
+        public virtual async Task<int> SendAsync(CoapMessage message, CancellationToken token) 
+            => await SendAsync(message, null, token);
 
         /// <summary>
         /// <see cref="SendAsync(CoapMessage, ICoapEndpoint, CancellationToken)"/>
@@ -284,11 +284,11 @@ namespace CoAPNet
         /// <param name="message"></param>
         /// <param name="endpoint"></param>
         /// <returns></returns>
-        public virtual async Task<int> SendAsync(CoapMessage message, ICoapEndpoint endpoint) =>
-            await SendAsync(message, endpoint, CancellationToken.None);
+        public virtual async Task<int> SendAsync(CoapMessage message, ICoapEndpoint endpoint) 
+            => await SendAsync(message, endpoint, CancellationToken.None);
 
-        private int GetNextMessageId() => 
-            Interlocked.Increment(ref _messageId) & ushort.MaxValue;
+        private int GetNextMessageId() 
+            => Interlocked.Increment(ref _messageId) & ushort.MaxValue;
 
         /// <summary>
         /// Assigns an incremented message id (if none is already set) and performs a blocking Send operation. 
@@ -308,6 +308,9 @@ namespace CoAPNet
 
             if (message.Id == 0)
                 message.Id = GetNextMessageId();
+
+            if (message.IsMulticast && message.Type != CoapMessageType.NonConfirmable)
+                throw new CoapClientException("Can not send confirmable (CON) CoAP message to a multicast endpoint");
 
             if (message.Type != CoapMessageType.Confirmable)
             {
@@ -341,12 +344,15 @@ namespace CoAPNet
         {
             if(Endpoint == null)
                 return;
-            
+
             if (remoteEndpoint == null)
                 remoteEndpoint = new CoapEndpoint
                 {
-                    BaseUri = new UriBuilder(message.GetUri()) {Path = "/", Fragment = "", Query = ""}.Uri
+                    BaseUri = new UriBuilder(message.GetUri()) { Path = "/", Fragment = "", Query = "" }.Uri,
+                    IsMulticast = message.IsMulticast,
                 };
+            else if (message.IsMulticast && !remoteEndpoint.IsMulticast)
+                throw new CoapClientException("Can not send CoAP multicast message to a non-multicast endpoint");
 
             await Task.Run(async () => await Endpoint.SendAsync(new CoapPacket
             {

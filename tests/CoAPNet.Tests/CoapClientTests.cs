@@ -422,7 +422,7 @@ namespace CoAPNet.Tests
         // TODO: Test Multicast Message Is Marked Multicast
         [Test]
         [Category("[RFC7252] Section 8.1")]
-        public async Task TestMulticastMessagFromMulticastEndpoint()
+        public async Task TestReceiveMulticastMessagFromMulticastEndpoint()
         {
             // Arrange
             var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
@@ -467,7 +467,7 @@ namespace CoAPNet.Tests
                 }
                 catch (CoapEndpointException)
                 {
-                    Debug.WriteLine($"Caught CoapEndpointException", nameof(TestMulticastMessagFromMulticastEndpoint));
+                    Debug.WriteLine($"Caught CoapEndpointException", nameof(TestReceiveMulticastMessagFromMulticastEndpoint));
                 }
 
                 await messageReceived.Task;
@@ -476,6 +476,151 @@ namespace CoAPNet.Tests
             // Assert
             Assert.IsTrue(messageReceived.Task.IsCompleted, "Took too long to receive message");
             Assert.IsTrue(messageReceived.Task.Result, "Message is not marked as Multicast");
+        }
+
+        [Test]
+        [Category("[RFC7252] Section 8.1")]
+        public async Task TestSendMulticastMessagToMulticastEndpoint()
+        {
+            // Arrange
+            var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
+            mockClientEndpoint
+                // Ensure a multicast placeholder endpoint is used.
+                .Setup(e => e.SendAsync(It.Is<CoapPacket>(p => p.Endpoint is CoapEndpoint && p.Endpoint.IsMulticast == true)))
+                .CallBase()
+                .Verifiable("Message was not sent via multicast endpoint");
+
+            var message = new CoapMessage
+            {
+                IsMulticast = true,
+                Type = CoapMessageType.NonConfirmable,
+                Code = CoapMessageCode.Get,
+                Options = new System.Collections.Generic.List<CoapOption>
+                    {
+                        new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat)
+                    },
+                Payload = Encoding.UTF8.GetBytes("</.well-known/core>")
+            };
+
+
+            // Ack
+            using (var client = new CoapClient(mockClientEndpoint.Object))
+            {
+                var ct = new CancellationTokenSource(MaxTaskTimeout);
+
+                await client.SendAsync(message, ct.Token);
+            }
+
+            // Assert
+            Mock.Verify(mockClientEndpoint);
+        }
+
+        [Test]
+        [Category("[RFC7252] Section 8.1")]
+        public async Task TestSendMulticastMessagToExplicitMulticastEndpoint()
+        {
+            // Arrange
+            var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
+            mockClientEndpoint
+                .Setup(e => e.SendAsync(It.IsAny<CoapPacket>()))
+                .CallBase()
+                .Verifiable("Message was not sent via multicast endpoint");
+
+            var destEndpoint = new CoapEndpoint { IsMulticast = true };
+
+            var message = new CoapMessage
+            {
+                IsMulticast = true,
+                Type = CoapMessageType.NonConfirmable,
+                Code = CoapMessageCode.Get,
+                Options = new System.Collections.Generic.List<CoapOption>
+                    {
+                        new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat)
+                    },
+                Payload = Encoding.UTF8.GetBytes("</.well-known/core>")
+            };
+
+
+            // Ack
+            using (var client = new CoapClient(mockClientEndpoint.Object))
+            {
+                var ct = new CancellationTokenSource(MaxTaskTimeout);
+
+                await client.SendAsync(message, destEndpoint, ct.Token);
+            }
+
+            // Assert
+            Mock.Verify(mockClientEndpoint);
+        }
+
+        [Test]
+        [Category("[RFC7252] Section 8.1")]
+        public void TestSendConfirmableMulticastMessagThrowsCoapClientException()
+        {
+            // Arrange
+            var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
+
+            var destEndpoint = new CoapEndpoint { IsMulticast = true };
+
+            var message = new CoapMessage
+            {
+                IsMulticast = true,
+                Type = CoapMessageType.Confirmable,
+                Code = CoapMessageCode.Get,
+                Options = new System.Collections.Generic.List<CoapOption>
+                    {
+                        new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat)
+                    },
+                Payload = Encoding.UTF8.GetBytes("</.well-known/core>")
+            };
+            
+            // Ack
+            AsyncTestDelegate action = async () => {
+                using (var client = new CoapClient(mockClientEndpoint.Object))
+                {
+                    var ct = new CancellationTokenSource(MaxTaskTimeout);
+
+                    await client.SendAsync(message, destEndpoint, ct.Token);
+                }
+            };
+
+            // Assert
+            Assert.ThrowsAsync<CoapClientException>(action);
+        }
+
+        [Test]
+        [Category("[RFC7252] Section 8.1")]
+        public void TestSendMulticastMessagtoNonMulticastEndpointThrowsCoapClientException()
+        {
+            // Arrange
+            var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
+
+            var destEndpoint = new CoapEndpoint { IsMulticast = false };
+
+            var message = new CoapMessage
+            {
+                IsMulticast = true,
+                Type = CoapMessageType.NonConfirmable,
+                Code = CoapMessageCode.Get,
+                Options = new System.Collections.Generic.List<CoapOption>
+                    {
+                        new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat)
+                    },
+                Payload = Encoding.UTF8.GetBytes("</.well-known/core>")
+            };
+
+            // Ack
+            AsyncTestDelegate action = async () => {
+                using (var client = new CoapClient(mockClientEndpoint.Object))
+                {
+                    var ct = new CancellationTokenSource(MaxTaskTimeout);
+
+                    await client.SendAsync(message, destEndpoint, ct.Token);
+                }
+            };
+
+            // Assert
+            Assert.ThrowsAsync<CoapClientException>(action);
         }
 
         // TODO: Test Multicast Message is Non-Confirmable
