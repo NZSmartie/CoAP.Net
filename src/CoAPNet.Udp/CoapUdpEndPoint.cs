@@ -150,7 +150,10 @@ namespace CoAPNet.Udp
                     if (port == -1)
                         port = coapEndpoint.IsSecure ? Coap.PortDTLS : Coap.Port;
 
-                    udpDestEndpoint = new CoapUdpEndPoint(coapEndpoint.BaseUri.Host, port);
+                    udpDestEndpoint = coapEndpoint.IsMulticast
+                        ? new CoapUdpEndPoint(_multicastAddressIPv4, port) // TODO: Support sending to IPv6 multicast endpoints as well.
+                        : new CoapUdpEndPoint(coapEndpoint.BaseUri.Host, port);
+                    
                     break;
                 default:
                     throw new InvalidOperationException($"Unsupported {nameof(CoapPacket)}.{nameof(CoapPacket.Endpoint)} type ({packet.Endpoint.GetType().FullName})");
