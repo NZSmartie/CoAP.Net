@@ -1,5 +1,16 @@
  # Change Log for CoAP.Net 
 
+ ### v0.3.8
+
+ - [`c3b44ee`](https://github.com/NZSmartie/CoAP.Net/commit/c3b44ee) Default to multicast address in CoapUdpEndpoint
+ - [`2f453f5`](https://github.com/NZSmartie/CoAP.Net/commit/2f453f5) Allow selectively setting Uri componetns in CoapMessage.SetUri
+ - [`b8ef59a`](https://github.com/NZSmartie/CoAP.Net/commit/b8ef59a) Sending multicast CoAP messages are checked appropiately
+ - [`e131344`](https://github.com/NZSmartie/CoAP.Net/commit/e131344) Replace FromUri with SetUri
+
+ ### v0.3.7
+
+ - [`a2cdf94`](https://github.com/NZSmartie/CoAP.Net/commit/a2cdf94) Retarget .Net Standard 1.4 and 2.0 and export XML Doc
+
  ### v0.3.6
 
  - [`96b59c6`](https://github.com/NZSmartie/CoAP.Net/commit/96b59c6) CoAPNet.Udp support joinging IPv4 multicast groups
