@@ -23,6 +23,12 @@ for:
     except:
       - docs
 
+  skip_commits:
+    files:
+     - docs/**/*
+     - /*.md
+     - /*.yml
+
   # Patch package version to all match
   dotnet_csproj:
     patch: true
