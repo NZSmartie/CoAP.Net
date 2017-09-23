@@ -3,7 +3,7 @@ skip_tags: true
 image: Visual Studio 2017
 
 environment:
-  package_version: '0.3.8'
+  package_version: '0.3.9'
 
   COVERALLS_REPO_TOKEN:
     secure: o3Oj2doUP9AbvI5Phn28o+JHMk9W9P39yiyq1b3d96g0FoJ1loUm7PJ7GytUzxyO
@@ -51,6 +51,14 @@ for:
     name: Code Coverage
   - path: '**/*.trx'
     name: Unit Test Results
+  
+  # Deploy to MyGet
+  deploy:
+    - provider: NuGet
+      server: https://www.myget.org/F/coapnet/api/v2/package
+      api_key:
+        secure: gXj5iu2gWjqUfY5EbDi7pG7w6x3CNtWpG5p4Qy4KuWZ1rVXAzmVWXz6MIrmAUDeA
+      symbol_server: https://www.myget.org/F/coapnet/symbols/api/v2/package
 
 - branches:
     only:
