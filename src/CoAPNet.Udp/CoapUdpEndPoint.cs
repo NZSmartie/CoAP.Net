@@ -150,13 +150,27 @@ namespace CoAPNet.Udp
                     if (port == -1)
                         port = coapEndpoint.IsSecure ? Coap.PortDTLS : Coap.Port;
 
-                    udpDestEndpoint = coapEndpoint.IsMulticast
-                        ? new CoapUdpEndPoint(_multicastAddressIPv4, port) // TODO: Support sending to IPv6 multicast endpoints as well.
-                        : new CoapUdpEndPoint(coapEndpoint.BaseUri.Host, port);
+                    IPAddress address = null;
+                    if (coapEndpoint.IsMulticast)
+                        address = _multicastAddressIPv4;
+                    else if (coapEndpoint.BaseUri.HostNameType == UriHostNameType.IPv4 || coapEndpoint.BaseUri.HostNameType == UriHostNameType.IPv6)
+                        address = IPAddress.Parse(coapEndpoint.BaseUri.Host);
+                    else if (coapEndpoint.BaseUri.HostNameType == UriHostNameType.Dns)
+                        // TODO: how do we select the best ip address after looking it up? 
+                        address = (await Dns.GetHostAddressesAsync(coapEndpoint.BaseUri.Host)).FirstOrDefault();
+                    else
+                        throw new CoapUdpEndpointException($"Unsupported Uri HostNameType ({coapEndpoint.BaseUri.HostNameType:G}");
+
+                    // Check is we still don't have an address
+                    if (address == null)
+                        throw new CoapUdpEndpointException($"Can not resolve host name for {coapEndpoint.BaseUri.Host}");
+
+                    udpDestEndpoint = new CoapUdpEndPoint(address, port); // TODO: Support sending to IPv6 multicast endpoints as well.
+
                     
                     break;
                 default:
-                    throw new InvalidOperationException($"Unsupported {nameof(CoapPacket)}.{nameof(CoapPacket.Endpoint)} type ({packet.Endpoint.GetType().FullName})");
+                    throw new CoapUdpEndpointException($"Unsupported {nameof(CoapPacket)}.{nameof(CoapPacket.Endpoint)} type ({packet.Endpoint.GetType().FullName})");
             }
 
             try
