@@ -1,5 +1,9 @@
  # Change Log for CoAP.Net 
 
+ ### v0.3.9
+
+ - [`4945c5b`](https://github.com/NZSmartie/CoAP.Net/commit/4945c5b) Perform DNS queries on hostnames in CoapUdpEndpoint
+
  ### v0.3.8
 
  - [`c3b44ee`](https://github.com/NZSmartie/CoAP.Net/commit/c3b44ee) Default to multicast address in CoapUdpEndpoint
