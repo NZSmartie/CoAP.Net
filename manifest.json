@@ -9,7 +9,7 @@
       "output": {
         ".html": {
           "relative_path": "Changelog.html",
-          "hash": "9TB8z0wZupEpCDCPpVNbZA=="
+          "hash": "DxvqlRt48yr1NCYWGeFnZA=="
         }
       },
       "is_incremental": false,
@@ -69,7 +69,7 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.CoapEndpointException.html",
-          "hash": "kj14eaKxRLcbq2t0OPmRJw=="
+          "hash": "aUnf+fJTTStb6ywvLzdpaA=="
         }
       },
       "is_incremental": false,
@@ -645,7 +645,19 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Udp.CoapUdpEndPoint.html",
-          "hash": "qKuQgWztvok4stl10kFeoA=="
+          "hash": "IDuvdQEsRfGJk5XK67cPOQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/CoAPNet.Udp.CoapUdpEndpointException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/CoAPNet.Udp.CoapUdpEndpointException.html",
+          "hash": "M4vOllBQgb1PzmZVM3DdAA=="
         }
       },
       "is_incremental": false,
@@ -693,7 +705,7 @@
       "output": {
         ".html": {
           "relative_path": "api/CoAPNet.Udp.html",
-          "hash": "IuJeSySQm4GaLNwpYBZtNg=="
+          "hash": "9pv8zYv+U5hup7y0l/b0SA=="
         }
       },
       "is_incremental": false,
@@ -765,7 +777,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "xEzW7deNDTlaoW66yN52tA=="
+          "hash": "0vrnG8oiHFqgXU677AY2NQ=="
         }
       },
       "is_incremental": false,
@@ -804,6 +816,19 @@
         "incrementalPhase": "build"
       },
       "processors": {
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build"
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build"
+        },
+        "ConceptualDocumentProcessor": {
+          "can_incremental": false,
+          "incrementalPhase": "build"
+        },
         "ResourceDocumentProcessor": {
           "can_incremental": false,
           "details": "Processor ResourceDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
@@ -812,19 +837,6 @@
         "RestApiDocumentProcessor": {
           "can_incremental": false,
           "details": "Processor RestApiDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build"
-        },
-        "TocDocumentProcessor": {
-          "can_incremental": false,
-          "details": "Processor TocDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build"
-        },
-        "ConceptualDocumentProcessor": {
-          "can_incremental": false,
-          "incrementalPhase": "build"
-        },
-        "ManagedReferenceDocumentProcessor": {
-          "can_incremental": false,
           "incrementalPhase": "build"
         }
       }
