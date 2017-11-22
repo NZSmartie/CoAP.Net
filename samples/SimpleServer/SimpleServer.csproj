@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CoAPNet.Server\CoAPNet.Server.csproj" />
+    <ProjectReference Include="..\..\src\CoAPNet.Udp\CoAPNet.Udp.csproj" />
+    <ProjectReference Include="..\..\src\CoAPNet\CoAPNet.csproj" />
+  </ItemGroup>
+
+</Project>

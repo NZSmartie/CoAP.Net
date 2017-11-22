@@ -1,5 +1,4 @@
-# CoAP.Net [![Build status](https://ci.appveyor.com/api/projects/status/ku2x7p5eo2yf4lls?svg=true)](https://ci.appveyor.com/project/NZSmartie/coap-net-iu0to) [![Tests Status](https://img.shields.io/appveyor/tests/NZSmartie/coap-net-iu0to.svg?logo=appveyor)](https://ci.appveyor.com/project/NZSmartie/coap-net-iu0to/build/tests) [![Coverage Status](https://coveralls.io/repos/github/NZSmartie/CoAP.Net/badge.svg?branch=master)](https://coveralls.io/github/NZSmartie/CoAP.Net?branch=master) [![NuGet](https://img.shields.io/nuget/v/NZSmartie.CoAPNet.svg)](https://www.nuget.org/packages/NZSmartie.CoAPNet/) [![MyGet Pre Release](https://img.shields.io/myget/coapnet/vpre/NZSmartie.CoapNet.svg?label=myget)](https://www.myget.org/feed/Packages/coapnet) [![license](https://img.shields.io/github/license/NZSmartie/CoAP.Net.svg)](https://github.com/NZSmartie/CoAP.Net/blob/master/LICENSE) 
-
+# CoAP.Net [![Build status](https://img.shields.io/appveyor/ci/NZSmartie/coap-net-iu0to.svg?logo=appveyor)](https://ci.appveyor.com/project/NZSmartie/coap-net-iu0to) [![Tests Status](https://img.shields.io/appveyor/tests/NZSmartie/coap-net-iu0to.svg?logo=appveyor)](https://ci.appveyor.com/project/NZSmartie/coap-net-iu0to/build/tests) [![Coverage Status](https://coveralls.io/repos/github/NZSmartie/CoAP.Net/badge.svg?branch=master)](https://coveralls.io/github/NZSmartie/CoAP.Net?branch=master) [![NuGet](https://img.shields.io/nuget/v/NZSmartie.CoAPNet.svg)](https://www.nuget.org/packages/NZSmartie.CoAPNet/) [![MyGet Pre Release](https://img.shields.io/myget/coapnet/vpre/NZSmartie.CoapNet.svg?label=myget)](https://www.myget.org/feed/Packages/coapnet) [![license](https://img.shields.io/github/license/NZSmartie/CoAP.Net.svg)](https://github.com/NZSmartie/CoAP.Net/blob/master/LICENSE) 
 
 ## About
 
@@ -28,6 +27,7 @@ All relevant changes are logged in [Changelog.md](Changelog.md)
        - [X] Malform messages with appropiate error code.
        - [X] Exceptions are thrown during processing
    - [X] Correctly parse CoAP packets
+   - [ ] DTLS support
 
  - `CoapServer` - Simple server for binding to local transports and processing requests
  
@@ -37,7 +37,16 @@ All relevant changes are logged in [Changelog.md](Changelog.md)
 ### Todo
 
  - Create unit tests to cover as much of RFC7252 as possible.
- - An application layer friendly API (This is a very low level library at the time of writing)
+ - Create more examples
+ - Add support for [RFC 7641 - Observing Resources in the Constrained Application Protocol (CoAP)
+](https://tools.ietf.org/html/rfc7641)
+ - Add support for [RFC 7390 - Group Communication for the Constrained Application Protocol (CoAP)](https://tools.ietf.org/html/rfc7390)
+ - Add support for [RFC 7959 - Block-Wise Transfers in the Constrained Application Protocol (CoAP)](https://tools.ietf.org/html/rfc7959)
+
+## Stats
+
+[![Build History](https://buildstats.info/appveyor/chart/NZSmartie/coap-net-iu0to?branch=master)](https://ci.appveyor.com/project/NZSmartie/coap-net-iu0to/history)
+
 
 ## Examples
 
