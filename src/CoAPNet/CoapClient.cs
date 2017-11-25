@@ -80,7 +80,7 @@ namespace CoAPNet
             _messageId = new Random().Next() & 0xFFFF;
         }
 
-        private readonly Queue<Task<CoapReceiveResult>> _receiveQueue = new Queue<Task<CoapReceiveResult>>();
+        private readonly ConcurrentQueue<Task<CoapReceiveResult>> _receiveQueue = new ConcurrentQueue<Task<CoapReceiveResult>>();
         private Task _receiveTask = Task.CompletedTask;
 
         private readonly AsyncAutoResetEvent _receiveEvent = new AsyncAutoResetEvent(false);
@@ -104,9 +104,10 @@ namespace CoAPNet
             Task<CoapReceiveResult> resultTask = null;
             lock (_receiveQueue)
             {
-                if (_receiveQueue.Count > 0)
+                while (!_receiveQueue.IsEmpty)
                 {
-                    resultTask = _receiveQueue.Dequeue();
+                    if (_receiveQueue.TryDequeue(out resultTask))
+                        break;
                 }
             }
             if (resultTask != null)
@@ -119,15 +120,17 @@ namespace CoAPNet
 
             StartReceiveAsyncInternal();
 
-            await _receiveEvent.WaitAsync(token);
-
-            if (token.IsCancellationRequested)
-                return null;
-
-            lock (_receiveQueue)
+            do
             {
-                resultTask = _receiveQueue.Dequeue();
-            }
+                await _receiveEvent.WaitAsync(token);
+
+                if (token.IsCancellationRequested)
+                    return null;
+
+                if (_receiveQueue.TryDequeue(out resultTask))
+                    break;
+            } while (true);
+            
 
             return await resultTask;
         }
@@ -186,10 +189,7 @@ namespace CoAPNet
                         _messageResponses[message.Id].TrySetResult(message);
                     }
 
-                    lock (_receiveQueue)
-                    {
-                        _receiveQueue.Enqueue(Task.FromResult(new CoapReceiveResult(payload.Endpoint, message)));
-                    }
+                    _receiveQueue.Enqueue(Task.FromResult(new CoapReceiveResult(payload.Endpoint, message)));
                     _receiveEvent.Set();
                 }
             }
@@ -204,11 +204,9 @@ namespace CoAPNet
                         response.TrySetCanceled();
                 }
 
-                lock (_receiveQueue)
-                {
-                    // Gona cheat and enque that exception so it gets thrown as if this detached-infinite-loop never existed...
-                    _receiveQueue.Enqueue(Task.FromException<CoapReceiveResult>(ex));
-                }
+                // Gona cheat and enque that exception so it gets thrown as if this detached-infinite-loop never existed...
+                _receiveQueue.Enqueue(Task.FromException<CoapReceiveResult>(ex));
+
                 _receiveEvent.Set();
 
             }
