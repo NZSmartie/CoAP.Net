@@ -310,6 +310,9 @@ namespace CoAPNet
         /// <exception cref="CoapClientException">If the timeout period * maximum retransmission attempts was reached.</exception>
         public virtual async Task<int> SendAsync(CoapMessage message, ICoapEndpoint endpoint, CancellationToken token)
         {
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
+
             if(Endpoint==null)
                 throw new InvalidOperationException($"{nameof(CoapClient)} is in an invalid state");
 
@@ -349,9 +352,6 @@ namespace CoAPNet
 
         private async Task SendAsyncInternal(CoapMessage message, ICoapEndpoint remoteEndpoint, CancellationToken token)
         {
-            if(Endpoint == null)
-                return;
-
             if (remoteEndpoint == null)
                 remoteEndpoint = new CoapEndpoint
                 {
@@ -361,11 +361,11 @@ namespace CoAPNet
             else if (message.IsMulticast && !remoteEndpoint.IsMulticast)
                 throw new CoapClientException("Can not send CoAP multicast message to a non-multicast endpoint");
 
-            await Task.Run(async () => await Endpoint.SendAsync(new CoapPacket
+            await Task.Run(async () => await (Endpoint?.SendAsync(new CoapPacket
             {
                 Payload = message.Serialise(),
                 Endpoint = remoteEndpoint
-            }), token).ConfigureAwait(false);
+            }) ?? Task.CompletedTask), token).ConfigureAwait(false);
         }
 
         internal void SetNextMessageId(int value)
