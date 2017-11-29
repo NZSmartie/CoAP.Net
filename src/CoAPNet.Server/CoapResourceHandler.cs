@@ -83,17 +83,15 @@ namespace CoAPNet.Server
                     $"Resouce {message.GetUri()} was not found");
 
             // ReSharper disable once SwitchStatementMissingSomeCases
-            switch (message.Code)
-            {
-                case CoapMessageCode.Get:
-                    return await resource.GetAsync(message);
-                case CoapMessageCode.Post:
-                    return await resource.PostAsync(message);
-                case CoapMessageCode.Put:
-                    return await resource.PutAsync(message);
-                case CoapMessageCode.Delete:
-                    return await resource.DeleteAsync(message);
-            }
+            if (message.Code == CoapMessageCode.Get)
+                return await resource.GetAsync(message);
+            if (message.Code == CoapMessageCode.Post)
+                return await resource.PostAsync(message);
+            if (message.Code == CoapMessageCode.Put)
+                return await resource.PutAsync(message);
+            if (message.Code == CoapMessageCode.Delete)
+                return await resource.DeleteAsync(message);
+
             throw new InvalidOperationException();
         }
     }
