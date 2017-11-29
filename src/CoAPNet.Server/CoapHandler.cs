@@ -61,7 +61,7 @@ namespace CoAPNet.Server
             try
             {
                 _logger?.LogDebug(CoapLoggingEvents.HandlerProcessRequest, "Deserialising payload");
-                message.Deserialise(payload);
+                message.FromBytes(payload);
 
                 //TODO: check if message is multicast, ignore Confirmable requests and delay response
 
@@ -116,7 +116,7 @@ namespace CoAPNet.Server
                     new CoapPacket
                     {
                         Endpoint = connection.RemoteEndpoint,
-                        Payload = result.Serialise()
+                        Payload = result.ToBytes()
                     });
             }
         }

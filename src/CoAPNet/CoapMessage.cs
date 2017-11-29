@@ -177,7 +177,7 @@ namespace CoAPNet
         /// Serialises the message into bytes, ready to be encrypted or transported to the destination endpoint.
         /// </summary>
         /// <returns></returns>
-        public byte[] Serialise()
+        public byte[] ToBytes()
         {
             var result = new List<byte>();
             byte optCode = 0;
@@ -280,7 +280,7 @@ namespace CoAPNet
             return result.ToArray();
         }
 
-        public void Deserialise(byte[] data)
+        public void FromBytes(byte[] data)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));

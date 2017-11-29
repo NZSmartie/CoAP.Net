@@ -165,10 +165,10 @@ namespace CoAPNet
 
                     var payload = await Endpoint.ReceiveAsync();
 
-                    var message = new CoapMessage(Endpoint.IsMulticast);
+                    var message = new CoapMessage { IsMulticast = Endpoint.IsMulticast };
                     try
                     {
-                        message.Deserialise(payload.Payload);
+                        message.FromBytes(payload.Payload);
                     }
                     catch (CoapMessageFormatException)
                     {
@@ -363,7 +363,7 @@ namespace CoAPNet
 
             await Task.Run(async () => await (Endpoint?.SendAsync(new CoapPacket
             {
-                Payload = message.Serialise(),
+                Payload = message.ToBytes(),
                 Endpoint = remoteEndpoint
             }) ?? Task.CompletedTask), token).ConfigureAwait(false);
         }

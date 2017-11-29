@@ -49,7 +49,7 @@ namespace CoAPNet.Tests
             _message.Id = 1234;
 
             var expected = new byte[] { 0x40, 0x00, 0x04, 0xD2 };
-            var actual = _message.Serialise();
+            var actual = _message.ToBytes();
 
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
@@ -64,7 +64,7 @@ namespace CoAPNet.Tests
             _message.Token = new byte[] { 0xC0, 0xff, 0xee };
 
             var expected = new byte[] { 0x60, 0x00, 0x04, 0xD2 };
-            var actual = _message.Serialise();
+            var actual = _message.ToBytes();
 
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
@@ -79,7 +79,7 @@ namespace CoAPNet.Tests
             _message.Id = 1235;
 
             var expected = new byte[] { 0x60, 0x43, 0x04, 0xD3 };
-            var actual = _message.Serialise();
+            var actual = _message.ToBytes();
 
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
@@ -100,7 +100,7 @@ namespace CoAPNet.Tests
                 0x44, 0x01, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xBB, 0x2E, 0x77, 0x65, 0x6C, 0x6C, 0x2D,
                 0x6B, 0x6E, 0x6F, 0x77, 0x6E, 0x04, 0x63, 0x6F, 0x72, 0x65
             };
-            var actual = _message.Serialise();
+            var actual = _message.ToBytes();
 
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
@@ -121,7 +121,7 @@ namespace CoAPNet.Tests
                 0x64, 0x45, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc1, 0x28, 0xff, 0x3c, 0x2e, 0x77, 0x65, 0x6c, 0x6c, 0x2d, 0x6b, 0x6e,
                 0x6f, 0x77, 0x6e, 0x2f, 0x63, 0x6f, 0x72, 0x65, 0x2f, 0x3e
             };
-            var actual = _message.Serialise();
+            var actual = _message.ToBytes();
 
             Assert.IsTrue(expected.SequenceEqual(actual));
         }
@@ -130,7 +130,7 @@ namespace CoAPNet.Tests
         [Category("[RFC7252] Section 3"), Category("Decode")]
         public void TestMessageDecodeRequest()
         {
-            this._message.Deserialise(new byte[] {
+            this._message.FromBytes(new byte[] {
                 0x44, 0x01, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xBB, 0x2E, 0x77, 0x65, 0x6C, 0x6C, 0x2D,
                 0x6B, 0x6E, 0x6F, 0x77, 0x6E, 0x04, 0x63, 0x6F, 0x72, 0x65
             });
@@ -151,16 +151,16 @@ namespace CoAPNet.Tests
         [Category("[RFC7252] Section 3"), Category("Decode")]
         public void TestMessageDecodeRequest_WithBadCodes()
         {
-            Assert.Throws<CoapMessageFormatException>(() => _message.Deserialise(new byte[] { 0x64, 0x20, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc0, 0xff, 0x68, 0x65, 0x6c, 0x6c, 0x6f }));
-            Assert.Throws<CoapMessageFormatException>(() => _message.Deserialise(new byte[] { 0x64, 0xC0, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc0, 0xff, 0x68, 0x65, 0x6c, 0x6c, 0x6f }));
-            Assert.Throws<CoapMessageFormatException>(() => _message.Deserialise(new byte[] { 0x64, 0xE0, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc0, 0xff, 0x68, 0x65, 0x6c, 0x6c, 0x6f }));
+            Assert.Throws<CoapMessageFormatException>(() => _message.FromBytes(new byte[] { 0x64, 0x20, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc0, 0xff, 0x68, 0x65, 0x6c, 0x6c, 0x6f }));
+            Assert.Throws<CoapMessageFormatException>(() => _message.FromBytes(new byte[] { 0x64, 0xC0, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc0, 0xff, 0x68, 0x65, 0x6c, 0x6c, 0x6f }));
+            Assert.Throws<CoapMessageFormatException>(() => _message.FromBytes(new byte[] { 0x64, 0xE0, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc0, 0xff, 0x68, 0x65, 0x6c, 0x6c, 0x6f }));
         }
 
         [Test]
         [Category("[RFC7252] Section 3"), Category("Decode")]
         public void TestMessageDecodeResponse()
         {
-            _message.Deserialise(new byte[] {
+            _message.FromBytes(new byte[] {
                 0x64, 0x45, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc1, 0x28, 0xff, 0x3c, 0x2e, 0x77, 0x65, 0x6c, 0x6c, 0x2d, 0x6b, 0x6e,
                 0x6f, 0x77, 0x6e, 0x2f, 0x63, 0x6f, 0x72, 0x65, 0x2f, 0x3e
             });
@@ -183,7 +183,7 @@ namespace CoAPNet.Tests
             Assert.Throws<CoapOptionException>(() =>
             {
                 // TODO: Use a fake unknwon option number, right now it's set to "Block" which is going to be supported
-                _message.Deserialise(new byte[] {
+                _message.FromBytes(new byte[] {
                     0x64, 0x45, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc0, 0xb1, 0x0c, 0xff, 0x68, 0x65, 0x6c, 0x6c, 0x6f
                 });
             });
@@ -195,7 +195,7 @@ namespace CoAPNet.Tests
         {
             Assert.Throws<CoapMessageFormatException>(() =>
             {
-                _message.Deserialise(new byte[] { 0x40, 0x00, 0x10, 0x00, 0xFF, 0x12, 0x34 });
+                _message.FromBytes(new byte[] { 0x40, 0x00, 0x10, 0x00, 0xFF, 0x12, 0x34 });
             }, "Empty message with payload");
 
             // Verify that Message.Id was decoded 
@@ -203,7 +203,7 @@ namespace CoAPNet.Tests
 
             Assert.Throws<CoapMessageFormatException>(() =>
             {
-                _message.Deserialise(new byte[] { 0x52, 0x00, 0xAA, 0x55, 0x12, 0x34 });
+                _message.FromBytes(new byte[] { 0x52, 0x00, 0xAA, 0x55, 0x12, 0x34 });
             }, "Empty message with tag");
 
             // Verify that Message.Id was decoded 
@@ -211,7 +211,7 @@ namespace CoAPNet.Tests
 
             Assert.Throws<CoapMessageFormatException>(() =>
             {
-                _message.Deserialise(new byte[] { 0x60, 0x00, 0xC3, 0x3C, 0xc1, 0x28 });
+                _message.FromBytes(new byte[] { 0x60, 0x00, 0xC3, 0x3C, 0xc1, 0x28 });
             }, "Empty message with options");
 
             // Verify that Message.Id was decoded 
@@ -219,7 +219,7 @@ namespace CoAPNet.Tests
 
             Assert.Throws<CoapMessageFormatException>(() =>
             {
-                _message.Deserialise(new byte[] { 0x40, 0x20, 0x12, 0x34, 0xc1, 0x28 });
+                _message.FromBytes(new byte[] { 0x40, 0x20, 0x12, 0x34, 0xc1, 0x28 });
             }, "Message with invalid Message.Code class");
         }
 

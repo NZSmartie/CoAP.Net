@@ -65,7 +65,7 @@ namespace CoAPNet.Tests
             var service = new CoapResourceHandler();
             service.Resources.Add(mockResource.Object);
 
-            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.ToBytes()).Wait();
             //_client.Raise(c => c.OnMessageReceived += null, new CoapMessageReceivedEventArgs {Message = request});
 
             // Assert
@@ -89,7 +89,7 @@ namespace CoAPNet.Tests
             var service = new CoapResourceHandler();
 
             service.Resources.Add(mockResource.Object);
-            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.ToBytes()).Wait();
             
             // Assert
             Mock.Verify(_endpoint, mockResource);
@@ -112,7 +112,7 @@ namespace CoAPNet.Tests
             var service = new CoapResourceHandler();
 
             service.Resources.Add(mockResource.Object);
-            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.ToBytes()).Wait();
 
             // Assert
             Mock.Verify(_endpoint, mockResource);
@@ -135,7 +135,7 @@ namespace CoAPNet.Tests
             var service = new CoapResourceHandler();
 
             service.Resources.Add(mockResource.Object);
-            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.ToBytes()).Wait();
 
             // Assert
             Mock.Verify(_endpoint, mockResource);
@@ -158,7 +158,7 @@ namespace CoAPNet.Tests
             var service = new CoapResourceHandler();
 
             service.Resources.Add(mockResource.Object);
-            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.ToBytes()).Wait();
 
             // Assert
             Mock.Verify(_endpoint, mockResource);
@@ -168,7 +168,7 @@ namespace CoAPNet.Tests
         public void TestResourceMethodNotImplemented()
         {
             // Arrange
-            var expectedMessage = CoapMessage.FromException(new NotImplementedException()).Serialise();
+            var expectedMessage = CoapMessage.FromException(new NotImplementedException()).ToBytes();
 
             _endpoint
                 .Setup(c => c.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage))))
@@ -187,7 +187,7 @@ namespace CoAPNet.Tests
             var service = new CoapResourceHandler();
 
             service.Resources.Add(mockResource.Object);
-            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.ToBytes()).Wait();
 
             // Assert
             Mock.Verify(_endpoint);
@@ -197,7 +197,7 @@ namespace CoAPNet.Tests
         public void TestResourceMethodBadOption()
         {
             // Arrange
-            var expectedMessage = CoapMessage.FromException(new CoapOptionException("Unsupported critical option (45575)")).Serialise();
+            var expectedMessage = CoapMessage.FromException(new CoapOptionException("Unsupported critical option (45575)")).ToBytes();
 
             _endpoint
                 .Setup(c => c.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage))))
@@ -216,7 +216,7 @@ namespace CoAPNet.Tests
             var service = new CoapResourceHandler();
 
             service.Resources.Add(mockResource.Object);
-            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.ToBytes()).Wait();
 
             // Assert
             Mock.Verify(_endpoint);
@@ -226,7 +226,7 @@ namespace CoAPNet.Tests
         public void TestResourceNotFound()
         {
             // Arrange
-            var expectedMessage = CoapMessage.Create(CoapMessageCode.NotFound, $"Resouce {new Uri(_baseUri, "/test")} was not found", CoapMessageType.Acknowledgement).Serialise();
+            var expectedMessage = CoapMessage.Create(CoapMessageCode.NotFound, $"Resouce {new Uri(_baseUri, "/test")} was not found", CoapMessageType.Acknowledgement).ToBytes();
 
             _endpoint
                 .Setup(e => e.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage))))
@@ -239,7 +239,7 @@ namespace CoAPNet.Tests
             // Act
             var service = new CoapResourceHandler();
 
-            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.ToBytes()).Wait();
 
             // Assert
             Mock.Verify(_endpoint);
@@ -249,7 +249,7 @@ namespace CoAPNet.Tests
         public void TestResourceInternalError()
         {
             // Arrange
-            var expectedMessage = CoapMessage.Create(CoapMessageCode.InternalServerError, "An unexpected error occured", CoapMessageType.Reset).Serialise();
+            var expectedMessage = CoapMessage.Create(CoapMessageCode.InternalServerError, "An unexpected error occured", CoapMessageType.Reset).ToBytes();
 
             _endpoint
                 .Setup(e => e.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage))))
@@ -268,7 +268,7 @@ namespace CoAPNet.Tests
             var service = new CoapResourceHandler();
             service.Resources.Add(mockResource.Object);
 
-            Assert.Throws<Exception>(()=> service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).GetAwaiter().GetResult());
+            Assert.Throws<Exception>(()=> service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.ToBytes()).GetAwaiter().GetResult());
 
             // Assert
             Mock.Verify(_endpoint);

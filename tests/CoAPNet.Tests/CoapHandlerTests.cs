@@ -59,7 +59,7 @@ namespace CoAPNet.Tests
             // Act
             var service = new CoapHandler();
 
-            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.Serialise()).Wait();
+            service.ProcessRequestAsync(new MockConnectionInformation(_endpoint.Object), request.ToBytes()).Wait();
 
             // Assert
             Mock.Verify(_endpoint);

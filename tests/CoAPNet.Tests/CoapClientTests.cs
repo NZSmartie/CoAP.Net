@@ -83,7 +83,7 @@ namespace CoAPNet.Tests
 
             mockClientEndpoint
                 .SetupSequence(c => c.MockReceiveAsync())
-                .Returns(Task.FromResult(new CoapPacket {Payload = expected.Serialise()}))
+                .Returns(Task.FromResult(new CoapPacket {Payload = expected.ToBytes()}))
                 .Throws(new CoapEndpointException("disposed"));
 
             // Ack
@@ -124,7 +124,7 @@ namespace CoAPNet.Tests
 
             mockClientEndpoint
                 .SetupSequence(c => c.MockReceiveAsync())
-                .Returns(Task.Delay(500).ContinueWith(t => new CoapPacket {Payload = expected.Serialise()}))
+                .Returns(Task.Delay(500).ContinueWith(t => new CoapPacket {Payload = expected.ToBytes()}))
                 .Throws(new CoapEndpointException("Endpoint closed"));
 
             // Ack
@@ -190,7 +190,7 @@ namespace CoAPNet.Tests
 
             // Assert
             mockClientEndpoint.Verify(
-                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.Serialise()))),
+                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes()))),
                 Times.Exactly(1));
         }
 
@@ -304,7 +304,7 @@ namespace CoAPNet.Tests
                     {
                         Id = 0x1234,
                         Type = CoapMessageType.Acknowledgement
-                    }.Serialise()
+                    }.ToBytes()
                 }))
                 .Throws(new CoapEndpointException("Endpoint closed"));
 
@@ -321,7 +321,7 @@ namespace CoAPNet.Tests
 
             // Assert
             mockClientEndpoint.Verify(
-                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(requestMessage.Serialise()))),
+                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(requestMessage.ToBytes()))),
                 Times.Exactly(2));
         }
 
@@ -359,7 +359,7 @@ namespace CoAPNet.Tests
 
             // Assert
             mockClientEndpoint.Verify(
-                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(requestMessage.Serialise()))),
+                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(requestMessage.ToBytes()))),
                 Times.Exactly(3));
         }
 
@@ -446,7 +446,7 @@ namespace CoAPNet.Tests
                 .Returns(Task.CompletedTask);
             mockClientEndpoint
                 .SetupSequence(c => c.MockReceiveAsync())
-                .Returns(Task.FromResult(new CoapPacket{Payload = expected.Serialise()}))
+                .Returns(Task.FromResult(new CoapPacket{Payload = expected.ToBytes()}))
                 .Throws(new CoapEndpointException("Endpoint closed"));
 
 
