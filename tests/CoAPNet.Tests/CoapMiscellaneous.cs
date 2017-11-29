@@ -16,6 +16,7 @@
 
 using System;
 using NUnit.Framework;
+using System.Collections;
 
 namespace CoAPNet.Tests
 {
@@ -48,125 +49,157 @@ namespace CoAPNet.Tests
             Assert.Throws<ArgumentOutOfRangeException>(() => Coap.GetMulticastIPv6ForScope(scope));
         }
 
-        [TestCase(CoapMessageCode.None, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Get, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.Post, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.Put, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.Delete, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.Created, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Deleted, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Valid, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Changed, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Content, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.BadRequest, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Unauthorized, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.BadOption, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Forbidden, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.NotFound, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.MethodNotAllowed, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.NotAcceptable, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.PreconditionFailed, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.RequestEntityTooLarge, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.UnsupportedContentFormat, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.InternalServerError, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.NotImplemented, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.BadGateway, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.ServiceUnavailable, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.GatewayTimeout, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.ProxyingNotSupported, ExpectedResult = false)]
+        public static IEnumerable IsRequestTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(CoapMessageCode.None).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Get).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.Post).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.Put).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.Delete).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.Created).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Deleted).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Valid).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Changed).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Content).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.BadRequest).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Unauthorized).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.BadOption).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Forbidden).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.NotFound).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.MethodNotAllowed).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.NotAcceptable).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.PreconditionFailed).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.RequestEntityTooLarge).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.UnsupportedContentFormat).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.InternalServerError).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.NotImplemented).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.BadGateway).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.ServiceUnavailable).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.GatewayTimeout).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.ProxyingNotSupported).Returns(false);
+            }
+        }
+
+        [TestCaseSource(nameof(IsRequestTestCases))]
         public bool TestCoapMessageCodeIsRequest(CoapMessageCode code)
         {
             return code.IsRequest();
         }
 
-        [TestCase(CoapMessageCode.None, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Get, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Post, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Put, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Delete, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Created, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.Deleted, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.Valid, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.Changed, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.Content, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.BadRequest, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Unauthorized, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.BadOption, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Forbidden, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.NotFound, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.MethodNotAllowed, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.NotAcceptable, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.PreconditionFailed, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.RequestEntityTooLarge, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.UnsupportedContentFormat, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.InternalServerError, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.NotImplemented, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.BadGateway, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.ServiceUnavailable, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.GatewayTimeout, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.ProxyingNotSupported, ExpectedResult = false)]
+        public static IEnumerable IsSuccessTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(CoapMessageCode.None).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Get).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Post).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Put).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Delete).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Created).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.Deleted).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.Valid).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.Changed).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.Content).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.BadRequest).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Unauthorized).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.BadOption).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Forbidden).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.NotFound).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.MethodNotAllowed).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.NotAcceptable).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.PreconditionFailed).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.RequestEntityTooLarge).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.UnsupportedContentFormat).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.InternalServerError).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.NotImplemented).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.BadGateway).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.ServiceUnavailable).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.GatewayTimeout).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.ProxyingNotSupported).Returns(false);
+            }
+        }
+
+        [TestCaseSource(nameof(IsSuccessTestCases))]
         public bool TestCoapMessageCodeIsSuccess(CoapMessageCode code)
         {
             return code.IsSuccess();
         }
 
-        [TestCase(CoapMessageCode.None, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Get, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Post, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Put, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Delete, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Created, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Deleted, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Valid, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Changed, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Content, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.BadRequest, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.Unauthorized, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.BadOption, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.Forbidden, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.NotFound, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.MethodNotAllowed, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.NotAcceptable, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.PreconditionFailed, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.RequestEntityTooLarge, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.UnsupportedContentFormat, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.InternalServerError, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.NotImplemented, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.BadGateway, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.ServiceUnavailable, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.GatewayTimeout, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.ProxyingNotSupported, ExpectedResult = false)]
+        public static IEnumerable IsClientErrorTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(CoapMessageCode.None).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Get).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Post).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Put).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Delete).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Created).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Deleted).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Valid).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Changed).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Content).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.BadRequest).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.Unauthorized).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.BadOption).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.Forbidden).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.NotFound).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.MethodNotAllowed).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.NotAcceptable).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.PreconditionFailed).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.RequestEntityTooLarge).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.UnsupportedContentFormat).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.InternalServerError).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.NotImplemented).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.BadGateway).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.ServiceUnavailable).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.GatewayTimeout).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.ProxyingNotSupported).Returns(false);
+            }
+        }
+
+        [TestCaseSource(nameof(IsClientErrorTestCases))]
         public bool TestCoapMessageCodeIsClientError(CoapMessageCode code)
         {
             return code.IsClientError();
         }
 
-        [TestCase(CoapMessageCode.None, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Get, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Post, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Put, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Delete, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Created, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Deleted, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Valid, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Changed, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Content, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.BadRequest, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Unauthorized, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.BadOption, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.Forbidden, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.NotFound, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.MethodNotAllowed, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.NotAcceptable, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.PreconditionFailed, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.RequestEntityTooLarge, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.UnsupportedContentFormat, ExpectedResult = false)]
-        [TestCase(CoapMessageCode.InternalServerError, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.NotImplemented, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.BadGateway, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.ServiceUnavailable, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.GatewayTimeout, ExpectedResult = true)]
-        [TestCase(CoapMessageCode.ProxyingNotSupported, ExpectedResult = true)]
+        public static IEnumerable IsServerErrorTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(CoapMessageCode.None).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Get).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Post).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Put).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Delete).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Created).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Deleted).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Valid).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Changed).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Content).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.BadRequest).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Unauthorized).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.BadOption).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.Forbidden).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.NotFound).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.MethodNotAllowed).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.NotAcceptable).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.PreconditionFailed).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.RequestEntityTooLarge).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.UnsupportedContentFormat).Returns(false);
+                yield return new TestCaseData(CoapMessageCode.InternalServerError).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.NotImplemented).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.BadGateway).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.ServiceUnavailable).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.GatewayTimeout).Returns(true);
+                yield return new TestCaseData(CoapMessageCode.ProxyingNotSupported).Returns(true);
+            }
+        }
+
+        [TestCaseSource(nameof(IsServerErrorTestCases))]
         public bool TestCoapMessageCodeIsServerError(CoapMessageCode code)
         {
             return code.IsServerError();

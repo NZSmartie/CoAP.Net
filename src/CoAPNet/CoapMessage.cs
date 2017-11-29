@@ -102,7 +102,7 @@ namespace CoAPNet
         /// <para>The class indicates if the message is <see cref="CoapMessageCodeClass.Request"/>, <see cref="CoapMessageCodeClass.Success"/>, <see cref="CoapMessageCodeClass.ClientError"/>, or a <see cref="CoapMessageCodeClass.ServerError"/></para>
         /// <para>See section 2.2 of [RFC7252]</para>
         /// </summary>
-        public CoapMessageCode Code { get; set; }
+        public CoapMessageCode Code { get; set; } = CoapMessageCode.None;
 
         private byte[] _token = new byte[0];
         /// <summary>
@@ -191,8 +191,8 @@ namespace CoAPNet
             // +-+-+-+-+-+-+-+-+
             // |class|  detail | (See section 5.2 of [RFC7252])
             // +-+-+-+-+-+-+-+-+
-            optCode = (byte)(((int)Code / 100) << 5); // Class
-            optCode |= (byte)((int)Code % 100);       // Detail
+            optCode = (byte)(Code.Class << 5); // Class
+            optCode |= (byte)Code.Detail;      // Detail
             result.Add(optCode); // Code
 
             result.Add((byte)((Id >> 8) & 0xFF)); // Message ID (upper byte)
@@ -293,9 +293,7 @@ namespace CoAPNet
 
             Type = (CoapMessageType)((data[0] & 0x30) >> 4);
 
-            var code = ((data[1] & 0xE0) >> 5) * 100;
-            code += data[1] & 0x1F;
-            Code = (CoapMessageCode)code;
+            Code = new CoapMessageCode(((data[1] & 0xE0) >> 5), data[1] & 0x1F);
 
             Id = (ushort)((data[2] << 8) | (data[3]));
 
@@ -355,7 +353,7 @@ namespace CoAPNet
             }
 
             // Performing this check after parsing the options to allow the chance of reading the message token
-            if (new int[] {1, 6, 7}.Contains(code / 100))
+            if (new int[] {1, 6, 7}.Contains(Code.Class))
                 throw new CoapMessageFormatException("Message.Code can not use reserved classes");
 
             if (badOptions.Count == 1)
@@ -492,16 +490,7 @@ namespace CoAPNet
                          Type == CoapMessageType.Confirmable     ? "CON" :
                          Type == CoapMessageType.NonConfirmable  ? "NON" : "RST";
 
-            result += ", MID:" + Id.ToString();
-
-            if (Code <= CoapMessageCode.Delete)
-            {
-                result += ", " + Code.ToString();
-            }
-            else
-            {
-                result += string.Format(", {0}.{1:D2} {2}", ((int)Code / 100), ((int)Code % 100), Code);
-            }
+            result += $", MID:{Id}, {Code}";
 
             if (Options.Any(o => o.OptionNumber == CoapRegisteredOptionNumber.UriPath))
                 result += ", /" + Options.Where(o => o.OptionNumber == CoapRegisteredOptionNumber.UriPath).Select(o => o.ValueString).Aggregate((a, b) => a + "/" + b);
