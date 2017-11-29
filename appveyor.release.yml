@@ -4,16 +4,12 @@ image: Visual Studio 2017
 configuration: Release
 
 environment:
-  package_version: '0.3.10'
+  package_version: '0.4.0'
   
   git_access_token:
     secure: kFNrVQrkAApceG8qiKcsgXAFx50qkY4Lfl2OLczSxwhEYbHh78AdPqyBn3P/JEjo
   git_email: nzsmartie@gmail.com
   git_user: NZSmartie
-
-# Installed nughet 4.3 to support .Net Standard 2.0 and .Net Core 2.0
-install:
- - cmd: appveyor downloadfile https://dist.nuget.org/win-x86-commandline/v4.3.0/nuget.exe
 
 # Patch package version to all match
 dotnet_csproj:
