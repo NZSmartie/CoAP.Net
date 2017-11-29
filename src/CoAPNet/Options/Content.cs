@@ -209,10 +209,8 @@ namespace CoAPNet.Options
     /// </summary>
     public class Size1 : CoapOption
     {
-        public Size1() : base(optionNumber: CoapRegisteredOptionNumber.Size1, maxLength: 4, type: OptionType.UInt)
-        {
-            ValueUInt = 9u;
-        }
+        public Size1() : base(optionNumber: CoapRegisteredOptionNumber.Size1, maxLength: 4, type: OptionType.UInt, defaultValue: 0u)
+        { }
 
         public Size1(uint value) : this()
         {
