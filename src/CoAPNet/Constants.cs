@@ -32,9 +32,12 @@ namespace CoAPNet
         public const int UriQuery = 15;
         public const int Accept = 17;
         public const int LocationQuery = 20;
+        public const int Block1 = 27;
+        public const int Block2 = 23;
         public const int ProxyUri = 35;
         public const int ProxyScheme = 39;
         public const int Size1 = 60;
+        public const int Size2 = 28;
     }
 
     /// <summary>

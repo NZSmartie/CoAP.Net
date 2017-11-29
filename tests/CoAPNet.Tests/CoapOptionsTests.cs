@@ -445,5 +445,28 @@ namespace CoAPNet.Tests
             option.FromBytes(new byte[]{}); // No-op
             Assert.Throws<InvalidCastException>(() => option.FromBytes(new byte[]{0x12}));
         }
+
+        [TestCase(0, 16, false, new byte[] { })]
+        [TestCase(1, 16, false, new byte[] { 0x01 })]
+        [TestCase(2, 32, false, new byte[] { 0x22 })]
+        [TestCase(3, 64, true, new byte[] { 0x53 })]
+        [TestCase(4095, 128, true, new byte[] { 0x7F, 0xFF })]
+        [TestCase(1048575, 256, true, new byte[] { 0x9F, 0xFF, 0xFF})]
+        public void TestBlockOption(int blockNumber, int blockSize, bool more, byte[] expected)
+        {
+            var optionToBytes = new Options.Block1(blockNumber, blockSize, more);
+
+            Assert.AreEqual(blockNumber, optionToBytes.BlockNumber, "Block Number");
+            Assert.AreEqual(blockSize, optionToBytes.BlockSize, "Block Size");
+            Assert.AreEqual(more, optionToBytes.IsMoreFollowing, "More Following");
+            Assert.AreEqual(expected, optionToBytes.GetBytes(), "To Bytes");
+
+            var optionFromBytes = new Options.Block1();
+
+            optionFromBytes.FromBytes(expected);
+            Assert.AreEqual(blockNumber, optionToBytes.BlockNumber, "Decoded Block Number from bytes");
+            Assert.AreEqual(blockSize, optionToBytes.BlockSize, "Decoded Block Size from bytes");
+            Assert.AreEqual(more, optionToBytes.IsMoreFollowing, "Decoded More following from bytes");
+        }
     }
 }

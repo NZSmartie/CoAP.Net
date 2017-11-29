@@ -36,9 +36,13 @@ namespace CoAPNet.Options
             Register<MaxAge>();
             Register<ETag>();
             Register<Size1>();
+            Register<Size2>();
 
             Register<IfMatch>();
             Register<IfNoneMatch>();
+
+            Register<Block1>();
+            Register<Block2>();
         }
 
         /// <summary>
