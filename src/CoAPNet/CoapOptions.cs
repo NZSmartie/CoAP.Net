@@ -292,6 +292,9 @@ namespace CoAPNet
             if (_type == OptionType.Empty)
                 return new byte[0];
 
+            if (_length < _minLength || _length > _maxLength)
+                throw new CoapOptionException($"Invalid option length ({_length}). Must be between {_minLength} and {_maxLength} bytes");
+
             if (_type == OptionType.Opaque)
                 return (byte[])_value;
 
@@ -319,6 +322,9 @@ namespace CoAPNet
                     throw new InvalidCastException("Empty option does not accept any data");
                 return;
             }
+
+            if(data.Length < _minLength || data.Length > _maxLength)
+                throw new CoapOptionException($"Invalid option length ({data.Length}). Must be between {_minLength} and {_maxLength} bytes");
 
             if (_type == OptionType.Opaque)
             {

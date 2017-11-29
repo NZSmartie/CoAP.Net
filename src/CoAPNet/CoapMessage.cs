@@ -308,7 +308,7 @@ namespace CoAPNet
                 _token = data.Skip(4).Take(data[0] & 0x0F).ToArray();
 
             // Catch all the CoapOptionExceptions and throw them after all the options have been parsed.
-            var badOptions = new List<int>();
+            var badOptions = new List<CoapOptionException>();
             var optionDelta = 0;
             for(var i = offset; i<data.Length; i++)
             {
@@ -345,9 +345,9 @@ namespace CoAPNet
                     if (option != null)
                         Options.Add(option);
                 }
-                catch (CoapOptionException)
+                catch (CoapOptionException ex)
                 {
-                    badOptions.Add(optCode + optionDelta);
+                    badOptions.Add(ex);
                 }
 
                 i += dataLen;
@@ -358,8 +358,11 @@ namespace CoAPNet
             if (new int[] {1, 6, 7}.Contains(code / 100))
                 throw new CoapMessageFormatException("Message.Code can not use reserved classes");
 
-            if (badOptions.Count > 0)
-                throw new CoapOptionException($"Unsupported critical option ({string.Join(", ", badOptions)})");
+            if (badOptions.Count == 1)
+                throw badOptions.First();
+
+            if (badOptions.Count > 1)
+                throw new AggregateException(badOptions);
         }
 
         /// <summary>

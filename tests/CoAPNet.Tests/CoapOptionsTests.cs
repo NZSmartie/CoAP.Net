@@ -391,7 +391,7 @@ namespace CoAPNet.Tests
         [Test]
         public void TestOpaqueOption()
         {
-            var option = new CoapOption(0, type: OptionType.Opaque);
+            var option = new CoapOption(0, type: OptionType.Opaque, maxLength: 256);
 
             option.ValueOpaque = new byte[] {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xF0};
             Assert.AreEqual(8, option.Length);
@@ -410,13 +410,13 @@ namespace CoAPNet.Tests
         [TestCase(0x12345678u, 4, new byte[] {0x12, 0x34, 0x56, 0x78})]
         public void TestValueOption(uint value, int length, byte[] expected)
         {
-            var optionToBytes = new CoapOption(0, type: OptionType.UInt);
+            var optionToBytes = new CoapOption(0, type: OptionType.UInt, maxLength: 4);
 
             optionToBytes.ValueUInt = value;
             Assert.AreEqual(length, optionToBytes.Length);
             Assert.AreEqual(expected, optionToBytes.GetBytes());
 
-            var optionFromBytes = new CoapOption(0, type: OptionType.UInt);
+            var optionFromBytes = new CoapOption(0, type: OptionType.UInt, maxLength: 4);
 
             optionFromBytes.FromBytes(expected);
             Assert.AreEqual(length, optionFromBytes.Length);
