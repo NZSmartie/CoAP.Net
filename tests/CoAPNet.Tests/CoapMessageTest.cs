@@ -149,6 +149,15 @@ namespace CoAPNet.Tests
 
         [Test]
         [Category("[RFC7252] Section 3"), Category("Decode")]
+        public void TestMessageDecodeRequest_WithBadCodes()
+        {
+            Assert.Throws<CoapMessageFormatException>(() => _message.Deserialise(new byte[] { 0x64, 0x20, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc0, 0xff, 0x68, 0x65, 0x6c, 0x6c, 0x6f }));
+            Assert.Throws<CoapMessageFormatException>(() => _message.Deserialise(new byte[] { 0x64, 0xC0, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc0, 0xff, 0x68, 0x65, 0x6c, 0x6c, 0x6f }));
+            Assert.Throws<CoapMessageFormatException>(() => _message.Deserialise(new byte[] { 0x64, 0xE0, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc0, 0xff, 0x68, 0x65, 0x6c, 0x6c, 0x6f }));
+        }
+
+        [Test]
+        [Category("[RFC7252] Section 3"), Category("Decode")]
         public void TestMessageDecodeResponse()
         {
             _message.Deserialise(new byte[] {
@@ -165,6 +174,19 @@ namespace CoAPNet.Tests
             }.SequenceEqual(_message.Options));
 
             Assert.IsTrue(Encoding.UTF8.GetBytes("<.well-known/core/>").SequenceEqual(_message.Payload));
+        }
+
+        [Test]
+        [Category("[RFC7252] Section 3"), Category("Decode")]
+        public void TestMessageDecodeResponse_WithUnknownCriticalOption()
+        {
+            Assert.Throws<CoapOptionException>(() =>
+            {
+                // TODO: Use a fake unknwon option number, right now it's set to "Block" which is going to be supported
+                _message.Deserialise(new byte[] {
+                    0x64, 0x45, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xc0, 0xb1, 0x0c, 0xff, 0x68, 0x65, 0x6c, 0x6c, 0x6f
+                });
+            });
         }
 
         [Test]
