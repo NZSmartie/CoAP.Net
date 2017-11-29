@@ -387,7 +387,7 @@ namespace CoAPNet
                 if (data[i] == 0xFF)
                 {
                     Payload = data.Skip(i + 1).ToArray();
-                    return;
+                    break;
                 }
 
                 var optCode = (data[i] & 0xF0) >> 4;
