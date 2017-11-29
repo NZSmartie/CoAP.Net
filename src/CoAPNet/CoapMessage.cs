@@ -39,92 +39,9 @@ namespace CoAPNet
     public enum CoapMessageCodeClass
     {
         Request = 0,
-        Success = 200,
-        ClientError = 400,
-        ServerError = 500
-    }
-
-    /// <summary>
-    /// Response Codes
-    /// <para>See section 5.9 of [RFC7252] and section 12.1 of [RFC7252]</para>
-    /// </summary>
-    public enum CoapMessageCode
-    {
-        /// <summary>
-        /// Placeholder and will throw <see cref="InvalidOperationException"/> when used.
-        /// </summary>
-        None = 0,
-        // 0.xx Request
-        /// <summary>
-        /// GET request from a client to a server used for retreiving resources
-        /// </summary>
-        Get = 1,
-        /// <summary>
-        /// Post request from a client to a server used for creating or updating resources
-        /// </summary>
-        Post = 2,
-        /// <summary>
-        /// Put request from a client to a server used for updating resources
-        /// </summary>
-        Put = 3,
-        /// <summary>
-        /// DELETE request from a client to a server used to delete resources
-        /// </summary>
-        Delete = 4,
-        // 2.xx Success
-        Created = 201,
-        Deleted = 202,
-        Valid = 203,
-        Changed = 204,
-        Content = 205,
-        // 4.xx Client Error
-        BadRequest = 400,
-        Unauthorized = 401,
-        BadOption = 402,
-        Forbidden = 403,
-        NotFound = 404,
-        MethodNotAllowed = 405,
-        NotAcceptable = 406,
-        PreconditionFailed = 412,
-        RequestEntityTooLarge = 413,
-        UnsupportedContentFormat = 415,
-        // 5.xx Server Error
-        InternalServerError = 500,
-        NotImplemented = 501,
-        BadGateway = 502,
-        ServiceUnavailable = 503,
-        GatewayTimeout = 504,
-        ProxyingNotSupported = 505
-    }
-
-    /// <summary>
-    /// Extension methods for quickly deciding which logic to apply to CoAP messages.
-    /// </summary>
-    public static class CoapMessageCodeExtensions
-    {
-        /// <summary>
-        /// indicates if the CoAP message is a Request from a client.
-        /// </summary>
-        public static bool IsRequest(this CoapMessageCode code)
-            => ((int) code / 100) == 0 && code != CoapMessageCode.None;
-
-        /// <summary>
-        /// indicates if the CoAP message is a successful response from a server.
-        /// </summary>
-        public static bool IsSuccess(this CoapMessageCode code)
-            => ((int)code / 100) == 2;
-
-        /// <summary>
-        /// indicates if the CoAP message is a error due to a client's request.
-        /// </summary>
-        public static bool IsClientError(this CoapMessageCode code)
-            => ((int)code / 100) == 4;
-
-        /// <summary>
-        /// indicates if the CoAP message is a error due to internal server issues.
-        /// </summary>
-        public static bool IsServerError(this CoapMessageCode code)
-            => ((int)code / 100) == 5;
+        Success = 2,
+        ClientError = 4,
+        ServerError = 5
     }
 
     /// <summary>
@@ -209,6 +126,7 @@ namespace CoAPNet
         public int Id { get; set; }
 
         private List<CoapOption> _options = new List<CoapOption>();
+
         /// <summary>
         /// Gets or sets the list of options to be encoded into the message header. The order of these options are Critical and spcial care is needed when adding new items.
         /// <para>Todo: Sort items based on <see cref="CoapOption.OptionNumber"/> and preserve options with identical Optionnumbers</para>
@@ -222,6 +140,17 @@ namespace CoAPNet
                 _options = value;
                 _options.Sort();
             }
+        }
+
+        private OptionFactory _optionFactory;
+
+        /// <summary>
+        /// Gets or Sets the OptionFactory used when decoding options in a CoAP message header
+        /// </summary>
+        public OptionFactory OptionFactory
+        {
+            get => _optionFactory ?? (_optionFactory = OptionFactory.Default);
+            set => _optionFactory = value;
         }
 
         /// <summary>
@@ -411,7 +340,7 @@ namespace CoAPNet
 
                 try
                 {
-                    var option = CoAPNet.Options.Factory.Create(optCode + optionDelta,
+                    var option = OptionFactory.Create(optCode + optionDelta,
                         data.Skip(i + 1).Take(dataLen).ToArray());
                     if (option != null)
                         Options.Add(option);
