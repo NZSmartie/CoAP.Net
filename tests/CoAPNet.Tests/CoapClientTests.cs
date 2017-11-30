@@ -499,12 +499,52 @@ namespace CoAPNet.Tests
             Assert.Inconclusive("Not Implemented");
         }
 
-        // TODO: Test Reject Empty Non-Confirmable Message
+        // TODO: Test Reject Empty Confirmable Message
         [Test]
         [Category("[RFC7252] Section 4.3")]
-        public void TestRejectEmptyNonConfirmableMessage()
+        public async Task TestRejectEmptyConfirmableMessage()
         {
-            Assert.Inconclusive("Not Implemented");
+            // Arrange
+            var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
+
+            var ping = new CoapMessage
+            {
+                Id = 0x1234,
+                Type = CoapMessageType.Confirmable,
+            };
+
+            var expected = new CoapMessage
+            {
+                Id = 0x1234,
+                Type = CoapMessageType.Reset,
+            };
+
+            mockClientEndpoint
+                .SetupSequence(c => c.MockReceiveAsync())
+                .Returns(Task.FromResult(new CoapPacket { Payload = ping.ToBytes() }))
+                .Throws(new CoapEndpointException("disposed"));
+
+            // Ack
+            using (var client = new CoapClient(mockClientEndpoint.Object))
+            {
+                var ct = new CancellationTokenSource(MaxTaskTimeout);
+
+                try
+                {
+                    while (true)
+                    {
+                        await client.ReceiveAsync(ct.Token);
+                    }
+                }
+                catch (CoapEndpointException)
+                {
+                    Debug.WriteLine($"Caught CoapEndpointException", nameof(TestReceiveMulticastMessagFromMulticastEndpoint));
+                }
+            }
+
+            // Assert
+            mockClientEndpoint.Verify(x => x.ReceiveAsync(), Times.AtLeastOnce);
+            mockClientEndpoint.Verify(x => x.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes()))), Times.AtLeastOnce);
         }
 
         // TODO: Test Multicast Message Is Marked Multicast

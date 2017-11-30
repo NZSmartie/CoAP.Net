@@ -182,6 +182,14 @@ namespace CoAPNet
                         if (message.Type == CoapMessageType.Reset && message.Code != CoapMessageCode.None)
                             continue;
 
+                        // Reject confirmable empty messages
+                        if (message.Type == CoapMessageType.Confirmable && message.Code == CoapMessageCode.None)
+                        {
+                            await SendAsync(new CoapMessage { Id = message.Id, Type = CoapMessageType.Reset }, payload.Endpoint);
+                            continue;
+                        }
+
+                        // Ignore repeated messages
                         if (IsRepeated(payload.Endpoint, message.Id))
                             continue;
 
