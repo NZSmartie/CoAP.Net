@@ -177,8 +177,13 @@ namespace CoAPNet
                     try
                     {
                         message.FromBytes(payload.Payload);
+
+                        // Ignore non-empty reset messages
+                        if (message.Type == CoapMessageType.Reset && message.Code != CoapMessageCode.None)
+                            continue;
+
                         if (IsRepeated(payload.Endpoint, message.Id))
-                            continue; 
+                            continue;
 
                         _recentMessageIds.Enqueue(Tuple.Create(DateTime.Now, payload.Endpoint, message.Id));
                     }

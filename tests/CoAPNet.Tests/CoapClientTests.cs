@@ -399,9 +399,50 @@ namespace CoAPNet.Tests
         // TODO: Test Ignore Non-Empty Reset Messages
         [Test]
         [Category("[RFC7252] Section 4.2")]
-        public void TestIgnoreNonEmptyResetMessages()
+        public async Task TestIgnoreNonEmptyResetMessages()
         {
-            Assert.Inconclusive("Not Implemented");
+            // Arrange
+            var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
+
+            var nonEmptyReset = new CoapMessage
+            {
+                Code = CoapMessageCode.Get,
+                Type = CoapMessageType.Reset,
+                Options =
+                {
+                    new Options.ContentFormat(Options.ContentFormatType.TextPlain)
+                },
+                Payload = Encoding.UTF8.GetBytes("hello")
+            };
+
+            mockClientEndpoint
+                .SetupSequence(c => c.MockReceiveAsync())
+                .Returns(Task.FromResult(new CoapPacket { Payload = nonEmptyReset.ToBytes() })) // Received
+                .Throws(new CoapEndpointException("disposed"));
+
+            int receiveCount = 0;
+
+            // Ack
+            using (var client = new CoapClient(mockClientEndpoint.Object))
+            {
+                var ct = new CancellationTokenSource(MaxTaskTimeout);
+                
+                try
+                {
+                    while (true)
+                    {
+                        await client.ReceiveAsync(ct.Token);
+                        receiveCount++;
+                    }
+                }
+                catch (CoapEndpointException)
+                {
+                    Debug.WriteLine($"Caught CoapEndpointException", nameof(TestReceiveMulticastMessagFromMulticastEndpoint));
+                }
+            }
+
+            // Assert
+            Assert.AreEqual(0, receiveCount, "Should not receive anyhting");
         }
 
         // TODO: Test Ignore Acknowledgement Messages With Reserved Code
