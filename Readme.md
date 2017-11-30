@@ -26,6 +26,7 @@ All relevant changes are logged in [Changelog.md](Changelog.md)
      - [X] Rejects messages when 
        - [X] Malform messages with appropiate error code.
        - [X] Exceptions are thrown during processing
+     - [X] Ignore repeated within a set `TimeSpan`
    - [X] Correctly parse CoAP packets
    - [ ] DTLS support
 

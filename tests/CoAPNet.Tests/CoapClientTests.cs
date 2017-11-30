@@ -194,91 +194,6 @@ namespace CoAPNet.Tests
                 Times.Exactly(1));
         }
 
-        /* TODO: This test doesn't make sense unless there's an auto-ack involved
-        [Test]
-        [Category("[RFC7252] Section 4.2")]
-        public async Task TestRequestWithSeperateResponse()
-        {
-            // Arrange
-            var token = new byte[] { 0xC0, 0xFF, 0xEE };
-            var requestMessage = new CoapMessage
-            {
-                Id = 0x1234,
-                Token = token,
-                Type = CoapMessageType.Confirmable,
-                Code = CoapMessageCode.Get,
-                Options = new System.Collections.Generic.List<CoapOption>
-                {
-                    new Options.UriPath("test")
-                }
-            };
-
-            var acknowledgeMessage = new CoapMessage
-            {
-                Id = 0xfeed,
-                Type = CoapMessageType.Acknowledgement,
-                Token = token
-            };
-
-            var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
-
-            var endpoint = mockClientEndpoint.Object;
-
-            endpoint.EnqueueReceivePacket(new CoapPacket
-            {
-                Payload = new CoapMessage
-                {
-                    Id = 0x1234,
-                    Token = token,
-                    Type = CoapMessageType.Acknowledgement
-                }.Serialise()
-            });
-
-            // Act
-            using (var mockClient = new CoapClient(mockClientEndpoint.Object))
-            {
-                var ct = new CancellationTokenSource(MaxTaskTimeout);
-
-                var messageId = await mockClient.SendAsync(requestMessage, ct.Token);
-
-                try
-                {
-                    while (true)
-                    {
-                        var result = await mockClient.ReceiveAsync(ct.Token);
-                        if (result.Message.Type == CoapMessageType.Confirmable)
-                        {
-                            await mockClient.SendAsync(acknowledgeMessage, ct.Token);
-                            endpoint.EnqueueReceivePacket(new CoapPacket
-                            {
-                                Payload = new CoapMessage
-                                {
-                                    Id = 0xfeed,
-                                    Token = token,
-                                    Type = CoapMessageType.Confirmable,
-                                    Code = CoapMessageCode.Content,
-                                    Payload = Encoding.UTF8.GetBytes("Test Resource")
-                                }.Serialise()
-                            });
-                        }
-                    }
-                }
-                catch (CoapEndpointException) { }
-
-                await mockClient.GetResponseAsync(messageId, ct.Token);
-
-            }
-            // Assert
-            mockClientEndpoint.Verify(
-                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(requestMessage.Serialise()))),
-                Times.Exactly(1));
-
-            mockClientEndpoint.Verify(
-                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(acknowledgeMessage.Serialise()))),
-                Times.Exactly(1));
-        }
-        */
-
         [Test]
         [Category("[RFC7252] Section 4.2")]
         public async Task TestRetransmissionAttempts()
@@ -363,12 +278,114 @@ namespace CoAPNet.Tests
                 Times.Exactly(3));
         }
 
-        // TODO: Test Ignore Repeated Messages
         [Test]
         [Category("[RFC7252] Section 4.2")]
-        public void TestIgnoreRepeatedMessages()
+        public async Task TestIgnoreRepeatedMessages()
         {
-            Assert.Inconclusive("Not Implemented");
+            // Arrange
+            var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
+
+            var expected = new CoapMessage
+            {
+                Id = 0x1234,
+                Type = CoapMessageType.Acknowledgement,
+                Code = CoapMessageCode.Content,
+                Options = new System.Collections.Generic.List<CoapOption>
+                    {
+                        new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat)
+                    },
+                Payload = Encoding.UTF8.GetBytes("</.well-known/core>")
+            };
+
+            mockClientEndpoint
+                .SetupSequence(c => c.MockReceiveAsync())
+                .Returns(Task.FromResult(new CoapPacket { Payload = expected.ToBytes() }))
+                .Returns(Task.FromResult(new CoapPacket { Payload = expected.ToBytes() }))
+                .Returns(Task.FromResult(new CoapPacket { Payload = expected.ToBytes() }))
+                .Throws(new CoapEndpointException("disposed"));
+
+            int receiveCount = 0;
+
+            // Ack
+            using (var client = new CoapClient(mockClientEndpoint.Object))
+            {
+                var ct = new CancellationTokenSource(MaxTaskTimeout);
+
+                client.SetNextMessageId(0x1234);
+                // Sned message
+                var messageId = await client.GetAsync("coap://example.com/.well-known/core", ct.Token);
+
+                try
+                {
+                    while (true)
+                    {
+                        await client.ReceiveAsync(ct.Token);
+                        receiveCount++;
+                    }
+                }
+                catch (CoapEndpointException)
+                {
+                    Debug.WriteLine($"Caught CoapEndpointException", nameof(TestReceiveMulticastMessagFromMulticastEndpoint));
+                }
+            }
+
+            // Assert
+            Assert.AreEqual(1, receiveCount, "Did not receive same message exactly once");
+        }
+
+        [Test]
+        [Category("[RFC7252] Section 4.2")]
+        public async Task TestRepeatedMessagesAfterExpirey()
+        {
+            // Arrange
+            var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
+
+            var expected = new CoapMessage
+            {
+                Id = 0x1234,
+                Type = CoapMessageType.Acknowledgement,
+                Code = CoapMessageCode.Content,
+                Options = new System.Collections.Generic.List<CoapOption>
+                    {
+                        new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat)
+                    },
+                Payload = Encoding.UTF8.GetBytes("</.well-known/core>")
+            };
+
+            mockClientEndpoint
+                .SetupSequence(c => c.MockReceiveAsync())
+                .Returns(Task.FromResult(new CoapPacket { Payload = expected.ToBytes() })) // Received
+                .Returns(Task.FromResult(new CoapPacket { Payload = expected.ToBytes() })) // Ignored (considered duplicate)
+                .Returns(Task.Delay(500).ContinueWith(_ => new CoapPacket { Payload = expected.ToBytes() })) // Received after expirey
+                .Throws(new CoapEndpointException("disposed"));
+
+            int receiveCount = 0;
+
+            // Ack
+            using (var client = new CoapClient(mockClientEndpoint.Object))
+            {
+                var ct = new CancellationTokenSource(MaxTaskTimeout);
+                client.IgnoreRepeatesFor = TimeSpan.FromMilliseconds(250);
+                client.SetNextMessageId(0x1234);
+                // Sned message
+                var messageId = await client.GetAsync("coap://example.com/.well-known/core", ct.Token);
+
+                try
+                {
+                    while (true)
+                    {
+                        await client.ReceiveAsync(ct.Token);
+                        receiveCount++;
+                    }
+                }
+                catch (CoapEndpointException)
+                {
+                    Debug.WriteLine($"Caught CoapEndpointException", nameof(TestReceiveMulticastMessagFromMulticastEndpoint));
+                }
+            }
+
+            // Assert
+            Assert.AreEqual(2, receiveCount, "Did not receive same message exactly twice");
         }
 
         // TODO: Test Ignore Messages Received After Timeout

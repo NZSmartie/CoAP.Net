@@ -52,6 +52,14 @@ namespace CoAPNet
 
         private int _messageId;
 
+        private Queue<Tuple<DateTime, ICoapEndpoint, int>> _recentMessageIds = new Queue<Tuple<DateTime, ICoapEndpoint, int>>();
+
+        /// <summary>
+        /// Sets or gets the <see cref="TimeSpan"/> to retain CoAP messageIDs per endpoint to compare repeated messages against.
+        /// </summary>
+        /// <remarks>Default is <c>5 minutes</c></remarks>
+        public TimeSpan IgnoreRepeatesFor { get; set; } = TimeSpan.FromMinutes(5);
+
         // I'm not particularly fond of the following _messageQueue and _messageResponses... Feels more like a hack. but it works? NEEDS MORE TESTING!!!
         private readonly ConcurrentDictionary<int, TaskCompletionSource<CoapMessage>> _messageResponses 
             = new ConcurrentDictionary<int, TaskCompletionSource<CoapMessage>>();
@@ -169,6 +177,10 @@ namespace CoAPNet
                     try
                     {
                         message.FromBytes(payload.Payload);
+                        if (IsRepeated(payload.Endpoint, message.Id))
+                            continue; 
+
+                        _recentMessageIds.Enqueue(Tuple.Create(DateTime.Now, payload.Endpoint, message.Id));
                     }
                     catch (CoapMessageFormatException)
                     {
@@ -210,6 +222,26 @@ namespace CoAPNet
                 _receiveEvent.Set();
 
             }
+        }
+
+        private bool IsRepeated(ICoapEndpoint endpoint, int messageId)
+        {
+            var clearBefore = DateTime.Now.Subtract(IgnoreRepeatesFor);
+
+            // Clear out expired messageIds
+            while (_recentMessageIds.Count > 0)
+            {
+                var p = _recentMessageIds.Peek();
+                if (p.Item1 < clearBefore)
+                    _recentMessageIds.Dequeue();
+                else
+                    break;
+            }
+
+            if (_recentMessageIds.Any(r => r.Item3 == messageId && r.Item2 == endpoint))
+                return true;
+
+            return false;
         }
 
         /// <summary>
