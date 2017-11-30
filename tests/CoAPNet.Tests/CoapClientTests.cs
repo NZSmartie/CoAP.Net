@@ -448,9 +448,39 @@ namespace CoAPNet.Tests
         // TODO: Test Ignore Acknowledgement Messages With Reserved Code
         [Test]
         [Category("[RFC7252] Section 4.2")]
-        public void TestIgnoreAcknowledgementMessagesWithReservedCode()
+        public async Task TestIgnoreAcknowledgementMessagesWithReservedCode()
         {
-            Assert.Inconclusive("Not Implemented");
+            // Arrange
+            var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
+
+            var expected = new CoapMessage
+            {
+                Id = 0x1234,
+                Type = CoapMessageType.Acknowledgement,
+                Code = new CoapMessageCode(1, 0),
+                Options = new System.Collections.Generic.List<CoapOption>
+                    {
+                        new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat)
+                    },
+                Payload = Encoding.UTF8.GetBytes("</.well-known/core>")
+            };
+
+            mockClientEndpoint
+                .SetupSequence(c => c.MockReceiveAsync())
+                .Returns(Task.FromResult(new CoapPacket { Payload = expected.ToBytes() }))
+                .Returns(Task.Delay(2000).ContinueWith<CoapPacket>(_ => throw new CoapEndpointException("Endpoint closed")));
+
+            // Ack
+            using (var client = new CoapClient(mockClientEndpoint.Object))
+            {
+                var ct = new CancellationTokenSource(MaxTaskTimeout);
+                client.RetransmitTimeout = TimeSpan.FromMilliseconds(200);
+                client.MaxRetransmitAttempts = 3;
+                client.SetNextMessageId(0x1234);
+
+                // Assert
+                Assert.ThrowsAsync<CoapClientException>(async () => await client.GetAsync("coap://example.com/.well-known/core", ct.Token));
+            }
         }
 
         // TODO: Test Reached Max Failed Retransmit Attempts

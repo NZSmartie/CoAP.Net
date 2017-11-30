@@ -198,6 +198,10 @@ namespace CoAPNet
                                 Type = CoapMessageType.Reset
                             }, payload.Endpoint);
                         }
+                        if (message.Type == CoapMessageType.Acknowledgement
+                            && Coap.ReservedMessageCodeClasses.Contains(message.Code.Class))
+                            continue;
+
                         throw;
                     }
 
@@ -279,7 +283,7 @@ namespace CoAPNet
                 throw new ArgumentOutOfRangeException($"The current message id ({messageId}) is not pending a due response");
 
             if (responseTask.Task.IsCompleted)
-                return responseTask.Task.Result;
+                return await responseTask.Task;
 
             if (Endpoint == null)
                 throw new InvalidOperationException($"{nameof(CoapClient)} is in an invalid state");

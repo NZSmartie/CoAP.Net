@@ -85,5 +85,7 @@ namespace CoAPNet
                 throw new ArgumentOutOfRangeException(nameof(scope), "Scope must be in the range from 1 to 14. 0 and 15 are reserved. (See RFC 7346)");
             return MulticastIPv6.Replace("X", scope.ToString("X"));
         }
+
+        public static readonly int[] ReservedMessageCodeClasses = new int[] { 1, 6, 7 };
     }
 }

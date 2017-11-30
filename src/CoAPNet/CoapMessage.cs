@@ -353,7 +353,7 @@ namespace CoAPNet
             }
 
             // Performing this check after parsing the options to allow the chance of reading the message token
-            if (new int[] {1, 6, 7}.Contains(Code.Class))
+            if (Coap.ReservedMessageCodeClasses.Contains(Code.Class))
                 throw new CoapMessageFormatException("Message.Code can not use reserved classes");
 
             if (badOptions.Count == 1)
