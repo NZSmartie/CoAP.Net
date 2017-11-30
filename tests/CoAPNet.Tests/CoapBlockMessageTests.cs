@@ -21,7 +21,7 @@ namespace CoAPNet.Tests
 
         [Test]
         [Category("Blocks")]
-        public async Task WriteCoapMessageBlocks()
+        public void WriteCoapMessageBlocks()
         {
             // Arrange
             var mockClientEndpoint = new Mock<MockEndpoint>() { CallBase = true };
