@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using CoAPNet.Utils;
+using System.Diagnostics;
 
 namespace CoAPNet.Tests.Mocks
 {
@@ -56,6 +57,7 @@ namespace CoAPNet.Tests.Mocks
         {
             lock (_receiveQueue)
             {
+                Debug.WriteLine($"MockEndpoint: Enqueing packet {{{string.Join(", ", packet.Payload)}}}");
                 _receiveQueue.Enqueue(packet);
             }
             _receiveEnqueuedEvent.Set();
@@ -75,10 +77,13 @@ namespace CoAPNet.Tests.Mocks
                 throw new CoapEndpointException("Encdpoint Disposed");
 
             CoapPacket packet;
+
             lock (_receiveQueue)
             {
                 packet = _receiveQueue.Dequeue();
             }
+
+            Debug.WriteLine($"MockEndpoint: Read packet {{{string.Join(", ", packet.Payload)}}}");
             return packet;
         }
     }
