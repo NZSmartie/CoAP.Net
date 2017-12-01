@@ -43,6 +43,7 @@ namespace CoAPNet.Tests.Mocks
 
         public virtual Task SendAsync(CoapPacket packet)
         {
+            Debug.WriteLine($"Writing packet {{{string.Join(", ", packet.Payload)}}}");
             return IsDisposed
                 ? throw new CoapEndpointException("Encdpoint Disposed")
                 : MockSendAsync(packet);
