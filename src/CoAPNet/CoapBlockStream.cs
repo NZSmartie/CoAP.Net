@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +20,10 @@ namespace CoAPNet
         private readonly Task _writerTask;
         private readonly AsyncAutoResetEvent _writerEvent = new AsyncAutoResetEvent(false);
         private int _writeBlockNumber = 0;
+
+        private Exception _exception = null;
+
+        private readonly AsyncAutoResetEvent _flushDoneEvent = new AsyncAutoResetEvent(false);
 
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
@@ -52,29 +57,65 @@ namespace CoAPNet
         private async Task WriteBlocksAsync()
         {
             var token = _cancellationTokenSource.Token;
-
-            while (!token.IsCancellationRequested && !_endOfStream)
+            try
             {
-                await _writerEvent.WaitAsync(token);
-
-                while (_writer.Length > BlockSize || (_endOfStream && _writer.Length > 0))
+                while (!token.IsCancellationRequested && !_endOfStream)
                 {
-                    var message = _baseMessage.Clone();
+                    await _writerEvent.WaitAsync(token);
 
-                    message.Id = 0;
-                    message.Options.Add(new Options.Block1(_writeBlockNumber++, BlockSize, _writer.Length > BlockSize));
+                    while (_writer.Length > BlockSize || (_endOfStream && _writer.Length > 0))
+                    {
+                        var message = _baseMessage.Clone();
 
-                    message.Payload = new byte[_writer.Length < BlockSize ? _writer.Length : BlockSize];
-                    _writer.Dequeue(message.Payload, 0, BlockSize);
+                        message.Id = 0;
+                        message.Options.Add(new Options.Block1(_writeBlockNumber++, BlockSize, _writer.Length > BlockSize));
 
-                    await _client.SendAsync(message);
+                        message.Payload = new byte[_writer.Length < BlockSize ? _writer.Length : BlockSize];
+                        _writer.Dequeue(message.Payload, 0, BlockSize);
+
+                        await _client.SendAsync(message);
+                    }
+
+                    // flag the mot recent flush has been performed
+                    _flushDoneEvent.Set();
                 }
+            }
+            catch (Exception ex)
+            {
+                _exception = ex;
+            }
+            finally
+            {
+                _flushDoneEvent.Set();
             }
         }
 
         public override void Flush()
         {
             _writerEvent.Set();
+
+            _flushDoneEvent.WaitAsync(CancellationToken.None).Wait();
+
+            if (_exception != null)
+            {
+                var exception = _exception;
+                _exception = null;
+                ExceptionDispatchInfo.Capture(exception).Throw();
+            }
+        }
+
+        public override async Task FlushAsync(CancellationToken cancellationToken)
+        {
+            _writerEvent.Set();
+
+            await _flushDoneEvent.WaitAsync(cancellationToken);
+
+            if (_exception != null)
+            {
+                var exception = _exception;
+                _exception = null;
+                ExceptionDispatchInfo.Capture(exception).Throw();
+            }
         }
 
         public override int Read(byte[] buffer, int offset, int count)
