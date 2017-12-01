@@ -483,14 +483,6 @@ namespace CoAPNet.Tests
             }
         }
 
-        // TODO: Test Reached Max Failed Retransmit Attempts
-        [Test]
-        [Category("[RFC7252] Section 4.2")]
-        public void TestReachedMaxFailedRetransmitAttempts()
-        {
-            Assert.Inconclusive("Not Implemented");
-        }
-
         // TODO: Test Cancel Request Retransmit Attempts
         [Test]
         [Category("[RFC7252] Section 4.2")]
