@@ -88,19 +88,19 @@ namespace CoAPNet.Tests
             mockClientEndpoint.Verify();
         }
 
-        public static IEnumerable WriteBlockWiseCoapMessage_RemoteReduceBlockSize_Data
+        /// <summary>
+        /// Generates parameters for <see cref="WriteBlockWiseCoapMessage_RemoteReduceBlockSize"/>
+        /// </summary>
+        public static IEnumerable WriteBlockWiseCoapMessage_RemoteReduceBlockSize_Data()
         {
-            get
+            foreach (var i in new[] { 16, 32, 64, 128, 256, 512, 1024 })
             {
-                foreach (var i in new[] { 16, 32, 64, 128, 256, 512, 1024 })
+                for (var r = (i / 2); r >= 16; r /= 2)
                 {
-                    for (var r = (i / 2); r >= 16; r /= 2)
-                    {
-                        yield return new TestCaseData(i, r, 1, false);
-                        yield return new TestCaseData(i, r, 2, false);
-                        yield return new TestCaseData(i, r, 1, true);
-                        yield return new TestCaseData(i, r, 2, true);
-                    }
+                    yield return new TestCaseData(i, r, 1, false);
+                    yield return new TestCaseData(i, r, 2, false);
+                    yield return new TestCaseData(i, r, 1, true);
+                    yield return new TestCaseData(i, r, 2, true);
                 }
             }
         }
