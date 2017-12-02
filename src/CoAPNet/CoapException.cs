@@ -16,6 +16,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace CoAPNet
 {
@@ -50,6 +51,25 @@ namespace CoAPNet
         public CoapException(string message, Exception innerException, CoapMessageCode responseCode) : base(message, innerException)
         {
             ResponseCode = responseCode;
+        }
+
+        public static CoapException FromCoapMessage(CoapMessage message, Exception innerExcpetion = null)
+        {
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
+
+            var errorMessage = string.Empty;
+            var contentFormat = message.Options.Get<Options.ContentFormat>();
+
+            if (contentFormat != null && message.Payload != null)
+            {
+                if (contentFormat.MediaType == Options.ContentFormatType.TextPlain)
+                    errorMessage = System.Text.Encoding.UTF8.GetString(message.Payload);
+                else
+                    errorMessage = string.Join(", ", message.Payload.Select(b => $"0x{b:X2}"));
+            }
+
+            return new CoapException(errorMessage, innerExcpetion, message.Code);
         }
     }
 }
