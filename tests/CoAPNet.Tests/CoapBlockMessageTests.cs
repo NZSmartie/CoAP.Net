@@ -21,6 +21,7 @@ namespace CoAPNet.Tests
         public readonly int MaxTaskTimeout = System.Diagnostics.Debugger.IsAttached ? -1 : 2000;
 
         [Test]
+        [MaxTime(2000)]
         [Category("[RFC7959] Section 2.5"), Category("Blocks")]
         public void WriteBlockWiseCoapMessage(
             [Values(16, 32, 64, 128, 256, 512, 1024)] int blockSize, 
@@ -86,50 +87,12 @@ namespace CoAPNet.Tests
             // Assert
             mockClientEndpoint.Verify();
         }
-        
+
         [Test]
         [Category("Blocks")]
-        public async Task ReadCoapMessageBlocks()
+        public void ReadCoapMessageBlocks()
         {
-            // Arrange
-            var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
-
-            var expected = new CoapMessage
-            {
-                Id = 0x1234,
-                Type = CoapMessageType.Acknowledgement,
-                Code = CoapMessageCode.Content,
-                Options = new System.Collections.Generic.List<CoapOption>
-                    {
-                        new Options.ContentFormat(Options.ContentFormatType.ApplicationLinkFormat),
-                        new Block2(0, 256, false)
-                    },
-                //                Payload = Encoding.UTF8.GetBytes("</.well-known/core>")
-            };
-
-            mockClientEndpoint
-                .SetupSequence(c => c.MockReceiveAsync())
-                .Returns(Task.FromResult(new CoapPacket { Payload = expected.ToBytes() }))
-                .Throws(new CoapEndpointException("disposed"));
-
-            // Ack
-            using (var client = new CoapClient(mockClientEndpoint.Object))
-            {
-                var ct = new CancellationTokenSource(MaxTaskTimeout);
-
-                client.SetNextMessageId(0x1234);
-                // Sned message
-                var messageId = await client.GetAsync("coap://example.com/.well-known/core", ct.Token);
-
-                using (var reader = new CoapBlockStream(client))
-                {
-                    // Receive msssage
-                    // await client.GetResponseAsync(messageId, ct.Token).ConfigureAwait(false);
-                }
-            }
-
-            // Assert
-            mockClientEndpoint.Verify(x => x.ReceiveAsync(), Times.AtLeastOnce);
+            Assert.Inconclusive("Not Implemented");
         }
     }
 }
