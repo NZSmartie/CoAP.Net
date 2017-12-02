@@ -31,8 +31,14 @@ namespace CoAPNet
 
         private bool _endOfStream = false;
 
+        private int _blockSize = 1024;
+
         // TODO: check blocksize for valid value in 16,32,...,1024
-        public int BlockSize { get; set; } = 256;
+        public int BlockSize
+        {
+            get => _blockSize;
+            set => _blockSize = (value <= _blockSize) ? value : throw new ArgumentOutOfRangeException($"Can not increase blocksize from {_blockSize} to {value}");
+        }
 
 
         public override bool CanRead => true;
@@ -63,17 +69,41 @@ namespace CoAPNet
                 {
                     await _writerEvent.WaitAsync(token);
 
+                    if (_blockSize > BlockSize)
+                        _blockSize = BlockSize;
+
                     while (_writer.Length > BlockSize || (_endOfStream && _writer.Length > 0))
                     {
                         var message = _baseMessage.Clone();
 
+                        // Reset the message Id so it's set by CoapClient
                         message.Id = 0;
-                        message.Options.Add(new Options.Block1(_writeBlockNumber++, BlockSize, _writer.Length > BlockSize));
 
-                        message.Payload = new byte[_writer.Length < BlockSize ? _writer.Length : BlockSize];
-                        _writer.Dequeue(message.Payload, 0, BlockSize);
+                        message.Options.Add(new Options.Block1(_writeBlockNumber++, _blockSize, _writer.Length > _blockSize));
 
-                        await _client.SendAsync(message);
+                        message.Payload = new byte[_writer.Length < _blockSize ? _writer.Length : _blockSize];
+                        _writer.Dequeue(message.Payload, 0, _blockSize);
+
+                        var messageId = await _client.SendAsync(message, token);
+                        var result = await _client.GetResponseAsync(messageId, token);
+
+                        if (result.Code.IsSuccess())
+                        {
+                            var block = result.Options.Get<Options.Block1>();
+                            var blockDelta = block.BlockSize - _blockSize;
+
+                            // Only update the size if it's smaller
+                            if (blockDelta < 0)
+                            {
+                                _blockSize += blockDelta;
+                                _writeBlockNumber -= blockDelta / _blockSize;
+                            }
+                            else if (blockDelta > 0)
+                                throw new CoapBlockException($"Remote endpoint requested to increase blocksize from {_blockSize} to {_blockSize + blockDelta}");
+                        }
+                        else if (result.Code.IsClientError() || result.Code.IsServerError())
+                            throw new CoapBlockException($"Failed to send block ({_writeBlockNumber}) to remote endpoint", CoapException.FromCoapMessage(result), result.Code);
+                        
                     }
 
                     // flag the mot recent flush has been performed
