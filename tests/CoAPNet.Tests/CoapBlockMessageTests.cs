@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -20,74 +21,50 @@ namespace CoAPNet.Tests
         public readonly int MaxTaskTimeout = System.Diagnostics.Debugger.IsAttached ? -1 : 2000;
 
         [Test]
-        [Category("Blocks")]
-        public void WriteCoapMessageBlocks()
+        [Category("[RFC7959] Section 2.5"), Category("Blocks")]
+        public void WriteBlockWiseCoapMessage([Values(16, 32, 64, 128, 256, 512, 1024)] int blockSize, [Range(1, 5)] int blocks, [Random(1, 1000, 1)] int additionalBytes)
         {
             // Arrange
             var mockClientEndpoint = new Mock<MockEndpoint>() { CallBase = true };
 
-            var blockSize = 16;
+            // "lambda" for generating our pseudo payload
+            Func<int, int, byte[]> byteRange = (a, b) => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
+
+            int totalBytes = (blocks * blockSize) + additionalBytes;
+            int totalBlocks = ((totalBytes - 1) / blockSize) + 1;
 
             var baseRequestMessage = new CoapMessage
             {
-                Id = 1,
                 Code = CoapMessageCode.Post,
                 Type = CoapMessageType.Confirmable,
             };
 
             var baseResponseMessage = new CoapMessage
             {
-                Id = 1,
                 Code = CoapMessageCode.Continue,
                 Type = CoapMessageType.Acknowledgement,
             };
 
+            // Generate an expected packet and response for all block-wise requests
+            for (var block = 0; block < totalBlocks; block++)
+            {
+                var bytes = block == (totalBlocks - 1) ? (totalBytes % blockSize) : blockSize;
 
-            var expected1 = baseRequestMessage.Clone();
-            expected1.Id = 1;
-            expected1.Payload = new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
-            expected1.Options.Add(new Options.Block1(0, blockSize, true));
+                var expected = baseRequestMessage.Clone();
+                expected.Id = block + 1;
+                expected.Payload = byteRange(blockSize * block, bytes);
+                expected.Options.Add(new Options.Block1(block, blockSize, block != (totalBlocks - 1)));
 
-            var response1 = baseResponseMessage.Clone();
-            response1.Id = 1;
-            response1.Options.Add(new Options.Block1(0, blockSize, true));
+                var response = baseResponseMessage.Clone();
+                response.Id = block + 1;
+                response.Options.Add(new Options.Block1(block, blockSize, block != (totalBlocks - 1)));
 
-            var expected2 = baseRequestMessage.Clone();
-            expected2.Id = 2;
-            expected2.Payload = new byte[] { 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f };
-            expected2.Options.Add(new Options.Block1(1, blockSize, true));
-
-            var response2 = baseResponseMessage.Clone();
-            response2.Id = 2;
-            response2.Options.Add(new Options.Block1(1, blockSize, true));
-
-            var expected3 = baseRequestMessage.Clone();
-            expected3.Id = 3;
-            expected3.Payload = new byte[] { 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27};
-            expected3.Options.Add(new Options.Block1(2, blockSize, false));
-
-            var response3 = baseResponseMessage.Clone();
-            response3.Id = 3;
-            response3.Code = CoapMessageCode.Changed;
-            response3.Options.Add(new Options.Block1(2, blockSize, false));
-
-            mockClientEndpoint
-                .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected1.ToBytes()))))
-                .Callback(() => mockClientEndpoint.Object.EnqueueReceivePacket(new CoapPacket { Payload = response1.ToBytes() }))
-                .Returns(Task.CompletedTask)
-                .Verifiable("Did not send first block");
-
-            mockClientEndpoint
-                .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected2.ToBytes()))))
-                .Callback(() => mockClientEndpoint.Object.EnqueueReceivePacket(new CoapPacket { Payload = response2.ToBytes() }))
-                .Returns(Task.CompletedTask)
-                .Verifiable("Did not send second block");
-
-            mockClientEndpoint
-                .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected3.ToBytes()))))
-                .Callback(() => mockClientEndpoint.Object.EnqueueReceivePacket(new CoapPacket { Payload = response3.ToBytes() }))
-                .Returns(Task.CompletedTask)
-                .Verifiable("Did not send third block");
+                mockClientEndpoint
+                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes()))))
+                    .Callback(() => mockClientEndpoint.Object.EnqueueReceivePacket(new CoapPacket { Payload = response.ToBytes() }))
+                    .Returns(Task.CompletedTask)
+                    .Verifiable($"Did not send block: {block}");
+            }
             
             // Act
             using (var client = new CoapClient(mockClientEndpoint.Object))
@@ -97,12 +74,7 @@ namespace CoAPNet.Tests
                 client.SetNextMessageId(1);
                 using (var writer = new CoapBlockStream(client, baseRequestMessage) { BlockSize = blockSize })
                 {
-                    writer.Write(new byte[] 
-                    {
-                        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-                        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
-                        0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27
-                    }, 0, 40);
+                    writer.Write(byteRange(0, totalBytes), 0, totalBytes);
 
                     writer.Flush();
                 };
@@ -111,7 +83,7 @@ namespace CoAPNet.Tests
             // Assert
             mockClientEndpoint.Verify();
         }
-
+        
         [Test]
         [Category("Blocks")]
         public async Task ReadCoapMessageBlocks()
