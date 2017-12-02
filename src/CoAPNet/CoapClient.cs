@@ -124,7 +124,7 @@ namespace CoAPNet
                     : await resultTask;
             
             if (Endpoint == null)
-                throw new InvalidOperationException($"{nameof(CoapClient)} is in an invalid state");
+                throw new CoapEndpointException($"{nameof(CoapClient)} does not have a valid endpoint");
 
             StartReceiveAsyncInternal();
 
