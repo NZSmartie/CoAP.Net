@@ -22,7 +22,10 @@ namespace CoAPNet.Tests
 
         [Test]
         [Category("[RFC7959] Section 2.5"), Category("Blocks")]
-        public void WriteBlockWiseCoapMessage([Values(16, 32, 64, 128, 256, 512, 1024)] int blockSize, [Range(1, 5)] int blocks, [Random(1, 1000, 1)] int additionalBytes)
+        public void WriteBlockWiseCoapMessage(
+            [Values(16, 32, 64, 128, 256, 512, 1024)] int blockSize, 
+            [Range(1, 2)] int blocks, 
+            [Values] bool lastHalfblock)
         {
             // Arrange
             var mockClientEndpoint = new Mock<MockEndpoint>() { CallBase = true };
@@ -30,7 +33,7 @@ namespace CoAPNet.Tests
             // "lambda" for generating our pseudo payload
             Func<int, int, byte[]> byteRange = (a, b) => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
 
-            int totalBytes = (blocks * blockSize) + additionalBytes;
+            int totalBytes = (blocks * blockSize) + (lastHalfblock ? blockSize / 2 : 0);
             int totalBlocks = ((totalBytes - 1) / blockSize) + 1;
 
             var baseRequestMessage = new CoapMessage
@@ -48,7 +51,7 @@ namespace CoAPNet.Tests
             // Generate an expected packet and response for all block-wise requests
             for (var block = 0; block < totalBlocks; block++)
             {
-                var bytes = block == (totalBlocks - 1) ? (totalBytes % blockSize) : blockSize;
+                var bytes = Math.Min(totalBytes - (block * blockSize), blockSize);
 
                 var expected = baseRequestMessage.Clone();
                 expected.Id = block + 1;
