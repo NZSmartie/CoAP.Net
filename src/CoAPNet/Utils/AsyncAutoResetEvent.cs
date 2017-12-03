@@ -74,5 +74,13 @@ namespace CoAPNet.Utils
 
             toRelease?.SetResult(true);
         }
+
+        public void Reset()
+        {
+            lock (_waits)
+            {
+                _signaled = false;
+            }
+        }
     }
 }
