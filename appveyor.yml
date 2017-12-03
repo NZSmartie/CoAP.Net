@@ -41,7 +41,7 @@ for:
    - ps: |
          & msbuild /t:restore /p:Configuration=AppVeyor
          
-         & $env:USERPROFILE\.nuget\packages\opencover\4.6.519\tools\OpenCover.Console.exe -oldstyle -register:user -target:"C:/Program Files/dotnet/dotnet.exe" -targetargs:"test tests/CoAPNet.Tests -c AppVeyor --logger:trx" -filter:"+[CoAPNet*]* -[*.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -excludebyfile:*\*Designer.cs -hideskipped:All -output:".\CoAPNet.coverage.xml"
+         & $env:USERPROFILE\.nuget\packages\opencover\4.6.519\tools\OpenCover.Console.exe -oldstyle -register:user -target:"C:/Program Files/dotnet/dotnet.exe" -targetargs:"test tests/CoAPNet.Tests -c AppVeyor --verbosity quiet --logger:trx" -filter:"+[CoAPNet*]* -[*.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -excludebyfile:*\*Designer.cs -hideskipped:All -output:".\CoAPNet.coverage.xml"
          
          & $env:USERPROFILE\.nuget\packages\coveralls.io\1.3.4\tools\coveralls.net.exe --opencover CoAPNet.coverage.xml
          
