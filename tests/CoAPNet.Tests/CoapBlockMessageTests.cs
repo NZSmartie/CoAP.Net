@@ -190,7 +190,7 @@ namespace CoAPNet.Tests
         }
 
         [Category("[RFC7959] Section 2.5"), Category("Blocks")]
-        //[TestCaseSource(nameof(WriteBlockWiseCoapMessage_RemoteReduceBlockSize_Data))]
+        [TestCaseSource(nameof(WriteBlockWiseCoapMessage_RemoteReduceBlockSize_Data))]
         public void WriteBlockWiseCoapMessage_BlockSizeTooLarge(int initialBlockSize, int reducetoBlockSize, int blocks, bool lastHalfblock)
         {
             Assume.That(reducetoBlockSize < initialBlockSize, "Ignoring invalid test input");
