@@ -448,7 +448,7 @@ namespace CoAPNet.Tests
         // TODO: Test Ignore Acknowledgement Messages With Reserved Code
         [Test]
         [Category("[RFC7252] Section 4.2")]
-        public async Task TestIgnoreAcknowledgementMessagesWithReservedCode()
+        public void TestIgnoreAcknowledgementMessagesWithReservedCode()
         {
             // Arrange
             var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };

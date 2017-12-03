@@ -54,7 +54,7 @@ namespace CoAPNet.Tests
                 .Verifiable();
 
             var request = new CoapMessage { Code = CoapMessageCode.Get };
-            request.FromUri(new Uri(_baseUri, "/test"));
+            request.SetUri(new Uri(_baseUri, "/test"));
 
             // Act
             var service = new CoapHandler();

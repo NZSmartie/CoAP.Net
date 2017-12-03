@@ -255,7 +255,7 @@ namespace CoAPNet.Tests
         [Category("[RFC7252] Section 3.1"), Category("Encode")]
         public void TestMessageFromUri()
         {
-            _message.FromUri("coap://example.net/.well-known/core");
+            _message.SetUri("coap://example.net/.well-known/core");
 
             var expectedOptions = new List<CoapOption>
             {
@@ -334,7 +334,7 @@ namespace CoAPNet.Tests
         [Category("[RFC7252] Section 6.4")]
         public void TestMessageFromUriIPv4()
         {
-            _message.FromUri("coap://198.51.100.1:61616//%2F//?%2F%2F&?%26");
+            _message.SetUri("coap://198.51.100.1:61616//%2F//?%2F%2F&?%26");
 
             var expectedOptions = new List<CoapOption> {
                 new Options.UriHost("198.51.100.1"),
@@ -358,7 +358,7 @@ namespace CoAPNet.Tests
         [Category("[RFC7252] Section 6.4")]
         public void TestMessageFromUriSpecialChars()
         {
-            _message.FromUri("coap://\u307B\u3052.example/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF");
+            _message.SetUri("coap://\u307B\u3052.example/%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF");
 
             var expectedOptions = new List<CoapOption>
             {
