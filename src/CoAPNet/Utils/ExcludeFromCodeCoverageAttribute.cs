@@ -22,6 +22,9 @@ using System.ComponentModel;
 // ReSharper disable once CheckNamespace
 namespace System.Diagnostics.CodeAnalysis
 {
+    /// <summary>
+    /// Placeholder to mark code blocks as unintended to be included in code coverage metrics.
+    /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [AttributeUsage(AttributeTargets.All, Inherited = false)]
     public class ExcludeFromCodeCoverageAttribute : Attribute

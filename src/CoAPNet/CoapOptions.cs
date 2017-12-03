@@ -22,16 +22,41 @@ using System.Linq;
 
 namespace CoAPNet
 {
+    /// <summary>
+    /// Represents CoAP-Option specific errors that occur during application execution.
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class CoapOptionException : CoapException
     {
-        public CoapOptionException() : base() { }
+        /// <inheritdoc/>
+        public CoapOptionException() 
+            : base()
+        { }
 
-        public CoapOptionException(string message) : base(message, CoapMessageCode.BadOption) { }
+        /// <inheritdoc/>
+        public CoapOptionException(string message) 
+            : base(message, CoapMessageCode.BadOption)
+        { }
 
-        public CoapOptionException(string message, Exception innerException) : base(message, innerException, CoapMessageCode.BadOption) { }
+        /// <inheritdoc/>
+        public CoapOptionException(string message, Exception innerException) 
+            : base(message, innerException, CoapMessageCode.BadOption)
+        { }
+
+        /// <inheritdoc/>
+        public CoapOptionException(string message, CoapMessageCode responseCode) 
+            : base(message, responseCode)
+        { }
+
+        /// <inheritdoc/>
+        public CoapOptionException(string message, Exception innerException, CoapMessageCode responseCode) 
+            : base(message, innerException, responseCode)
+        { }
     }
 
+    /// <summary>
+    /// Represents the Value type for <see cref="CoapOption"/> that dictates use of <see cref="CoapOption.ValueOpaque"/>, <see cref="CoapOption.ValueString"/> or <see cref="CoapOption.ValueUInt"/>.
+    /// </summary>
     public enum OptionType
     {
         /// <summary>
@@ -104,6 +129,9 @@ namespace CoAPNet
 
     // TODO: Caching (Section 5.6 of [RFC7252])
     // TODO: Proxying (Section 5.7 of [RFC7252])
+    /// <summary>
+    /// Repressents a CoAP-Option (Much like HTTP Headers) that may be present in a <see cref="CoapMessage"/>.
+    /// </summary>
     public class CoapOption : IComparable<CoapOption>
     {
         private readonly int _optionNumber;
@@ -119,13 +147,14 @@ namespace CoAPNet
             }
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             if (_type == OptionType.Empty)
                 return $"<{GetType().Name}> (empty)";
 
             if (_type == OptionType.Opaque)
-                return $"<{GetType().Name}> ({_length} bytes)";
+                return $"<{GetType().Name}> ({Length} bytes)";
 
             if (_type == OptionType.String)
                 return $"<{GetType().Name}> \"({(string)_value}\"";
@@ -190,11 +219,13 @@ namespace CoAPNet
         /// </summary>
         public OptionType Type { get => _type; }
 
-        protected readonly object _default;
+        private readonly object _default;
 
-        protected object _value = null;
-        protected int _length = 0;
+        private object _value = null;
 
+        /// <summary>
+        /// Gets the default value for this <see cref="CoapOption"/>
+        /// </summary>
         public uint DefaultUInt
         {
             get
@@ -205,7 +236,10 @@ namespace CoAPNet
             }
         }
 
-        public uint ValueUInt
+        /// <summary>
+        /// Gets or sets the unsigned integer value for this <see cref="CoapOption"/>
+        /// </summary>
+        public virtual uint ValueUInt
         {
             get
             {
@@ -219,18 +253,21 @@ namespace CoAPNet
                     throw new InvalidCastException();
                 _value = value;
                 if (value > 0xFFFFFFu)
-                    _length = 4;
+                    Length = 4;
                 else if (value > 0xFFFFu)
-                    _length = 3;
+                    Length = 3;
                 else if (value > 0xFFu)
-                    _length = 2;
+                    Length = 2;
                 else if (value > 0u)
-                    _length = 1;
+                    Length = 1;
                 else
-                    _length = 0;
+                    Length = 0;
             }
         }
 
+        /// <summary>
+        /// Gets the default opaque value for this <see cref="CoapOption"/>
+        /// </summary>
         public byte[] DefaultOpaque
         {
             get
@@ -241,7 +278,10 @@ namespace CoAPNet
             }
         }
 
-        public byte[] ValueOpaque
+        /// <summary>
+        /// Gets or sets the opaque value for this <see cref="CoapOption"/>
+        /// </summary>
+        public virtual byte[] ValueOpaque
         {
             get
             {
@@ -254,10 +294,13 @@ namespace CoAPNet
                 if (_type != OptionType.Opaque)
                     throw new InvalidCastException();
                 _value = value;
-                _length = value == null ? 0 : value.Length;
+                Length = value == null ? 0 : value.Length;
             }
         }
 
+        /// <summary>
+        /// Gets the default string value for this <see cref="CoapOption"/>
+        /// </summary>
         public string DefaultString
         {
             get
@@ -268,7 +311,10 @@ namespace CoAPNet
             }
         }
 
-        public string ValueString
+        /// <summary>
+        /// Gets or sets the string value for this <see cref="CoapOption"/>
+        /// </summary>
+        public virtual string ValueString
         {
             get
             {
@@ -281,19 +327,26 @@ namespace CoAPNet
                 if (_type != OptionType.String)
                     throw new InvalidCastException();
                 _value = value;
-                _length = value == null ? 0 : Encoding.UTF8.GetByteCount(value);
+                Length = value == null ? 0 : Encoding.UTF8.GetByteCount(value);
             }
         }
 
-        public int Length { get => _length; }
+        /// <summary>
+        /// Gets the length of the CoAP Option data in bytes
+        /// </summary>
+        public virtual int Length { get; protected set; }
 
-        public byte[] GetBytes()
+        /// <summary>
+        /// Gets the <see cref="byte"/>[] representation of this <see cref="CoapOption"/>
+        /// </summary>
+        /// <returns></returns>
+        public virtual byte[] GetBytes()
         {
             if (_type == OptionType.Empty)
                 return new byte[0];
 
-            if (_length < _minLength || _length > _maxLength)
-                throw new CoapOptionException($"Invalid option length ({_length}). Must be between {_minLength} and {_maxLength} bytes");
+            if (Length < _minLength || Length > _maxLength)
+                throw new CoapOptionException($"Invalid option length ({Length}). Must be between {_minLength} and {_maxLength} bytes");
 
             if (_type == OptionType.Opaque)
                 return (byte[])_value;
@@ -301,20 +354,24 @@ namespace CoAPNet
             if (_type == OptionType.String)
                 return Encoding.UTF8.GetBytes((string)_value);
 
-            var data = new byte[_length];
+            var data = new byte[Length];
             uint i = 0, value = (uint)_value;
-            if (_length == 4)
+            if (Length == 4)
                 data[i++] = (byte)((value & 0xFF000000u) >> 24);
-            if (_length >= 3)
+            if (Length >= 3)
                 data[i++] = (byte)((value & 0xFF0000u) >> 16);
-            if (_length >= 2)
+            if (Length >= 2)
                 data[i++] = (byte)((value & 0xFF00u) >> 8);
-            if (_length >= 1)
+            if (Length >= 1)
                 data[i++] = (byte)(value & 0xFFu);
             return data;
         }
 
-        public void FromBytes(byte[] data)
+        /// <summary>
+        /// Decodes a <see cref="byte"/>[] into this <see cref="CoapOption"/>
+        /// </summary>
+        /// <param name="data"></param>
+        public virtual void FromBytes(byte[] data)
         {
             if (_type == OptionType.Empty)
             {
@@ -351,6 +408,15 @@ namespace CoAPNet
             ValueUInt = value;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="optionNumber"></param>
+        /// <param name="minLength"></param>
+        /// <param name="maxLength"></param>
+        /// <param name="isRepeatable"></param>
+        /// <param name="type"></param>
+        /// <param name="defaultValue"></param>
         protected internal CoapOption(int optionNumber, int minLength = 0, int maxLength = 0, bool isRepeatable = false, OptionType type = OptionType.Empty, object defaultValue = null)
         {
             _optionNumber = optionNumber;
@@ -361,6 +427,7 @@ namespace CoAPNet
             _default = defaultValue;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             var option = obj as CoapOption;
@@ -386,13 +453,14 @@ namespace CoAPNet
             }
         }
 
+        private static Dictionary<Type, int> _hashCode = new Dictionary<System.Type, int>();
+        
         /// <summary>
         /// Gets a hashcode unique to the <see cref="CoapOption"/> sub class. 
         /// </summary>
         /// <remarks>
         /// This will generate and store the hashcode based on the subclass's full name. 
         /// </remarks>
-        private static Dictionary<Type, int> _hashCode = new Dictionary<System.Type, int>();
         public override int GetHashCode()
         {
             if (_hashCode.TryGetValue(GetType(), out int hashcode) == false)

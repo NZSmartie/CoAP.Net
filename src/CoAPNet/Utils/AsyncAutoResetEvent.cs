@@ -23,16 +23,28 @@ using System.Threading.Tasks;
 namespace CoAPNet.Utils
 {
 
+    /// <summary>
+    /// A async implementation of a <see cref="AutoResetEvent"/>
+    /// </summary>
     public class AsyncAutoResetEvent
     {
         private readonly Queue<TaskCompletionSource<bool>> _waits = new Queue<TaskCompletionSource<bool>>();
         private bool _signaled;
 
+        /// <summary>
+        /// See <see cref="AutoResetEvent(bool)"/>
+        /// </summary>
+        /// <param name="signaled"></param>
         public AsyncAutoResetEvent(bool signaled)
         {
             _signaled = signaled;
         }
 
+        /// <summary>
+        /// Async wait for the event to be set.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public async Task WaitAsync(CancellationToken token)
         {
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -51,7 +63,9 @@ namespace CoAPNet.Utils
             await tcs.Task;
         }
 
-
+        /// <summary>
+        /// Sets the event and unblocks the next <see cref="Task"/> that may be awaiting.
+        /// </summary>
         public void Set()
         {
             TaskCompletionSource<bool> toRelease = null;
@@ -75,6 +89,9 @@ namespace CoAPNet.Utils
             toRelease?.SetResult(true);
         }
 
+        /// <summary>
+        /// Resets the event incase no <see cref="Task"/> is waiting.
+        /// </summary>
         public void Reset()
         {
             lock (_waits)

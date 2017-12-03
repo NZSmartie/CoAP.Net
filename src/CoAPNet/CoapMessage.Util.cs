@@ -45,7 +45,7 @@ namespace CoAPNet
         public static CoapMessage CreateFromUri(string input)
         {
             var message = new CoapMessage();
-            message.FromUri(input);
+            message.SetUri(input);
             return message;
         }
 
@@ -85,6 +85,15 @@ namespace CoAPNet
                     break;
             }
             return result;
+        }
+
+        /// <summary>
+        /// Returns a new deep-clone of this <see cref="CoapMessage"/>.
+        /// </summary>
+        /// <returns></returns>
+        public CoapMessage Clone()
+        {
+            return FromBytes(ToBytes(), IsMulticast);
         }
     }
 }

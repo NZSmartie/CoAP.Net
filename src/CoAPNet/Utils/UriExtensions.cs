@@ -4,10 +4,23 @@ using System.Linq;
 namespace CoAPNet.Utils
 {
     // TODO: This helper class will be redundant in .Net Core 2.0 through sub-classing HttpStyleUriParser and adding CoAP defaults.
+    /// <summary>
+    /// Extensions for easily managing CoAP related resources.
+    /// </summary>
     public static class CoapUri
     {
         private static readonly string[] _schemes = {"coap", "coaps"};
 
+        /// <summary>
+        /// Supports CoAP scheme <see cref="Uri"/> for comparing to each other.
+        /// See <see cref="Uri.Compare(Uri, Uri, UriComponents, UriFormat, StringComparison)"/>
+        /// </summary>
+        /// <param name="uri1"></param>
+        /// <param name="uri2"></param>
+        /// <param name="partsToCompare"></param>
+        /// <param name="compareFormat"></param>
+        /// <param name="comparisonType"></param>
+        /// <returns></returns>
         public static int Compare(Uri uri1, Uri uri2, UriComponents partsToCompare, UriFormat compareFormat, StringComparison comparisonType)
         {
             // Setup Default ports before performing comparasons.

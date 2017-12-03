@@ -26,33 +26,65 @@ namespace CoAPNet
     [ExcludeFromCodeCoverage]
     public class CoapException : Exception
     {
+        /// <summary>
+        /// The response <see cref="CoapMessageCode"/> that was resturned from the remote endpoint.
+        /// </summary>
         public CoapMessageCode ResponseCode { get; }
 
+        /// <summary>
+        /// Initialise a blank exception. (this is strongly discourages as it lacks detail about the error)
+        /// </summary>
         public CoapException()
         {
             ResponseCode = CoapMessageCode.InternalServerError;
         }
 
+        /// <summary>
+        /// Initialise an exception with a message describing the error
+        /// </summary>
+        /// <param name="message"></param>
         public CoapException(string message) : base(message)
         {
             ResponseCode = CoapMessageCode.InternalServerError;
         }
 
+        /// <summary>
+        /// Initialise an exception with a message describing the error and the <see cref="CoapMessageCode"/> returned from the remote endpoint.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="responseCode"></param>
         public CoapException(string message, CoapMessageCode responseCode) : base(message)
         {
             ResponseCode = responseCode;
         }
 
+        /// <summary>
+        /// Initialise an exception with a message describing the error with an internally caught excpetion.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="innerException"></param>
         public CoapException(string message, Exception innerException) : base(message, innerException)
         {
             ResponseCode = CoapMessageCode.InternalServerError;
         }
 
+        /// <summary>
+        /// Initialise an exception with a message describing the error with an internally caught excpetion and the <see cref="CoapMessageCode"/> returned from the remote endpoint.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="innerException"></param>
+        /// <param name="responseCode"></param>
         public CoapException(string message, Exception innerException, CoapMessageCode responseCode) : base(message, innerException)
         {
             ResponseCode = responseCode;
         }
 
+        /// <summary>
+        /// Creates an <see cref="CoapException"/> with details populated from <paramref name="message"/> with an optional inner-exception.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="innerExcpetion"></param>
+        /// <returns></returns>
         public static CoapException FromCoapMessage(CoapMessage message, Exception innerExcpetion = null)
         {
             if (message == null)

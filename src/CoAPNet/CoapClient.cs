@@ -33,11 +33,30 @@ namespace CoAPNet
     [ExcludeFromCodeCoverage]
     public class CoapClientException : CoapException
     {
-        public CoapClientException() : base() { }
+        /// <inheritdoc/>
+        public CoapClientException() 
+            : base()
+        { }
 
-        public CoapClientException(string message) : base(message) { }
+        /// <inheritdoc/>
+        public CoapClientException(string message) 
+            : base(message)
+        { }
 
-        public CoapClientException(string message, Exception innerException) : base(message, innerException) { }
+        /// <inheritdoc/>
+        public CoapClientException(string message, Exception innerException) 
+            : base(message, innerException)
+        { }
+
+        /// <inheritdoc/>
+        public CoapClientException(string message, CoapMessageCode responseCode) 
+            : base(message, responseCode)
+        { }
+
+        /// <inheritdoc/>
+        public CoapClientException(string message, Exception innerException, CoapMessageCode responseCode) 
+            : base(message, innerException, responseCode)
+        { }
     }
 
     /// <summary>
@@ -93,12 +112,24 @@ namespace CoAPNet
 
         private readonly AsyncAutoResetEvent _receiveEvent = new AsyncAutoResetEvent(false);
 
+        /// <summary>
+        /// Checks if a <see cref="CoapReceiveResult"/> has been received and returns it. Otherwise waits until a new result is received unless max retransmission attempts is reached.
+        /// </summary>
+        /// <returns>Valid result if a result is received, <c>null</c> if canceled.</returns>
         public async Task<CoapReceiveResult> ReceiveAsync()
             => await ReceiveAsync(RetransmitTimeout.Milliseconds * MaxRetransmitAttempts);
 
+        /// <summary>
+        /// Checks if a <see cref="CoapReceiveResult"/> has been received and returns it. Otherwise waits until a new result is received unless timed out by <paramref name="milliseconds"/>
+        /// </summary>
+        /// <returns>Valid result if a result is received, <c>null</c> if timed out.</returns>
         public async Task<CoapReceiveResult> ReceiveAsync(int milliseconds)
             => await ReceiveAsync(new CancellationTokenSource(milliseconds).Token);
 
+        /// <summary>
+        /// Checks if a <see cref="CoapReceiveResult"/> has been received and returns it. Otherwise waits until a new result is received unless timed out by <paramref name="timeout"/>
+        /// </summary>
+        /// <returns>Valid result if a result is received, <c>null</c> if timed out.</returns>
         public async Task<CoapReceiveResult> ReceiveAsync(TimeSpan timeout)
             => await ReceiveAsync(new CancellationTokenSource(timeout).Token);
 
@@ -445,11 +476,24 @@ namespace CoAPNet
         
         #region Request Operations
 
+        /// <summary>
+        /// Performs a async <see cref="CoapMessageCode.Get"/> request to the <paramref name="uri"/>.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public virtual async Task<int> GetAsync(string uri, CancellationToken token = default(CancellationToken))
         {
             return await GetAsync(uri, null, token);
         }
 
+        /// <summary>
+        /// Performs a async <see cref="CoapMessageCode.Get"/> request with a supplied <paramref name="uri"/> to the <paramref name="endpoint"/>.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="endpoint"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public virtual async Task<int> GetAsync(string uri, ICoapEndpoint endpoint, CancellationToken token = default(CancellationToken))
         {
             var message = new CoapMessage
@@ -462,21 +506,44 @@ namespace CoAPNet
             return await SendAsync(message, endpoint, token).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Performs a async <see cref="CoapMessageCode.Put"/> request to the <paramref name="uri"/> with the supplied <paramref name="message"/> payload.
+        /// Optionally, a <paramref name="endpoint"/> may be specified for sending the request to.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="message"></param>
+        /// <param name="endpoint"></param>
+        /// <returns></returns>
         public virtual Task<int> PutAsync(string uri, CoapMessage message, ICoapEndpoint endpoint = null)
         {
             throw new NotImplementedException();
         }
-        
+
+        /// <summary>
+        /// Performs a async <see cref="CoapMessageCode.Post"/> request to the <paramref name="uri"/> with the supplied <paramref name="message"/> payload.
+        /// Optionally, a <paramref name="endpoint"/> may be specified for sending the request to.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="message"></param>
+        /// <param name="endpoint"></param>
+        /// <returns></returns>
         public virtual Task<int> PostAsync(string uri, CoapMessage message, ICoapEndpoint endpoint = null)
         {
             throw new NotImplementedException();
         }
-        
+
+        /// <summary>
+        /// Performs a async <see cref="CoapMessageCode.Delete"/> to the supplied <paramref name="uri"/>.
+        /// Optionally, a <paramref name="endpoint"/> may be specified for sending the request to.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="endpoint"></param>
+        /// <returns></returns>
         public virtual Task<int> DeleteAsync(string uri, ICoapEndpoint endpoint = null)
         {
             throw new NotImplementedException();
         }
-        
+
         public virtual Task<int> ObserveAsync(string uri, ICoapEndpoint endpoint = null)
         {
             throw new NotImplementedException();
@@ -487,8 +554,16 @@ namespace CoAPNet
 
     }
 
+    /// <summary>
+    /// A object to hold a <see cref="CoapMessage"/> and <see cref="ICoapEndpoint"/> result.
+    /// </summary>
     public class CoapReceiveResult
     {
+        /// <summary>
+        /// Initialise a new <see cref="CoapReceiveResult"/>.
+        /// </summary>
+        /// <param name="endpoint"></param>
+        /// <param name="message"></param>
         public CoapReceiveResult(ICoapEndpoint endpoint, CoapMessage message)
         {
             Endpoint = endpoint;
@@ -496,8 +571,14 @@ namespace CoAPNet
             Message = message;
         }
 
+        /// <summary>
+        /// Gets which <see cref="ICoapEndpoint"/> the <see cref="Message"/> was received from.
+        /// </summary>
         public ICoapEndpoint Endpoint { get; }
 
+        /// <summary>
+        /// The <see cref="CoapMessage"/> that was received from <see cref="Endpoint"/>.
+        /// </summary>
         public CoapMessage Message { get; }
     }
 }

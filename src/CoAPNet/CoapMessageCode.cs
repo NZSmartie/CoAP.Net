@@ -98,16 +98,12 @@ namespace CoAPNet
             return hashCode;
         }
 
-        public static bool operator ==(CoapMessageCode code, CoapMessageCodeClass codeClass)
-        {
-            return code.Class == (int)codeClass;
-        }
-
-        public static bool operator !=(CoapMessageCode code, CoapMessageCodeClass codeClass)
-        {
-            return code.Class != (int)codeClass;
-        }
-
+        /// <summary>
+        /// Compare <paramref name="a"/> for equality with <paramref name="b"/>
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator ==(CoapMessageCode a, CoapMessageCode b)
         {
             if (a is null || b is null)
@@ -115,6 +111,12 @@ namespace CoAPNet
             return a.Class == b.Class && a.Detail == b.Detail;
         }
 
+        /// <summary>
+        /// Compare <paramref name="a"/> for inequality with <paramref name="b"/>
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator !=(CoapMessageCode a, CoapMessageCode b)
         {
             if(a is null || b is null)

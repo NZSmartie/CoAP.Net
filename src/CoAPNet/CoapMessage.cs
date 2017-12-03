@@ -27,9 +27,21 @@ namespace CoAPNet
     /// </summary>
     public enum CoapMessageType
     {
+        /// <summary>
+        /// Marks a <see cref="CoapMessage"/> as confirmable (CON) which must be acknowleged (ACK) or reset (RST) from the recipiant.
+        /// </summary>
         Confirmable = 0,
+        /// <summary>
+        /// Marks a <see cref="CoapMessage"/> as non-confirmable (NON) which may be ignored by the recipiant or safely lost during transit.
+        /// </summary>
         NonConfirmable = 1,
+        /// <summary>
+        /// Marks a <see cref="CoapMessage"/> as an acknowledgement (ACK) to a previous confirmable (CON) <see cref="CoapMessage"/>.
+        /// </summary>
         Acknowledgement = 2,
+        /// <summary>
+        /// Marks a <see cref="CoapMessage"/> as a reset (RST) to a previous <see cref="CoapMessage"/> that was received in error or was invalid.
+        /// </summary>
         Reset = 3,
     }
 
@@ -38,9 +50,21 @@ namespace CoAPNet
     /// </summary>
     public enum CoapMessageCodeClass
     {
+        /// <summary>
+        /// Classifies <see cref="CoapMessage"/> as a request to a remote endpoint.
+        /// </summary>
         Request = 0,
+        /// <summary>
+        /// Classifies <see cref="CoapMessage"/> as a successful response from a remote endpoint.
+        /// </summary>
         Success = 2,
+        /// <summary>
+        /// Classifies <see cref="CoapMessage"/> as an error response to a prior request that was invalid.
+        /// </summary>
         ClientError = 4,
+        /// <summary>
+        /// Classifies <see cref="CoapMessage"/> as an error response to a prior request that caused the remote to have an internal error.
+        /// </summary>
         ServerError = 5
     }
 
@@ -50,14 +74,19 @@ namespace CoAPNet
     [ExcludeFromCodeCoverage]
     public class CoapMessageFormatException : CoapException {
 
+        /// <inheritdoc/>
         public CoapMessageFormatException() :base() { }
 
+        /// <inheritdoc/>
         public CoapMessageFormatException(string message) : base(message) { }
 
+        /// <inheritdoc/>
         public CoapMessageFormatException(string message, CoapMessageCode responseCode) : base(message, responseCode) { }
 
+        /// <inheritdoc/>
         public CoapMessageFormatException(string message, Exception innerException) : base(message, innerException) { }
 
+        /// <inheritdoc/>
         public CoapMessageFormatException(string message, Exception innerException, CoapMessageCode responseCode) : base(message, innerException, responseCode) { }
     }
 
@@ -280,6 +309,13 @@ namespace CoAPNet
             return result.ToArray();
         }
 
+        /// <summary>
+        /// Deserialises a <see cref="byte"/>[] to a <see cref="CoapMessage"/>.
+        /// </summary>
+        /// <remarks>
+        /// The header and options will be read as much as possible to help diagnose problems when an <see cref="CoapException"/> is thrown.
+        /// </remarks>
+        /// <param name="data"></param>
         public void FromBytes(byte[] data)
         {
             if (data == null)
