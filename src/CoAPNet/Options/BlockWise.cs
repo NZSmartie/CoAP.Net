@@ -7,7 +7,7 @@ namespace CoAPNet.Options
 {
     public class BlockBase : CoapOption
     {
-        internal List<Tuple<int, int>> SupportedBlockSizes = new List<Tuple<int, int>>
+        internal static readonly List<Tuple<int, int>> SupportedBlockSizes = new List<Tuple<int, int>>
         {
             Tuple.Create(0, 16),
             Tuple.Create(1, 32),
@@ -38,7 +38,7 @@ namespace CoAPNet.Options
             set
             {
                 if (!SupportedBlockSizes.Any(b => b.Item2 == value))
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException($"Unsupported blocksize {value}. Expecting block sizes in ({string.Join(", ", Options.BlockBase.SupportedBlockSizes.Select(b => b.Item2))})");
                 _blockSize = value;
             }
         }

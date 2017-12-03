@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
@@ -9,12 +10,16 @@ using System.Threading.Tasks;
 
 namespace CoAPNet
 {
+    /// <summary>
+    /// A Coap Block-Wise Tranfer (RFC 7959) implementation of <see cref="Stream"/>. 
+    /// </summary>
     public class CoapBlockStream : Stream
     {
         private readonly CoapClient _client;
 
         private readonly ByteQueue _reader = new ByteQueue();
-        private readonly Task _readerTask;
+
+        //private readonly Task _readerTask;
 
         private readonly ByteQueue _writer = new ByteQueue();
         private readonly Task _writerTask;
@@ -27,33 +32,58 @@ namespace CoAPNet
 
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        public readonly CoapMessage _baseMessage;
+        private readonly CoapMessage _baseMessage;
 
         private bool _endOfStream = false;
 
         private int _blockSize = 1024;
 
+        /// <summary>
+        /// Gets or sets the maximum amount of time spent writing to <see cref="CoapClient"/> during <see cref="Dispose(bool)"/>
+        /// </summary>
         public TimeSpan Timeout { get; set; } = TimeSpan.FromMilliseconds(-1);
 
-        // TODO: check blocksize for valid value in 16,32,...,1024
+        /// <summary>
+        /// Gets or Sets the Blocksize used for transfering data.
+        /// </summary>
+        /// <remarks>
+        /// This can only be set with a decreased value to prevent unexpected behavior.
+        /// </remarks>
         public int BlockSize
         {
             get => _blockSize;
-            set => _blockSize = (value <= _blockSize) ? value : throw new ArgumentOutOfRangeException($"Can not increase blocksize from {_blockSize} to {value}");
+            set
+            {
+                if (value > _blockSize)
+                    throw new ArgumentOutOfRangeException($"Can not increase blocksize from {_blockSize} to {value}");
+
+                if (!Options.BlockBase.SupportedBlockSizes.Any(b => b.Item2 == value))
+                    throw new ArgumentOutOfRangeException($"Unsupported blocksize {value}. Expecting block sizes in ({string.Join(", ", Options.BlockBase.SupportedBlockSizes.Select(b => b.Item2))})");
+
+                _blockSize = value;
+            }
         }
 
-
+        /// <inheritdoc/>
         public override bool CanRead => true;
 
+        /// <inheritdoc/>
         public override bool CanSeek => false;
 
+        /// <inheritdoc/>
         public override bool CanWrite => true;
 
+        /// <inheritdoc/>
         public override long Length => throw new NotSupportedException();
 
+        /// <inheritdoc/>
         public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
-
+        /// <summary>
+        /// Create a new <see cref="CoapBlockStream"/> using <paramref name="client"/> to read and write blocks of data. <paramref name="baseMessage"/> is required to base blocked messages off of.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="baseMessage"></param>
         public CoapBlockStream(CoapClient client, CoapMessage baseMessage = null)
         {
             _client = client;
@@ -136,6 +166,10 @@ namespace CoAPNet
             }
         }
 
+        /// <summary>
+        /// Attempt to flush any blocks to <see cref="CoapClient"/> that have been queued up.
+        /// </summary>
+        /// <inheritdoc/>
         public override void Flush()
         {
             if (_exception == null && !_writerTask.IsCompleted)
@@ -147,6 +181,10 @@ namespace CoAPNet
             ThrowCaughtException();
         }
 
+        /// <summary>
+        /// Attempt to flush any blocks to <see cref="CoapClient"/> that have been queued up.
+        /// </summary>
+        /// <inheritdoc/>
         public override async Task FlushAsync(CancellationToken cancellationToken)
         {
             _writerEvent.Set();
@@ -156,27 +194,32 @@ namespace CoAPNet
             ThrowCaughtException();
         }
 
+        /// <inheritdoc/>
         public override int Read(byte[] buffer, int offset, int count)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public override long Seek(long offset, SeekOrigin origin)
         {
             throw new NotSupportedException();
         }
 
+        /// <inheritdoc/>
         public override void SetLength(long value)
         {
             throw new NotSupportedException();
         }
 
+        /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)
         {
             _writer.Enqueue(buffer, offset, count);
             _writerEvent.Set();
         }
 
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
