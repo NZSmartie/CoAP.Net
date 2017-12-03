@@ -164,16 +164,23 @@ namespace CoAPNet
 
         private async Task ReceiveAsyncInternal()
         {
+            var isMulticast = Endpoint?.IsMulticast ?? false;
             try
             {
                 while (true)
                 {
-                    if (Endpoint == null)
-                        return;
+                    Task<CoapPacket> payloadTask;
+                    lock (this)
+                    {
+                        if (Endpoint == null)
+                            return;
 
-                    var payload = await Endpoint.ReceiveAsync();
+                        payloadTask = Endpoint.ReceiveAsync();
+                    }
 
-                    var message = new CoapMessage { IsMulticast = Endpoint.IsMulticast };
+                    var payload = await payloadTask;
+
+                    var message = new CoapMessage { IsMulticast = isMulticast };
                     try
                     {
                         message.FromBytes(payload.Payload);
@@ -198,7 +205,7 @@ namespace CoAPNet
                     catch (CoapMessageFormatException)
                     {
                         if (message.Type == CoapMessageType.Confirmable
-                            && !Endpoint.IsMulticast)
+                            && !isMulticast)
                         {
                             await SendAsync(new CoapMessage
                             {
@@ -226,8 +233,12 @@ namespace CoAPNet
             {
                 if (ex is CoapEndpointException)
                 {
-                    Endpoint?.Dispose();
-                    Endpoint = null;
+                    var endpoint = Endpoint;
+
+                    lock (this)
+                        Endpoint = null;
+                    
+                    endpoint?.Dispose();
 
                     foreach (var response in _messageResponses.Values)
                         response.TrySetCanceled();
@@ -268,7 +279,9 @@ namespace CoAPNet
         public void Dispose()
         {
             var endpoint = Endpoint;
-            Endpoint = null;
+
+            lock (this)
+                Endpoint = null;
 
             endpoint?.Dispose();
 
@@ -294,7 +307,7 @@ namespace CoAPNet
                 return await responseTask.Task;
 
             if (Endpoint == null)
-                throw new InvalidOperationException($"{nameof(CoapClient)} is in an invalid state");
+                throw new CoapEndpointException($"{nameof(CoapClient)} has an invalid {nameof(Endpoint)}");
 
             for (var attempt = 1; attempt <= MaxRetransmitAttempts; attempt++)
             {
@@ -362,8 +375,8 @@ namespace CoAPNet
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
 
-            if(Endpoint==null)
-                throw new InvalidOperationException($"{nameof(CoapClient)} is in an invalid state");
+            if (Endpoint == null)
+                throw new CoapEndpointException($"{nameof(CoapClient)} has an invalid {nameof(Endpoint)}");
 
             if (message.Id == 0)
                 message.Id = GetNextMessageId();
@@ -410,11 +423,19 @@ namespace CoAPNet
             else if (message.IsMulticast && !remoteEndpoint.IsMulticast)
                 throw new CoapClientException("Can not send CoAP multicast message to a non-multicast endpoint");
 
-            await Task.Run(async () => await (Endpoint?.SendAsync(new CoapPacket
+            Task task;
+            lock (this)
             {
-                Payload = message.ToBytes(),
-                Endpoint = remoteEndpoint
-            }) ?? Task.CompletedTask), token).ConfigureAwait(false);
+                task = (Endpoint == null)
+                    ? Task.CompletedTask
+                    : Endpoint.SendAsync(new CoapPacket
+                    {
+                        Payload = message.ToBytes(),
+                        Endpoint = remoteEndpoint
+                    });
+            }
+
+            await Task.Run(async () => await task, token).ConfigureAwait(false);
         }
 
         internal void SetNextMessageId(int value)
