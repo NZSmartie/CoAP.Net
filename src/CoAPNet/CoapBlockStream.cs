@@ -69,9 +69,6 @@ namespace CoAPNet
                 {
                     await _writerEvent.WaitAsync(token);
 
-                    if (_blockSize > BlockSize)
-                        _blockSize = BlockSize;
-
                     while (_writer.Length > BlockSize || (_endOfStream && _writer.Length > 0))
                     {
                         var message = _baseMessage.Clone();
@@ -82,7 +79,7 @@ namespace CoAPNet
                         message.Options.Add(new Options.Block1(_writeBlockNumber++, _blockSize, _writer.Length > _blockSize));
 
                         message.Payload = new byte[_writer.Length < _blockSize ? _writer.Length : _blockSize];
-                        _writer.Dequeue(message.Payload, 0, _blockSize);
+                        _writer.Peek(message.Payload, 0, _blockSize);
 
                         var messageId = await _client.SendAsync(message, token);
                         var result = await _client.GetResponseAsync(messageId, token);
@@ -100,9 +97,18 @@ namespace CoAPNet
                             }
                             else if (blockDelta > 0)
                                 throw new CoapBlockException($"Remote endpoint requested to increase blocksize from {_blockSize} to {_blockSize + blockDelta}");
+
+                            _writer.AdvanceQueue(message.Payload.Length);
                         }
                         else if (result.Code.IsClientError() || result.Code.IsServerError())
-                            throw new CoapBlockException($"Failed to send block ({_writeBlockNumber}) to remote endpoint", CoapException.FromCoapMessage(result), result.Code);
+                        {
+                            // Try again and attempt at sending a smaller block size.
+                            _writeBlockNumber = 0;
+                            _blockSize /= 2;
+
+                            if(_blockSize < 16)
+                                throw new CoapBlockException($"Failed to send block ({_writeBlockNumber}) to remote endpoint", CoapException.FromCoapMessage(result), result.Code);
+                        }
                         
                     }
 
@@ -112,26 +118,25 @@ namespace CoAPNet
             }
             catch (Exception ex)
             {
+                // Hold onto the exception to throw it from a synchronous call.
                 _exception = ex;
             }
             finally
             {
+                _endOfStream = true;
                 _flushDoneEvent.Set();
             }
         }
 
         public override void Flush()
         {
-            _writerEvent.Set();
-
-            _flushDoneEvent.WaitAsync(CancellationToken.None).Wait();
-
-            if (_exception != null)
+            if (_exception == null && !_writerTask.IsCompleted)
             {
-                var exception = _exception;
-                _exception = null;
-                ExceptionDispatchInfo.Capture(exception).Throw();
+                _writerEvent.Set();
+                _flushDoneEvent.WaitAsync(CancellationToken.None).Wait();
             }
+
+            ThrowCaughtException();
         }
 
         public override async Task FlushAsync(CancellationToken cancellationToken)
@@ -140,12 +145,7 @@ namespace CoAPNet
 
             await _flushDoneEvent.WaitAsync(cancellationToken);
 
-            if (_exception != null)
-            {
-                var exception = _exception;
-                _exception = null;
-                ExceptionDispatchInfo.Capture(exception).Throw();
-            }
+            ThrowCaughtException();
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -173,21 +173,43 @@ namespace CoAPNet
         {
             if (disposing)
             {
-                _endOfStream = true;
+                if (_exception == null && !_writerTask.IsCompleted)
+                {
+                    _endOfStream = true;
 
-                if (_writer.Length <= BlockSize)
-                    _writerEvent.Set();
-                else
+                    // Only attempt last write if blocks have already been flushed
+                    if (_writer.Length <= BlockSize)
+                    {
+                        _flushDoneEvent.Reset();
+                        _writerEvent.Set();
+                    }
+
+                    _flushDoneEvent.WaitAsync(CancellationToken.None).Wait();
                     _cancellationTokenSource.Cancel();
 
-                try
-                {
-                    _writerTask.Wait();
+                    try
+                    {
+                        _writerTask.Wait();
+                    }
+                    catch (AggregateException ex)
+                    {
+                        ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+                    }
                 }
-                catch (AggregateException) { }
 
+                ThrowCaughtException();
             }
             base.Dispose(disposing);
+        }
+
+        private void ThrowCaughtException()
+        {
+            if (_exception == null)
+                return;
+
+            var exception = _exception;
+            _exception = null;
+            ExceptionDispatchInfo.Capture(exception).Throw();
         }
     }
 }
