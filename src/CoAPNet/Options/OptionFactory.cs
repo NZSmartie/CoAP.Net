@@ -85,16 +85,22 @@ namespace CoAPNet.Options
         /// <exception cref="CoapOptionException">If the option number is unsuppported and is critical (See RFC 7252 Section 5.4.1)</exception>
         public CoapOption Create(int number, byte[] data = null)
         {
+            CoapOption option;
             // Let the exception get thrown if index is out of range
-            Type type = null;
-            if (!_options.TryGetValue(number, out type))
+            if (_options.TryGetValue(number, out var type))
             {
+                option = (CoapOption)Activator.CreateInstance(type);
+            }
+            else
+            {
+                // Critial option must be registered as they're esssential for understanding the message
                 if (number % 2 == 1)
                     throw new CoapOptionException($"Unsupported critical option ({number})", new ArgumentOutOfRangeException(nameof(number)));
-                return null;
+
+                // Return a placeholder option to give the application chance at reading them
+                option = new CoapOption(number, type: OptionType.Opaque);
             }
 
-            var option = (CoapOption)Activator.CreateInstance(type);
             if (data != null)
                 option.FromBytes(data);
 
