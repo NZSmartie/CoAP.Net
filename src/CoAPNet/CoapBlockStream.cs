@@ -76,7 +76,7 @@ namespace CoAPNet
                         // Reset the message Id so it's set by CoapClient
                         message.Id = 0;
 
-                        message.Options.Add(new Options.Block1(_writeBlockNumber++, _blockSize, _writer.Length > _blockSize));
+                        message.Options.Add(new Options.Block1(_writeBlockNumber, _blockSize, _writer.Length > _blockSize));
 
                         message.Payload = new byte[_writer.Length < _blockSize ? _writer.Length : _blockSize];
                         _writer.Peek(message.Payload, 0, _blockSize);
@@ -86,6 +86,9 @@ namespace CoAPNet
 
                         if (result.Code.IsSuccess())
                         {
+                            _writer.AdvanceQueue(message.Payload.Length);
+                            _writeBlockNumber++;
+
                             var block = result.Options.Get<Options.Block1>();
                             var blockDelta = block.BlockSize - _blockSize;
 
@@ -98,16 +101,19 @@ namespace CoAPNet
                             else if (blockDelta > 0)
                                 throw new CoapBlockException($"Remote endpoint requested to increase blocksize from {_blockSize} to {_blockSize + blockDelta}");
 
-                            _writer.AdvanceQueue(message.Payload.Length);
                         }
                         else if (result.Code.IsClientError() || result.Code.IsServerError())
                         {
-                            // Try again and attempt at sending a smaller block size.
-                            _writeBlockNumber = 0;
-                            _blockSize /= 2;
+                            if (_writeBlockNumber == 0 && result.Code == CoapMessageCode.RequestEntityTooLarge && _blockSize > 16)
+                            {
+                                // Try again and attempt at sending a smaller block size.
+                                _writeBlockNumber = 0;
+                                _blockSize /= 2;
 
-                            if(_blockSize < 16)
-                                throw new CoapBlockException($"Failed to send block ({_writeBlockNumber}) to remote endpoint", CoapException.FromCoapMessage(result), result.Code);
+                                continue;
+                            }
+
+                            throw new CoapBlockException($"Failed to send block ({_writeBlockNumber}) to remote endpoint", CoapException.FromCoapMessage(result), result.Code);
                         }
                         
                     }
