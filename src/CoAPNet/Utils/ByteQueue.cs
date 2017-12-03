@@ -33,21 +33,23 @@ namespace CoAPNet.Utils
     /// <summary>
     /// Defines a class that represents a resizable circular byte queue.
     /// </summary>
-    public sealed class ByteQueue
+    internal sealed class ByteQueue
     {
         // Private fields
-        private int fHead;
-        private int fTail;
-        private int fSize;
-        private int fSizeUntilCut;
-        private byte[] fInternalBuffer;
+        private int _head;
+        private int _tail;
+        private int _size;
+        private int _sizeUntilCut;
+        private byte[] _internalBuffer;
+
+        private const int _bufferBlockSize = 2048; // must be a power of 2
 
         /// <summary>
         /// Gets the length of the byte queue
         /// </summary>
         public int Length
         {
-            get { return fSize; }
+            get { return _size; }
         }
 
         /// <summary>
@@ -55,7 +57,7 @@ namespace CoAPNet.Utils
         /// </summary>
         public ByteQueue()
         {
-            fInternalBuffer = new byte[2048];
+            _internalBuffer = new byte[_bufferBlockSize];
         }
 
         /// <summary>
@@ -63,10 +65,10 @@ namespace CoAPNet.Utils
         /// </summary>
         internal void Clear()
         {
-            fHead = 0;
-            fTail = 0;
-            fSize = 0;
-            fSizeUntilCut = fInternalBuffer.Length;
+            _head = 0;
+            _tail = 0;
+            _size = 0;
+            _sizeUntilCut = _internalBuffer.Length;
         }
 
         /// <summary>
@@ -76,22 +78,22 @@ namespace CoAPNet.Utils
         {
             lock (this)
             {
-                if (size > fSize)
-                    size = fSize;
+                if (size > _size)
+                    size = _size;
 
                 if (size == 0)
                     return;
 
-                fHead = (fHead + size) % fInternalBuffer.Length;
-                fSize -= size;
+                _head = (_head + size) % _internalBuffer.Length;
+                _size -= size;
 
-                if (fSize == 0)
+                if (_size == 0)
                 {
-                    fHead = 0;
-                    fTail = 0;
+                    _head = 0;
+                    _tail = 0;
                 }
 
-                fSizeUntilCut = fInternalBuffer.Length - fHead;
+                _sizeUntilCut = _internalBuffer.Length - _head;
                 return;
             }
         }
@@ -103,22 +105,22 @@ namespace CoAPNet.Utils
         {
             byte[] newBuffer = new byte[capacity];
 
-            if (fSize > 0)
+            if (_size > 0)
             {
-                if (fHead < fTail)
+                if (_head < _tail)
                 {
-                    Buffer.BlockCopy(fInternalBuffer, fHead, newBuffer, 0, fSize);
+                    Buffer.BlockCopy(_internalBuffer, _head, newBuffer, 0, _size);
                 }
                 else
                 {
-                    Buffer.BlockCopy(fInternalBuffer, fHead, newBuffer, 0, fInternalBuffer.Length - fHead);
-                    Buffer.BlockCopy(fInternalBuffer, 0, newBuffer, fInternalBuffer.Length - fHead, fTail);
+                    Buffer.BlockCopy(_internalBuffer, _head, newBuffer, 0, _internalBuffer.Length - _head);
+                    Buffer.BlockCopy(_internalBuffer, 0, newBuffer, _internalBuffer.Length - _head, _tail);
                 }
             }
 
-            fHead = 0;
-            fTail = fSize;
-            fInternalBuffer = newBuffer;
+            _head = 0;
+            _tail = _size;
+            _internalBuffer = newBuffer;
         }
 
 
@@ -135,31 +137,31 @@ namespace CoAPNet.Utils
 
             lock (this)
             {
-                if ((fSize + size) > fInternalBuffer.Length)
-                    SetCapacity((fSize + size + 2047) & ~2047);
+                if ((_size + size) > _internalBuffer.Length)
+                    SetCapacity((_size + size + (_bufferBlockSize - 1)) & ~(_bufferBlockSize - 1));
 
-                if (fHead < fTail)
+                if (_head < _tail)
                 {
-                    int rightLength = (fInternalBuffer.Length - fTail);
+                    int rightLength = (_internalBuffer.Length - _tail);
 
                     if (rightLength >= size)
                     {
-                        Buffer.BlockCopy(buffer, offset, fInternalBuffer, fTail, size);
+                        Buffer.BlockCopy(buffer, offset, _internalBuffer, _tail, size);
                     }
                     else
                     {
-                        Buffer.BlockCopy(buffer, offset, fInternalBuffer, fTail, rightLength);
-                        Buffer.BlockCopy(buffer, offset + rightLength, fInternalBuffer, 0, size - rightLength);
+                        Buffer.BlockCopy(buffer, offset, _internalBuffer, _tail, rightLength);
+                        Buffer.BlockCopy(buffer, offset + rightLength, _internalBuffer, 0, size - rightLength);
                     }
                 }
                 else
                 {
-                    Buffer.BlockCopy(buffer, offset, fInternalBuffer, fTail, size);
+                    Buffer.BlockCopy(buffer, offset, _internalBuffer, _tail, size);
                 }
 
-                fTail = (fTail + size) % fInternalBuffer.Length;
-                fSize += size;
-                fSizeUntilCut = fInternalBuffer.Length - fHead;
+                _tail = (_tail + size) % _internalBuffer.Length;
+                _size += size;
+                _sizeUntilCut = _internalBuffer.Length - _head;
             }
         }
 
@@ -174,45 +176,74 @@ namespace CoAPNet.Utils
         {
             lock (this)
             {
-                if (size > fSize)
-                    size = fSize;
-
-                if (size == 0)
-                    return 0;
-
-                if (fHead < fTail)
-                {
-                    Buffer.BlockCopy(fInternalBuffer, fHead, buffer, offset, size);
-                }
-                else
-                {
-                    int rightLength = (fInternalBuffer.Length - fHead);
-
-                    if (rightLength >= size)
-                    {
-                        Buffer.BlockCopy(fInternalBuffer, fHead, buffer, offset, size);
-                    }
-                    else
-                    {
-                        Buffer.BlockCopy(fInternalBuffer, fHead, buffer, offset, rightLength);
-                        Buffer.BlockCopy(fInternalBuffer, 0, buffer, offset + rightLength, size - rightLength);
-                    }
-                }
-
-                fHead = (fHead + size) % fInternalBuffer.Length;
-                fSize -= size;
-
-                if (fSize == 0)
-                {
-                    fHead = 0;
-                    fTail = 0;
-                }
-
-                fSizeUntilCut = fInternalBuffer.Length - fHead;
+                size = PeekInternal(buffer, offset, size);
+                AdvanceQueueInternal(size);
                 return size;
             }
         }
 
+        internal void AdvanceQueue(int bytes)
+        {
+            lock (this)
+                AdvanceQueueInternal(bytes);
+        }
+
+        private void AdvanceQueueInternal(int bytes)
+        {
+            _head = (_head + bytes) % _internalBuffer.Length;
+            _size -= bytes;
+
+            if (_size == 0)
+            {
+                _head = 0;
+                _tail = 0;
+            }
+
+            _sizeUntilCut = _internalBuffer.Length - _head;
+        }
+
+        /// <summary>
+        /// Dequeues a buffer from the queue
+        /// </summary>
+        /// <param name="buffer">Buffer to enqueue</param>
+        /// <param name="offset">The zero-based byte offset in the buffer</param>
+        /// <param name="size">The number of bytes to dequeue</param>
+        /// <returns>Number of bytes dequeued</returns>
+        internal int Peek(byte[] buffer, int offset, int size)
+        {
+            lock (this)
+                return PeekInternal(buffer, offset, size);
+        }
+
+        private int PeekInternal(byte[] buffer, int offset, int size)
+        {
+            if (size > _size)
+                size = _size;
+
+            if (size == 0)
+                return 0;
+
+            if (_head < _tail)
+            {
+                Buffer.BlockCopy(_internalBuffer, _head, buffer, offset, size);
+            }
+            else
+            {
+                int rightLength = (_internalBuffer.Length - _head);
+
+                if (rightLength >= size)
+                {
+                    Buffer.BlockCopy(_internalBuffer, _head, buffer, offset, size);
+                }
+                else
+                {
+                    Buffer.BlockCopy(_internalBuffer, _head, buffer, offset, rightLength);
+                    Buffer.BlockCopy(_internalBuffer, 0, buffer, offset + rightLength, size - rightLength);
+                }
+            }
+
+            return size;
+        }
 
         /// <summary>
         /// Peeks a byte with a relative index to the fHead
@@ -222,9 +253,9 @@ namespace CoAPNet.Utils
         /// <returns>The byte peeked</returns>
         private byte PeekOne(int index)
         {
-            return index >= fSizeUntilCut
-                ? fInternalBuffer[index - fSizeUntilCut]
-                : fInternalBuffer[fHead + index];
+            return index >= _sizeUntilCut
+                ? _internalBuffer[index - _sizeUntilCut]
+                : _internalBuffer[_head + index];
         }
 
 
