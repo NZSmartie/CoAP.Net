@@ -58,15 +58,15 @@ namespace CoAPNet
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
 
-            var errorMessage = string.Empty;
+            var errorMessage = $"({message.Code.Class}.{message.Code.Detail:D2})";
             var contentFormat = message.Options.Get<Options.ContentFormat>();
 
             if (contentFormat != null && message.Payload != null)
             {
                 if (contentFormat.MediaType == Options.ContentFormatType.TextPlain)
-                    errorMessage = System.Text.Encoding.UTF8.GetString(message.Payload);
+                    errorMessage += System.Text.Encoding.UTF8.GetString(message.Payload);
                 else
-                    errorMessage = string.Join(", ", message.Payload.Select(b => $"0x{b:X2}"));
+                    errorMessage += string.Join(", ", message.Payload.Select(b => $"0x{b:X2}"));
             }
 
             return new CoapException(errorMessage, innerExcpetion, message.Code);
