@@ -183,14 +183,14 @@ namespace CoAPNet
                 {
                     _endOfStream = true;
 
-                    // Only attempt last write if blocks have already been flushed
-                    if (_writer.Length <= BlockSize)
+                    // Write any/all data to the output
+                    if (_writer.Length > 0)
                     {
                         _flushDoneEvent.Reset();
                         _writerEvent.Set();
+                        _flushDoneEvent.WaitAsync(CancellationToken.None).Wait();
                     }
 
-                    _flushDoneEvent.WaitAsync(CancellationToken.None).Wait();
                     _cancellationTokenSource.Cancel();
 
                     try
