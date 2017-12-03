@@ -33,6 +33,8 @@ namespace CoAPNet
 
         private int _blockSize = 1024;
 
+        public TimeSpan Timeout { get; set; } = TimeSpan.FromMilliseconds(-1);
+
         // TODO: check blocksize for valid value in 16,32,...,1024
         public int BlockSize
         {
@@ -185,13 +187,9 @@ namespace CoAPNet
 
                     // Write any/all data to the output
                     if (_writer.Length > 0)
-                    {
-                        _flushDoneEvent.Reset();
                         _writerEvent.Set();
-                        _flushDoneEvent.WaitAsync(CancellationToken.None).Wait();
-                    }
 
-                    _cancellationTokenSource.Cancel();
+                    _cancellationTokenSource.CancelAfter(Timeout);
 
                     try
                     {
