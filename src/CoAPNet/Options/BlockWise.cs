@@ -47,7 +47,7 @@ namespace CoAPNet.Options
 
         private int _blockNumber = 0;
 
-        public int BlockNumber
+        public virtual int BlockNumber
         {
             get => _blockNumber;
             set
@@ -136,6 +136,14 @@ namespace CoAPNet.Options
 
     public sealed class Block1 : BlockBase
     {
+        /// <summary>
+        /// Gets or Sets the block number in in the request <see cref="CoapMessage"/>
+        /// </summary>
+        /// <remarks>
+        /// This value indicates which block the <see cref="CoapMessage.Payload"/> belongs to in the requesting message body.
+        /// </remarks>
+        public override int BlockNumber { get => base.BlockNumber; set => base.BlockNumber = value; }
+
         public Block1()
             : base(CoapRegisteredOptionNumber.Block1)
         { }
@@ -147,6 +155,15 @@ namespace CoAPNet.Options
 
     public sealed class Block2 : BlockBase
     {
+        /// <summary>
+        /// Gets or Sets the block number in in the respone <see cref="CoapMessage"/>
+        /// </summary>
+        /// <remarks>
+        /// When the <see cref="CoapMessage"/>.<see cref="CoapMessage.Code"/> is a <see cref="CoapMessageCodeClass.Request"/>: The remote endpoint will response with the appropiate block for the message body.
+        /// Otherwise, this value indicates which block the <see cref="CoapMessage.Payload"/> belongs to in the message body.
+        /// </remarks>
+        public override int BlockNumber { get => base.BlockNumber; set => base.BlockNumber = value; }
+
         public Block2() 
             : base(CoapRegisteredOptionNumber.Block2)
         { }
