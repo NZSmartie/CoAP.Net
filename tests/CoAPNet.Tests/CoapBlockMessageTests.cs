@@ -23,7 +23,7 @@ namespace CoAPNet.Tests
 
         [Test]
         [Category("[RFC7959] Section 2.5"), Category("Blocks")]
-        public void WriteBlockWiseCoapMessage(
+        public void Write_BlockWiseCoapMessage(
             [Values(16, 32, 64, 128, 256, 512, 1024)] int blockSize, 
             [Range(1, 2)] int blocks, 
             [Values] bool lastHalfblock)
@@ -32,10 +32,10 @@ namespace CoAPNet.Tests
             var mockClientEndpoint = new Mock<MockEndpoint>() { CallBase = true };
 
             // "lambda" for generating our pseudo payload
-            Func<int, int, byte[]> byteRange = (a, b) => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
+            byte[] byteRange(int a, int b) => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
 
-            int totalBytes = (blocks * blockSize) + (lastHalfblock ? blockSize / 2 : 0);
-            int totalBlocks = ((totalBytes - 1) / blockSize) + 1;
+            var totalBytes = (blocks * blockSize) + (lastHalfblock ? blockSize / 2 : 0);
+            var totalBlocks = ((totalBytes - 1) / blockSize) + 1;
 
             var baseRequestMessage = new CoapMessage
             {
@@ -89,9 +89,9 @@ namespace CoAPNet.Tests
         }
 
         /// <summary>
-        /// Generates parameters for <see cref="WriteBlockWiseCoapMessage_RemoteReduceBlockSize"/>
+        /// Generates parameters for <see cref="Write_BlockWiseCoapMessage_RemoteReduceBlockSize"/>
         /// </summary>
-        public static IEnumerable WriteBlockWiseCoapMessage_RemoteReduceBlockSize_Data()
+        public static IEnumerable Write_BlockWiseCoapMessage_RemoteReduceBlockSize_Data()
         {
             foreach (var i in new[] { 16, 32, 64, 128, 256, 512, 1024 })
             {
@@ -106,8 +106,8 @@ namespace CoAPNet.Tests
         }
 
         [Category("[RFC7959] Section 2.5"), Category("Blocks")]
-        [TestCaseSource(nameof(WriteBlockWiseCoapMessage_RemoteReduceBlockSize_Data))]
-        public void WriteBlockWiseCoapMessage_RemoteReduceBlockSize(int initialBlockSize, int reducetoBlockSize, int blocks, bool lastHalfblock)
+        [TestCaseSource(nameof(Write_BlockWiseCoapMessage_RemoteReduceBlockSize_Data))]
+        public void Write_BlockWiseCoapMessage_RemoteReduceBlockSize(int initialBlockSize, int reducetoBlockSize, int blocks, bool lastHalfblock)
         {
             Assume.That(reducetoBlockSize < initialBlockSize, "Ignoring invalid test input");
 
@@ -115,7 +115,7 @@ namespace CoAPNet.Tests
             var mockClientEndpoint = new Mock<MockEndpoint>() { CallBase = true };
 
             // "lambda" for generating our pseudo payload
-            Func<int, int, byte[]> byteRange = (a, b) => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
+            byte[] byteRange(int a, int b) => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
 
             int totalBytes = (blocks * initialBlockSize) + (lastHalfblock ? initialBlockSize / 2 : 0);
             int totalBlocks = ((totalBytes - 1) / reducetoBlockSize) + 1;
@@ -190,8 +190,8 @@ namespace CoAPNet.Tests
         }
 
         [Category("[RFC7959] Section 2.5"), Category("Blocks")]
-        [TestCaseSource(nameof(WriteBlockWiseCoapMessage_RemoteReduceBlockSize_Data))]
-        public void WriteBlockWiseCoapMessage_BlockSizeTooLarge(int initialBlockSize, int reducetoBlockSize, int blocks, bool lastHalfblock)
+        [TestCaseSource(nameof(Write_BlockWiseCoapMessage_RemoteReduceBlockSize_Data))]
+        public void Write_BlockWiseCoapMessage_BlockSizeTooLarge(int initialBlockSize, int reducetoBlockSize, int blocks, bool lastHalfblock)
         {
             Assume.That(reducetoBlockSize < initialBlockSize, "Ignoring invalid test input");
 
@@ -199,11 +199,11 @@ namespace CoAPNet.Tests
             var mockClientEndpoint = new Mock<MockEndpoint>() { CallBase = true };
 
             // "lambda" for generating our pseudo payload
-            Func<int, int, byte[]> byteRange = (a, b) => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
+            byte[] byteRange(int a, int b) => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
 
-            int totalBytes = (blocks * initialBlockSize) + (lastHalfblock ? initialBlockSize / 2 : 0);
-            int totalBlocks = ((totalBytes - 1) / reducetoBlockSize) + 1;
-            int messageId = 1;
+            var totalBytes = (blocks * initialBlockSize) + (lastHalfblock ? initialBlockSize / 2 : 0);
+            var totalBlocks = ((totalBytes - 1) / reducetoBlockSize) + 1;
+            var messageId = 1;
 
             var baseRequestMessage = new CoapMessage
             {

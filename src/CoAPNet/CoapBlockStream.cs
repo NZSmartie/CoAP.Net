@@ -7,6 +7,7 @@ using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using CoAPNet.Options;
 
 namespace CoAPNet
 {
@@ -15,6 +16,20 @@ namespace CoAPNet
     /// </summary>
     public class CoapBlockStream : Stream
     {
+        // Backing field for DefaultBlockSize
+        private static int _defaultBlockSize = 1024;
+
+        /// <summary>
+        /// Gets or Sets the default blocksize used when initailising a new <see cref="CoapBlockStream"/>.
+        /// </summary>
+        public static int DefaultBlockSize
+        {
+            get => _defaultBlockSize;
+            set => _defaultBlockSize = BlockBase.SupportedBlockSizes.Any(b => b.Item2 == value)
+                ? value
+                : throw new ArgumentOutOfRangeException();
+        }
+
         private readonly CoapClient _client;
 
         private readonly ByteQueue _reader = new ByteQueue();
@@ -24,19 +39,19 @@ namespace CoAPNet
         private readonly ByteQueue _writer = new ByteQueue();
         private readonly Task _writerTask;
         private readonly AsyncAutoResetEvent _writerEvent = new AsyncAutoResetEvent(false);
-        private int _writeBlockNumber = 0;
+        private int _writeBlockNumber;
 
-        private Exception _exception = null;
+        private Exception _caughtException;
 
-        private readonly AsyncAutoResetEvent _flushDoneEvent = new AsyncAutoResetEvent(false);
+        private readonly AsyncAutoResetEvent _flushFinishedEvent = new AsyncAutoResetEvent(false);
 
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         private readonly CoapMessage _baseMessage;
 
-        private bool _endOfStream = false;
+        private bool _endOfStream;
 
-        private int _blockSize = 1024;
+        private int _blockSize = DefaultBlockSize;
 
         /// <summary>
         /// Gets or sets the maximum amount of time spent writing to <see cref="CoapClient"/> during <see cref="Dispose(bool)"/>
@@ -57,7 +72,7 @@ namespace CoAPNet
                 if (value > _blockSize)
                     throw new ArgumentOutOfRangeException($"Can not increase blocksize from {_blockSize} to {value}");
 
-                if (!Options.BlockBase.SupportedBlockSizes.Any(b => b.Item2 == value))
+                if (BlockBase.SupportedBlockSizes.All(b => b.Item2 != value))
                     throw new ArgumentOutOfRangeException($"Unsupported blocksize {value}. Expecting block sizes in ({string.Join(", ", Options.BlockBase.SupportedBlockSizes.Select(b => b.Item2))})");
 
                 _blockSize = value;
@@ -71,13 +86,7 @@ namespace CoAPNet
         public override bool CanSeek => false;
 
         /// <inheritdoc/>
-        public override bool CanWrite => true;
-
-        /// <inheritdoc/>
-        public override long Length => throw new NotSupportedException();
-
-        /// <inheritdoc/>
-        public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        public override bool CanWrite => !_endOfStream;
 
         /// <summary>
         /// Create a new <see cref="CoapBlockStream"/> using <paramref name="client"/> to read and write blocks of data. <paramref name="baseMessage"/> is required to base blocked messages off of.
@@ -151,18 +160,18 @@ namespace CoAPNet
                     }
 
                     // flag the mot recent flush has been performed
-                    _flushDoneEvent.Set();
+                    _flushFinishedEvent.Set();
                 }
             }
             catch (Exception ex)
             {
                 // Hold onto the exception to throw it from a synchronous call.
-                _exception = ex;
+                _caughtException = ex;
             }
             finally
             {
                 _endOfStream = true;
-                _flushDoneEvent.Set();
+                _flushFinishedEvent.Set();
             }
         }
 
@@ -172,10 +181,10 @@ namespace CoAPNet
         /// <inheritdoc/>
         public override void Flush()
         {
-            if (_exception == null && !_writerTask.IsCompleted)
+            if (_caughtException == null && !_writerTask.IsCompleted)
             {
                 _writerEvent.Set();
-                _flushDoneEvent.WaitAsync(CancellationToken.None).Wait();
+                _flushFinishedEvent.WaitAsync(CancellationToken.None).Wait();
             }
 
             ThrowCaughtException();
@@ -189,7 +198,7 @@ namespace CoAPNet
         {
             _writerEvent.Set();
 
-            await _flushDoneEvent.WaitAsync(cancellationToken);
+            await _flushFinishedEvent.WaitAsync(cancellationToken);
 
             ThrowCaughtException();
         }
@@ -201,20 +210,9 @@ namespace CoAPNet
         }
 
         /// <inheritdoc/>
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <inheritdoc/>
-        public override void SetLength(long value)
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)
         {
+            // TODO: Block here while there are full blocks that can be written. Leaving only incomplete blocks to be written during Close or Dispose
             _writer.Enqueue(buffer, offset, count);
             _writerEvent.Set();
         }
@@ -224,7 +222,7 @@ namespace CoAPNet
         {
             if (disposing)
             {
-                if (_exception == null && !_writerTask.IsCompleted)
+                if (_caughtException == null && !_writerTask.IsCompleted)
                 {
                     _endOfStream = true;
 
@@ -251,12 +249,28 @@ namespace CoAPNet
 
         private void ThrowCaughtException()
         {
-            if (_exception == null)
+            if (_caughtException == null)
                 return;
 
-            var exception = _exception;
-            _exception = null;
+            var exception = _caughtException;
+            _caughtException = null;
             ExceptionDispatchInfo.Capture(exception).Throw();
         }
+
+        #region NotSupppoorted
+
+        /// <inheritdoc/>
+        public override long Length => throw new NotSupportedException();
+
+        /// <inheritdoc/>
+        public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+
+        /// <inheritdoc/>
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+
+        /// <inheritdoc/>
+        public override void SetLength(long value) => throw new NotSupportedException();
+
+        #endregion
     }
 }
