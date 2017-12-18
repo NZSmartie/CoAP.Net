@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using CoAPNet;
@@ -62,7 +63,7 @@ namespace CoAPNet
     /// <summary>
     /// Client interface for interacting with CoAP endpoints with the provided <see cref="ICoapEndpoint"/>
     /// </summary>
-    public class CoapClient : IDisposable
+    public partial class CoapClient : IDisposable
     {
         /// <summary>
         /// The endpoint which this client is bound to, and performs Send/Receive through.
@@ -71,17 +72,18 @@ namespace CoAPNet
 
         private int _messageId;
 
-        private Queue<Tuple<DateTime, ICoapEndpoint, int>> _recentMessageIds = new Queue<Tuple<DateTime, ICoapEndpoint, int>>();
+        private readonly ConcurrentQueue<Tuple<DateTime, ICoapEndpoint, CoapMessage>> _recentMessages = new ConcurrentQueue<Tuple<DateTime, ICoapEndpoint, CoapMessage>>();
 
+        // TODO: Test this default value. would only a few seconds be enough?
         /// <summary>
         /// Sets or gets the <see cref="TimeSpan"/> to retain CoAP messageIDs per endpoint to compare repeated messages against.
         /// </summary>
         /// <remarks>Default is <c>5 minutes</c></remarks>
-        public TimeSpan IgnoreRepeatesFor { get; set; } = TimeSpan.FromMinutes(5);
+        public TimeSpan MessageCacheTimeSpan { get; set; } = TimeSpan.FromMinutes(1);
 
         // I'm not particularly fond of the following _messageQueue and _messageResponses... Feels more like a hack. but it works? NEEDS MORE TESTING!!!
-        private readonly ConcurrentDictionary<int, TaskCompletionSource<CoapMessage>> _messageResponses 
-            = new ConcurrentDictionary<int, TaskCompletionSource<CoapMessage>>();
+        private readonly ConcurrentDictionary<CoapMessageIdentifier, TaskCompletionSource<CoapMessage>> _messageResponses 
+            = new ConcurrentDictionary<CoapMessageIdentifier, TaskCompletionSource<CoapMessage>>();
 
         /// <summary>
         /// Maximum number of attempts at performing <see cref="ICoapEndpoint.SendAsync(CoapPacket)"/> before throwing <see cref="CoapClientException"/>
@@ -231,7 +233,7 @@ namespace CoAPNet
                         if (IsRepeated(payload.Endpoint, message.Id))
                             continue;
 
-                        _recentMessageIds.Enqueue(Tuple.Create(DateTime.Now, payload.Endpoint, message.Id));
+                        _recentMessages.Enqueue(Tuple.Create(DateTime.Now, payload.Endpoint, message));
                     }
                     catch (CoapMessageFormatException)
                     {
@@ -251,10 +253,10 @@ namespace CoAPNet
                         throw;
                     }
 
-                    if (_messageResponses.ContainsKey(message.Id))
-                    {
-                        _messageResponses[message.Id].TrySetResult(message);
-                    }
+                    var messageId = message.GetIdentifier(payload.Endpoint);
+
+                    if (_messageResponses.ContainsKey(messageId))
+                        _messageResponses[messageId].TrySetResult(message);
 
                     _receiveQueue.Enqueue(Task.FromResult(new CoapReceiveResult(payload.Endpoint, message)));
                     _receiveEvent.Set();
@@ -285,19 +287,18 @@ namespace CoAPNet
 
         private bool IsRepeated(ICoapEndpoint endpoint, int messageId)
         {
-            var clearBefore = DateTime.Now.Subtract(IgnoreRepeatesFor);
+            var clearBefore = DateTime.Now.Subtract(MessageCacheTimeSpan);
 
             // Clear out expired messageIds
-            while (_recentMessageIds.Count > 0)
+            while (_recentMessages.Count > 0)
             {
-                var p = _recentMessageIds.Peek();
-                if (p.Item1 < clearBefore)
-                    _recentMessageIds.Dequeue();
+                if(_recentMessages.TryPeek(out var p) && p.Item1 < clearBefore)
+                    _recentMessages.TryDequeue(out _);
                 else
                     break;
             }
 
-            if (_recentMessageIds.Any(r => r.Item3 == messageId && r.Item2 == endpoint))
+            if (_recentMessages.Any(r => r.Item3.Id == messageId && r.Item2 == endpoint))
                 return true;
 
             return false;
@@ -321,21 +322,41 @@ namespace CoAPNet
         }
 
         /// <summary>
+        /// Checks if a <see cref="CoapReceiveResult"/> has been received for the coresponding <paramref name="request"/> and returns it. 
+        /// Otherwise waits until a new result is received unless cancelled by the <paramref name="token"/> or the <see cref="MaxRetransmitAttempts"/> is reached.
+        /// </summary>
+        /// <param name="request">Waits for a result with a coresponding request message.</param>
+        /// <param name="token">Token to cancel the blocking Receive operation</param>
+        /// <returns>Valid result if a result is received, <c>null</c> if canceled.</returns>
+        /// <exception cref="CoapClientException">If the timeout period * maximum retransmission attempts was reached.</exception>
+        public Task<CoapMessage> GetResponseAsync(CoapMessage request, ICoapEndpoint endpoint = null, CancellationToken token = default(CancellationToken), bool dequeue = true)
+            => GetResponseAsyncInternal(request.GetIdentifier(endpoint), token, dequeue);
+
+
+        /// <summary>
         /// Checks if a <see cref="CoapReceiveResult"/> has been received with a coresponding <paramref name="messageId"/> and returns it. Otherwise waits until a new result is received unless cancelled by the <paramref name="token"/> or the <see cref="MaxRetransmitAttempts"/> is reached.
         /// </summary>
         /// <param name="messageId">Waits for a result with a coresponding message Id.</param>
         /// <param name="token">Token to cancel the blocking Receive operation</param>
         /// <returns>Valid result if a result is received, <c>null</c> if canceled.</returns>
         /// <exception cref="CoapClientException">If the timeout period * maximum retransmission attempts was reached.</exception>
-        public async Task<CoapMessage> GetResponseAsync(int messageId, CancellationToken token = default(CancellationToken))
+        [Obsolete("In favor of GetResponseAsync(CoapMessage request, ...)")]
+        public Task<CoapMessage> GetResponseAsync(int messageId, CancellationToken token = default(CancellationToken), bool dequeue = true)
+        {
+            // Assume message was Confirmable
+            return GetResponseAsyncInternal(new CoapMessageIdentifier(messageId, CoapMessageType.Confirmable), token, dequeue);
+        }
+
+        private async Task<CoapMessage> GetResponseAsyncInternal(CoapMessageIdentifier messageId, CancellationToken token = default(CancellationToken), bool dequeue = true)
         {
             TaskCompletionSource<CoapMessage> responseTask = null;
 
             if (!_messageResponses.TryGetValue(messageId, out responseTask))
-                throw new ArgumentOutOfRangeException($"The current message id ({messageId}) is not pending a due response");
+                throw new CoapClientException($"The current message id ({messageId}) is not pending a due response");
 
             if (responseTask.Task.IsCompleted)
-                return await responseTask.Task;
+                return _recentMessages.FirstOrDefault(m => m.Item3.GetIdentifier() == messageId)?.Item3
+                    ?? throw new CoapClientException($"No recent message found for {messageId}. This may happen when {nameof(MessageCacheTimeSpan)} is set too short");
 
             if (Endpoint == null)
                 throw new CoapEndpointException($"{nameof(CoapClient)} has an invalid {nameof(Endpoint)}");
@@ -356,7 +377,9 @@ namespace CoAPNet
             if (responseTask.Task.Status != TaskStatus.RanToCompletion)
                 throw new CoapClientException($"Max timeout reached for Message Id: {messageId}");
 
-            Debug.Assert(_messageResponses.TryRemove(messageId, out responseTask));
+            if (dequeue)
+                _messageResponses.TryRemove(messageId, out _);
+
 
             return responseTask.Task.Result;
         }
@@ -415,14 +438,17 @@ namespace CoAPNet
             if (message.IsMulticast && message.Type != CoapMessageType.NonConfirmable)
                 throw new CoapClientException("Can not send confirmable (CON) CoAP message to a multicast endpoint");
 
+            var messageId = message.GetIdentifier(endpoint);
+
+            _messageResponses.TryAdd(messageId, new TaskCompletionSource<CoapMessage>(TaskCreationOptions.RunContinuationsAsynchronously));
+
             if (message.Type != CoapMessageType.Confirmable)
             {
                 await SendAsyncInternal(message, endpoint, token).ConfigureAwait(false);
                 return message.Id;
             }
 
-            _messageResponses.TryAdd(message.Id, new TaskCompletionSource<CoapMessage>(TaskCreationOptions.RunContinuationsAsynchronously));
-            var responseTaskSource = _messageResponses[message.Id];
+            Debug.Assert(_messageResponses.TryGetValue(messageId, out var responseTaskSource), "Race condition?");
 
             for (var attempt = 1; attempt <= MaxRetransmitAttempts; attempt++)
             {
@@ -474,7 +500,7 @@ namespace CoAPNet
             Interlocked.Exchange(ref _messageId, value - 1);
         }
         
-        #region Request Operations
+#region Request Operations
 
         /// <summary>
         /// Performs a async <see cref="CoapMessageCode.Get"/> request to the <paramref name="uri"/>.
@@ -549,7 +575,7 @@ namespace CoAPNet
             throw new NotImplementedException();
         }
 
-        #endregion
+#endregion
 
 
     }

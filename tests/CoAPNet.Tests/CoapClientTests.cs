@@ -365,7 +365,7 @@ namespace CoAPNet.Tests
             using (var client = new CoapClient(mockClientEndpoint.Object))
             {
                 var ct = new CancellationTokenSource(MaxTaskTimeout);
-                client.IgnoreRepeatesFor = TimeSpan.FromMilliseconds(250);
+                client.MessageCacheTimeSpan = TimeSpan.FromMilliseconds(250);
                 client.SetNextMessageId(0x1234);
                 // Sned message
                 var messageId = await client.GetAsync("coap://example.com/.well-known/core", ct.Token);
