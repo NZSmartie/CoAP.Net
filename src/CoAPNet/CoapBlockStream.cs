@@ -102,11 +102,11 @@ namespace CoAPNet
             _client = client ?? throw new ArgumentNullException(nameof(client));
             _endpoint = endpoint;
 
-            if (!_baseMessage.Code.IsRequest())
-                throw new InvalidOperationException($"Can not create a {nameof(CoapBlockStream)} with a {nameof(baseMessage)}.{nameof(baseMessage.Type)} of {baseMessage.Type}");
-
             _baseMessage = baseMessage?.Clone()
                            ?? throw new ArgumentNullException(nameof(baseMessage));
+
+            if (!_baseMessage.Code.IsRequest())
+                throw new InvalidOperationException($"Can not create a {nameof(CoapBlockStream)} with a {nameof(baseMessage)}.{nameof(baseMessage.Type)} of {baseMessage.Type}");
 
             _writerTask = WriteBlocksAsync();
 
