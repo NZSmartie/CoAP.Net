@@ -6,8 +6,8 @@ namespace CoAPNet
 {
     public static class CoapMessageIdentifierExtensions
     {
-        public static CoapMessageIdentifier GetIdentifier(this CoapMessage message, ICoapEndpoint endpoint = null)
-            => new CoapMessageIdentifier(message, endpoint);
+        public static CoapMessageIdentifier GetIdentifier(this CoapMessage message, ICoapEndpoint endpoint = null, bool isRequest = false)
+            => new CoapMessageIdentifier(message, endpoint, isRequest);
     }
 
     public struct CoapMessageIdentifier
@@ -20,11 +20,17 @@ namespace CoAPNet
 
         public readonly ICoapEndpoint Endpoint;
 
-        public CoapMessageIdentifier(CoapMessage message, ICoapEndpoint endpoint = null)
+        /// <summary>
+        /// When <c>true</c>, the associated identifer is for a requesting <see cref="CoapMessage"/>.
+        /// </summary>
+        public readonly bool IsRequest;
+
+        public CoapMessageIdentifier(CoapMessage message, ICoapEndpoint endpoint = null, bool isRequest = false)
         {
             Id = message.Id;
             MessageType = message.Type;
             Endpoint = endpoint;
+            IsRequest = isRequest;
 
             // Even no tokens are treated as a zero-length token representing 0x0
             Token = new byte[message.Token?.Length ?? 0];
@@ -33,11 +39,12 @@ namespace CoAPNet
                 Array.Copy(message.Token, Token, message.Token.Length);
         }
 
-        public CoapMessageIdentifier(int id, CoapMessageType messageType, byte[] token = null, ICoapEndpoint endpoint = null)
+        public CoapMessageIdentifier(int id, CoapMessageType messageType, byte[] token = null, ICoapEndpoint endpoint = null, bool isRequest = false)
         {
             Id = id;
             MessageType = messageType;
             Endpoint = endpoint;
+            IsRequest = isRequest;
 
             // Even no tokens are treated as a zero-length token representing 0x0
             Token = new byte[token?.Length ?? 0];
@@ -56,14 +63,14 @@ namespace CoAPNet
                 return false;
 
             // Only check the ID on a piggypacked response. Reponses that arrive after a an Acknowledge have a new ID
-            if (((A.MessageType == CoapMessageType.Confirmable && B.MessageType == CoapMessageType.Acknowledgement) ||
-                 (B.MessageType == CoapMessageType.Confirmable && A.MessageType == CoapMessageType.Acknowledgement)) && 
+            if (((A.IsRequest && B.MessageType == CoapMessageType.Acknowledgement) ||
+                 (B.IsRequest && A.MessageType == CoapMessageType.Acknowledgement)) && 
                  A.Id != B.Id)
                 return false;
 
             return true;
         }
-
+        
         /// <inheritdoc />
         public override string ToString()
         {
@@ -101,7 +108,12 @@ namespace CoAPNet
         {
             unchecked
             {
-                return Token.Aggregate(270, (a, t) => a + t.GetHashCode() * 21890);
+                var idHash = IsRequest || MessageType == CoapMessageType.Acknowledgement
+                             ? Id * 55865
+                             : 0;
+                var tokenHash = Token.Aggregate(270, (a, t) => a + t.GetHashCode() * 21890);
+
+                return tokenHash ^ idHash;
             }
         }
     }

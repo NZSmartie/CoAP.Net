@@ -329,8 +329,8 @@ namespace CoAPNet
         /// <param name="token">Token to cancel the blocking Receive operation</param>
         /// <returns>Valid result if a result is received, <c>null</c> if canceled.</returns>
         /// <exception cref="CoapClientException">If the timeout period * maximum retransmission attempts was reached.</exception>
-        public Task<CoapMessage> GetResponseAsync(CoapMessage request, ICoapEndpoint endpoint = null, CancellationToken token = default(CancellationToken), bool dequeue = true)
-            => GetResponseAsyncInternal(request.GetIdentifier(endpoint), token, dequeue);
+        public Task<CoapMessage> GetResponseAsync(CoapMessage request, ICoapEndpoint endpoint = null, bool isRequest = false, CancellationToken token = default(CancellationToken), bool dequeue = true)
+            => GetResponseAsync(request.GetIdentifier(endpoint, isRequest), token, dequeue);
 
 
         /// <summary>
@@ -344,10 +344,11 @@ namespace CoAPNet
         public Task<CoapMessage> GetResponseAsync(int messageId, CancellationToken token = default(CancellationToken), bool dequeue = true)
         {
             // Assume message was Confirmable
-            return GetResponseAsyncInternal(new CoapMessageIdentifier(messageId, CoapMessageType.Confirmable), token, dequeue);
+            return GetResponseAsync(new CoapMessageIdentifier(messageId, CoapMessageType.Confirmable), token, dequeue);
         }
 
-        private async Task<CoapMessage> GetResponseAsyncInternal(CoapMessageIdentifier messageId, CancellationToken token = default(CancellationToken), bool dequeue = true)
+        // TODO: Ignore Acks, we're actually interested in a response.
+        public async Task<CoapMessage> GetResponseAsync(CoapMessageIdentifier messageId, CancellationToken token = default(CancellationToken), bool dequeue = true)
         {
             TaskCompletionSource<CoapMessage> responseTask = null;
 
@@ -356,7 +357,7 @@ namespace CoAPNet
 
             if (responseTask.Task.IsCompleted)
                 return _recentMessages.FirstOrDefault(m => m.Item3.GetIdentifier() == messageId)?.Item3
-                    ?? throw new CoapClientException($"No recent message found for {messageId}. This may happen when {nameof(MessageCacheTimeSpan)} is set too short");
+                    ?? throw new CoapClientException($"No recent message found for {messageId}. This may happen when {nameof(MessageCacheTimeSpan)} is too short");
 
             if (Endpoint == null)
                 throw new CoapEndpointException($"{nameof(CoapClient)} has an invalid {nameof(Endpoint)}");
@@ -389,7 +390,7 @@ namespace CoAPNet
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public virtual async Task<int> SendAsync(CoapMessage message) 
+        public virtual async Task<CoapMessageIdentifier> SendAsync(CoapMessage message) 
             => await SendAsync(message, null, CancellationToken.None);
 
         /// <summary>
@@ -398,7 +399,7 @@ namespace CoAPNet
         /// <param name="message"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public virtual async Task<int> SendAsync(CoapMessage message, CancellationToken token) 
+        public virtual async Task<CoapMessageIdentifier> SendAsync(CoapMessage message, CancellationToken token) 
             => await SendAsync(message, null, token);
 
         /// <summary>
@@ -407,7 +408,7 @@ namespace CoAPNet
         /// <param name="message"></param>
         /// <param name="endpoint"></param>
         /// <returns></returns>
-        public virtual async Task<int> SendAsync(CoapMessage message, ICoapEndpoint endpoint) 
+        public virtual async Task<CoapMessageIdentifier> SendAsync(CoapMessage message, ICoapEndpoint endpoint) 
             => await SendAsync(message, endpoint, CancellationToken.None);
 
         private int GetNextMessageId() 
@@ -424,7 +425,7 @@ namespace CoAPNet
         /// <param name="token">A token used to cancel the blocking Send operation or retransmission attempts.</param>
         /// <returns>The message Id</returns>
         /// <exception cref="CoapClientException">If the timeout period * maximum retransmission attempts was reached.</exception>
-        public virtual async Task<int> SendAsync(CoapMessage message, ICoapEndpoint endpoint, CancellationToken token)
+        public virtual async Task<CoapMessageIdentifier> SendAsync(CoapMessage message, ICoapEndpoint endpoint, CancellationToken token)
         {
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
@@ -438,14 +439,14 @@ namespace CoAPNet
             if (message.IsMulticast && message.Type != CoapMessageType.NonConfirmable)
                 throw new CoapClientException("Can not send confirmable (CON) CoAP message to a multicast endpoint");
 
-            var messageId = message.GetIdentifier(endpoint);
+            var messageId = message.GetIdentifier(endpoint, message.Type == CoapMessageType.Confirmable || message.Type == CoapMessageType.NonConfirmable);
 
             _messageResponses.TryAdd(messageId, new TaskCompletionSource<CoapMessage>(TaskCreationOptions.RunContinuationsAsynchronously));
 
             if (message.Type != CoapMessageType.Confirmable)
             {
                 await SendAsyncInternal(message, endpoint, token).ConfigureAwait(false);
-                return message.Id;
+                return messageId;
             }
 
             Debug.Assert(_messageResponses.TryGetValue(messageId, out var responseTaskSource), "Race condition?");
@@ -464,7 +465,7 @@ namespace CoAPNet
 
 
                 if (responseTaskSource.Task.IsCompleted)
-                    return message.Id;
+                    return messageId;
             }
             throw new CoapClientException($"Max retransmission attempts reached for Message Id: {message.Id}");
         }
@@ -508,7 +509,7 @@ namespace CoAPNet
         /// <param name="uri"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public virtual async Task<int> GetAsync(string uri, CancellationToken token = default(CancellationToken))
+        public virtual async Task<CoapMessageIdentifier> GetAsync(string uri, CancellationToken token = default(CancellationToken))
         {
             return await GetAsync(uri, null, token);
         }
@@ -520,7 +521,7 @@ namespace CoAPNet
         /// <param name="endpoint"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public virtual async Task<int> GetAsync(string uri, ICoapEndpoint endpoint, CancellationToken token = default(CancellationToken))
+        public virtual async Task<CoapMessageIdentifier> GetAsync(string uri, ICoapEndpoint endpoint, CancellationToken token = default(CancellationToken))
         {
             var message = new CoapMessage
             {
