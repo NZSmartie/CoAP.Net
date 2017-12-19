@@ -449,7 +449,8 @@ namespace CoAPNet
                 return messageId;
             }
 
-            Debug.Assert(_messageResponses.TryGetValue(messageId, out var responseTaskSource), "Race condition?");
+            if (!_messageResponses.TryGetValue(messageId, out var responseTaskSource))
+                throw new CoapClientException("Race condition? This shouldn't happen. Congratuations!");
 
             for (var attempt = 1; attempt <= MaxRetransmitAttempts; attempt++)
             {
