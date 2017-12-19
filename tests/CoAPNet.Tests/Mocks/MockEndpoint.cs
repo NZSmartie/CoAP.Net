@@ -43,7 +43,7 @@ namespace CoAPNet.Tests.Mocks
 
         public virtual Task SendAsync(CoapPacket packet)
         {
-            Debug.WriteLine($"Writing packet {{{string.Join(", ", packet.Payload)}}}");
+            Debug.WriteLine($"Writing packet {{{string.Join(", ", packet.Payload)}}} {CoapMessage.CreateFromBytes(packet.Payload)}");
             return IsDisposed
                 ? throw new CoapEndpointException("Encdpoint Disposed")
                 : MockSendAsync(packet);
@@ -58,7 +58,7 @@ namespace CoAPNet.Tests.Mocks
         {
             lock (_receiveQueue)
             {
-                Debug.WriteLine($"MockEndpoint: Enqueing packet {{{string.Join(", ", packet.Payload)}}}");
+                Debug.WriteLine($"MockEndpoint: Enqueing packet {{{string.Join(", ", packet.Payload)}}} {CoapMessage.CreateFromBytes(packet.Payload)}");
                 _receiveQueue.Enqueue(packet);
             }
             _receiveEnqueuedEvent.Set();
