@@ -531,6 +531,10 @@ namespace CoAPNet
             if (Options.Any(o => o.OptionNumber == CoapRegisteredOptionNumber.UriPath))
                 result += ", /" + Options.Where(o => o.OptionNumber == CoapRegisteredOptionNumber.UriPath).Select(o => o.ValueString).Aggregate((a, b) => a + "/" + b);
 
+            var block = Options.Get<Options.Block2>() ?? Options.Get<Options.Block1>() as BlockBase;
+            if (block != null)
+                result += $", {(block is Block1 ? "1" : "2")}:{block.BlockNumber}/{(block.IsMoreFollowing ? "1" : "0")}/{block.BlockSize}";
+
             return result;
         }
     }
