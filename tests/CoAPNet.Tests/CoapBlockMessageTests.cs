@@ -279,10 +279,104 @@ namespace CoAPNet.Tests
         }
 
         [Test]
-        [Category("Blocks")]
-        public void ReadCoapMessageBlocks()
+        [Category("[RFC7959] Section 2.4"), Category("Blocks")]
+        public async Task Read_BlockWiseCoapMessage(
+            [Values(16, 32, 64, 128, 256, 512, 1024)] int blockSize,
+            [Range(1, 2)] int blocks,
+            [Values] bool lastHalfblock)
         {
-            Assert.Inconclusive("Not Implemented");
+            // Arrange
+            var mockClientEndpoint = new Mock<MockEndpoint>() { CallBase = true };
+
+            var messageId = 1;
+
+            // "lambda" for generating our pseudo payload
+            byte[] byteRange(int a, int b) => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
+
+            int totalBytes = (blocks * blockSize) + (lastHalfblock ? blockSize / 2 : 0);
+            int totalBlocks = ((totalBytes - 1) / blockSize) + 1;
+
+            var baseRequestMessage = new CoapMessage
+            {
+                Code = CoapMessageCode.Get,
+                Type = CoapMessageType.Confirmable,
+            };
+
+            baseRequestMessage.SetUri("/status", UriComponents.Path);
+
+            var baseResponseMessage = new CoapMessage
+            {
+                Code = CoapMessageCode.Content,
+                Type = CoapMessageType.Acknowledgement,
+            };
+
+            {
+                var block = 0;
+                var bytes = Math.Min(totalBytes - (block * blockSize), blockSize);
+
+                var expected = baseRequestMessage.Clone();
+                expected.Id = messageId;
+
+                var response = baseResponseMessage.Clone();
+                response.Id = messageId++;
+                response.Options.Add(new Options.Block2(block, blockSize, block != (totalBlocks - 1)));
+                response.Payload = byteRange(blockSize * block, bytes);
+
+                Debug.WriteLine($"Expecting: {expected}");
+                Debug.WriteLine($" Response: {response}");
+
+                mockClientEndpoint
+                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes()))))
+                    .Callback(() => mockClientEndpoint.Object.EnqueueReceivePacket(new CoapPacket { Payload = response.ToBytes() }))
+                    .Returns(Task.CompletedTask)
+                    .Verifiable($"Did not send block: {block}");
+            }
+
+            // Generate an expected packet and response for all block-wise requests
+            for (var block = 1; block < totalBlocks; block++)
+            {
+                var bytes = Math.Min(totalBytes - (block * blockSize), blockSize);
+
+                var expected = baseRequestMessage.Clone();
+                expected.Id = messageId;
+                expected.Options.Add(new Options.Block2(block, blockSize));
+
+                var response = baseResponseMessage.Clone();
+                response.Id = messageId++;
+                response.Options.Add(new Options.Block2(block, blockSize, block != (totalBlocks - 1)));
+                response.Payload = byteRange(blockSize * block, bytes);
+
+                Debug.WriteLine($"Expecting: {expected}");
+                Debug.WriteLine($" Response: {response}");
+
+                mockClientEndpoint
+                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes()))))
+                    .Callback(() => mockClientEndpoint.Object.EnqueueReceivePacket(new CoapPacket { Payload = response.ToBytes() }))
+                    .Returns(Task.CompletedTask)
+                    .Verifiable($"Did not send block: {block}");
+            }
+
+            var result = new byte[totalBytes];
+
+            // Act
+            using (var client = new CoapClient(mockClientEndpoint.Object))
+            {
+                var ct = new CancellationTokenSource(MaxTaskTimeout);
+
+                client.SetNextMessageId(1);
+
+                var identifier = await client.SendAsync(baseRequestMessage, ct.Token);
+
+                var response = await client.GetResponseAsync(identifier, ct.Token);
+
+                using (var reader = new CoapBlockStream(client, response, baseRequestMessage))
+                {
+                    reader.Read(result, 0, totalBytes);
+                };
+            }
+
+            // Assert
+            mockClientEndpoint.Verify();
         }
     }
 }

@@ -31,10 +31,12 @@ namespace CoAPNet
         }
 
         private readonly CoapClient _client;
+        private readonly ICoapEndpoint _endpoint;
 
         private readonly ByteQueue _reader = new ByteQueue();
+        private readonly Task _readerTask;
+        private readonly AsyncAutoResetEvent _readerEvent = new AsyncAutoResetEvent(false);
 
-        //private readonly Task _readerTask;
 
         private readonly ByteQueue _writer = new ByteQueue();
         private readonly Task _writerTask;
@@ -52,6 +54,7 @@ namespace CoAPNet
         private bool _endOfStream;
 
         private int _blockSize = DefaultBlockSize;
+        private int _readBlockNumber;
 
         /// <summary>
         /// Gets or sets the maximum amount of time spent writing to <see cref="CoapClient"/> during <see cref="Dispose(bool)"/>
@@ -80,25 +83,108 @@ namespace CoAPNet
         }
 
         /// <inheritdoc/>
-        public override bool CanRead => true;
+        public override bool CanRead => !_endOfStream && (_readerTask?.IsCompleted ?? false);
 
         /// <inheritdoc/>
         public override bool CanSeek => false;
 
         /// <inheritdoc/>
-        public override bool CanWrite => !_endOfStream;
+        public override bool CanWrite => !_endOfStream && (_writerTask?.IsCompleted ?? false);
 
         /// <summary>
         /// Create a new <see cref="CoapBlockStream"/> using <paramref name="client"/> to read and write blocks of data. <paramref name="baseMessage"/> is required to base blocked messages off of.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="baseMessage"></param>
-        public CoapBlockStream(CoapClient client, CoapMessage baseMessage = null)
+        /// <param name="endpoint"></param>
+        public CoapBlockStream(CoapClient client, CoapMessage baseMessage, ICoapEndpoint endpoint = null)
         {
-            _client = client;
-            _baseMessage = baseMessage;
+            _client = client ?? throw new ArgumentNullException(nameof(client));
+            _endpoint = endpoint;
+
+            if (!_baseMessage.Code.IsRequest())
+                throw new InvalidOperationException($"Can not create a {nameof(CoapBlockStream)} with a {nameof(baseMessage)}.{nameof(baseMessage.Type)} of {baseMessage.Type}");
+
+            _baseMessage = baseMessage?.Clone()
+                           ?? throw new ArgumentNullException(nameof(baseMessage));
 
             _writerTask = WriteBlocksAsync();
+
+            
+        }
+
+        /// <summary>
+        /// Create a new <see cref="CoapBlockStream"/> using <paramref name="client"/> to read and write blocks of data. <paramref name="baseMessage"/> is required to base blocked messages off of.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="baseMessage"></param>
+        /// <param name="endpoint"></param>
+        public CoapBlockStream(CoapClient client, CoapMessage baseMessage, CoapMessage requestMessage, ICoapEndpoint endpoint = null)
+        {
+            _client = client ?? throw new ArgumentNullException(nameof(client));
+            _endpoint = endpoint;
+
+            _baseMessage = requestMessage?.Clone()
+                           ?? throw new ArgumentNullException(nameof(requestMessage));
+
+            var payload = baseMessage.Payload;
+
+            var block2 = baseMessage.Options.Get<Block2>();
+            _blockSize = block2.BlockSize;
+            _readBlockNumber = block2.BlockNumber;
+            _endOfStream = !block2.IsMoreFollowing;
+
+            _reader.Enqueue(payload, 0, payload.Length);
+
+            _readBlockNumber += payload.Length / _blockSize;
+
+            _readerTask = ReadBlocksAsync();
+        }
+
+        private async Task ReadBlocksAsync()
+        {
+            var cancellationToken = _cancellationTokenSource.Token;
+            //var meessageToken = new Random().Next();
+            
+            try
+            {
+                while (!_endOfStream && !cancellationToken.IsCancellationRequested)
+                {
+                    var message = _baseMessage.Clone();
+                    message.Id = 0;
+
+                    message.Options.Add(new Block2(_readBlockNumber, _blockSize));
+
+                    var messageId = await _client.SendAsync(message, _endpoint, cancellationToken);
+
+                    var response = await _client.GetResponseAsync(messageId, cancellationToken);
+
+                    if (!response.Code.IsSuccess())
+                        throw new CoapBlockException("Error occured while reading blocks from remote endpoint",
+                            CoapException.FromCoapMessage(response), response.Code);
+
+                    var block2 = response.Options.Get<Block2>();
+
+                    if (block2.BlockNumber != _readBlockNumber)
+                        throw new CoapBlockException("Received incorrect block number from remote host");
+                    
+                    _readBlockNumber++;
+
+                    _reader.Enqueue(response.Payload, 0, response.Payload.Length);
+                    _readerEvent.Set();
+                    _endOfStream = !response.Options.Get<Block2>().IsMoreFollowing;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Hold onto the exception to throw it from a synchronous call.
+                _caughtException = ex;
+            }
+            finally
+            {
+                _endOfStream = true;
+                _readerEvent.Set();
+            }
         }
 
         private async Task WriteBlocksAsync()
@@ -123,6 +209,7 @@ namespace CoAPNet
                         _writer.Peek(message.Payload, 0, _blockSize);
 
                         var messageId = await _client.SendAsync(message, token);
+
                         var result = await _client.GetResponseAsync(messageId, token);
 
                         if (result.Code.IsSuccess())
@@ -206,7 +293,17 @@ namespace CoAPNet
         /// <inheritdoc/>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            throw new NotImplementedException();
+            // TODO: implement timeout logic here
+            _readerEvent.WaitAsync(CancellationToken.None).Wait();
+
+            return _reader.Dequeue(buffer, offset, count);
+        }
+
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            await _readerEvent.WaitAsync(cancellationToken);
+
+            return _reader.Dequeue(buffer, offset, count);
         }
 
         /// <inheritdoc/>
@@ -222,10 +319,12 @@ namespace CoAPNet
         {
             if (disposing)
             {
-                if (_caughtException == null && !_writerTask.IsCompleted)
-                {
-                    _endOfStream = true;
+                ThrowCaughtException();
 
+                _endOfStream = true;
+
+                if(_writerTask != null && !_writerTask.IsCompleted)
+                {
                     // Write any/all data to the output
                     if (_writer.Length > 0)
                         _writerEvent.Set();
@@ -241,9 +340,8 @@ namespace CoAPNet
                         ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
                     }
                 }
-
-                ThrowCaughtException();
             }
+
             base.Dispose(disposing);
         }
 
