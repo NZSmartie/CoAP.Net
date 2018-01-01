@@ -272,37 +272,15 @@ namespace CoAPNet.Tests
             mockClientEndpoint.Verify();
         }
 
-        [Test]
-        [Category("[RFC7959] Section 2.4"), Category("Blocks")]
-        public async Task Read_BlockWiseCoapMessage(
-            [Values(16, 32, 64, 128, 256, 512, 1024)] int blockSize,
-            [Range(1, 2)] int blocks,
-            [Values] bool lastHalfblock)
+        public void Setup_Read_BlockWiseCorrespondance(
+            Mock<MockEndpoint> mockClientEndpoint, 
+            int messageId, 
+            int totalBytes, 
+            int blockSize,
+            int totalBlocks, 
+            CoapMessage baseRequestMessage, 
+            CoapMessage baseResponseMessage)
         {
-            // Arrange
-            var mockClientEndpoint = new Mock<MockEndpoint>() { CallBase = true };
-
-            var messageId = 1;
-
-            // "lambda" for generating our pseudo payload
-
-            int totalBytes = (blocks * blockSize) + (lastHalfblock ? blockSize / 2 : 0);
-            int totalBlocks = ((totalBytes - 1) / blockSize) + 1;
-
-            var baseRequestMessage = new CoapMessage
-            {
-                Code = CoapMessageCode.Get,
-                Type = CoapMessageType.Confirmable,
-            };
-
-            baseRequestMessage.SetUri("/status", UriComponents.Path);
-
-            var baseResponseMessage = new CoapMessage
-            {
-                Code = CoapMessageCode.Content,
-                Type = CoapMessageType.Acknowledgement,
-            };
-
             {
                 var block = 0;
                 var bytes = Math.Min(totalBytes - (block * blockSize), blockSize);
@@ -348,6 +326,40 @@ namespace CoAPNet.Tests
                     .Returns(Task.CompletedTask)
                     .Verifiable($"Did not send block: {block}");
             }
+        }
+
+        [Test]
+        [Category("[RFC7959] Section 2.4"), Category("Blocks")]
+        public async Task Read_BlockWiseCoapMessage(
+            [Values(16, 32, 64, 128, 256, 512, 1024)] int blockSize,
+            [Range(1, 2)] int blocks,
+            [Values] bool lastHalfblock)
+        {
+            // Arrange
+            var mockClientEndpoint = new Mock<MockEndpoint>() { CallBase = true };
+
+            var messageId = 1;
+
+            // "lambda" for generating our pseudo payload
+
+            int totalBytes = (blocks * blockSize) + (lastHalfblock ? blockSize / 2 : 0);
+            int totalBlocks = ((totalBytes - 1) / blockSize) + 1;
+
+            var baseRequestMessage = new CoapMessage
+            {
+                Code = CoapMessageCode.Get,
+                Type = CoapMessageType.Confirmable,
+            };
+
+            baseRequestMessage.SetUri("/status", UriComponents.Path);
+
+            var baseResponseMessage = new CoapMessage
+            {
+                Code = CoapMessageCode.Content,
+                Type = CoapMessageType.Acknowledgement,
+            };
+
+            Setup_Read_BlockWiseCorrespondance(mockClientEndpoint, messageId, totalBytes, blockSize, totalBlocks, baseRequestMessage, baseResponseMessage);
 
             var result = new byte[totalBytes];
             int bytesRead;
@@ -370,6 +382,60 @@ namespace CoAPNet.Tests
 
             // Assert
             Assert.That(bytesRead, Is.EqualTo(totalBytes), "Incorrect number of bytes read");
+            Assert.That(result, Is.EqualTo(ByteRange(0, totalBytes)), "Incorrect payload read");
+
+            mockClientEndpoint.Verify();
+        }
+
+        [Test]
+        [Category("[RFC7959] Section 2.4"), Category("Blocks")]
+        public async Task Read_BlockWiseCoapMessage_WithExtentionMethod(
+            [Values(16, 32, 64, 128, 256, 512, 1024)] int blockSize,
+            [Range(1, 2)] int blocks,
+            [Values] bool lastHalfblock)
+        {
+            // Arrange
+            var mockClientEndpoint = new Mock<MockEndpoint>() { CallBase = true };
+
+            var messageId = 1;
+
+            // "lambda" for generating our pseudo payload
+
+            int totalBytes = (blocks * blockSize) + (lastHalfblock ? blockSize / 2 : 0);
+            int totalBlocks = ((totalBytes - 1) / blockSize) + 1;
+
+            var baseRequestMessage = new CoapMessage
+            {
+                Code = CoapMessageCode.Get,
+                Type = CoapMessageType.Confirmable,
+            };
+
+            baseRequestMessage.SetUri("/status", UriComponents.Path);
+
+            var baseResponseMessage = new CoapMessage
+            {
+                Code = CoapMessageCode.Content,
+                Type = CoapMessageType.Acknowledgement,
+            };
+
+            Setup_Read_BlockWiseCorrespondance(mockClientEndpoint, messageId, totalBytes, blockSize, totalBlocks, baseRequestMessage, baseResponseMessage);
+
+            byte[] result;
+            // Act
+            using (var client = new CoapClient(mockClientEndpoint.Object))
+            {
+                var ct = new CancellationTokenSource(MaxTaskTimeout);
+
+                client.SetNextMessageId(1);
+
+                var identifier = await client.SendAsync(baseRequestMessage, ct.Token);
+
+                var response = await client.GetResponseAsync(identifier, ct.Token);
+
+                result = response.GetCompletedBlockWisePayload(client, baseRequestMessage);
+            }
+
+            // Assert
             Assert.That(result, Is.EqualTo(ByteRange(0, totalBytes)), "Incorrect payload read");
 
             mockClientEndpoint.Verify();
