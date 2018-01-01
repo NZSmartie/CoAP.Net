@@ -83,7 +83,7 @@ namespace CoAPNet
         }
 
         /// <inheritdoc/>
-        public override bool CanRead => !_endOfStream && (_readerTask?.IsCompleted ?? false);
+        public override bool CanRead => !_endOfStream || _reader.Length > 0;
 
         /// <inheritdoc/>
         public override bool CanSeek => false;
@@ -302,9 +302,14 @@ namespace CoAPNet
             var read = 0;
             while (read < count && !cancellationToken.IsCancellationRequested)
             {
-                await _readerEvent.WaitAsync(cancellationToken);
+                if (!_endOfStream)
+                    await _readerEvent.WaitAsync(cancellationToken);
 
-                read += _reader.Dequeue(buffer, offset + read, count - read);
+                var bytesDequeued = _reader.Dequeue(buffer, offset + read, count - read);
+                read += bytesDequeued;
+
+                if (bytesDequeued == 0 && _endOfStream)
+                    break;
             }
 
             return read;
