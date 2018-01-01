@@ -31,9 +31,6 @@ namespace CoAPNet.Tests
             // Arrange
             var mockClientEndpoint = new Mock<MockEndpoint>() { CallBase = true };
 
-            // "lambda" for generating our pseudo payload
-            byte[] byteRange(int a, int b) => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
-
             var totalBytes = (blocks * blockSize) + (lastHalfblock ? blockSize / 2 : 0);
             var totalBlocks = ((totalBytes - 1) / blockSize) + 1;
 
@@ -56,7 +53,7 @@ namespace CoAPNet.Tests
 
                 var expected = baseRequestMessage.Clone();
                 expected.Id = block + 1;
-                expected.Payload = byteRange(blockSize * block, bytes);
+                expected.Payload = ByteRange(blockSize * block, bytes);
                 expected.Options.Add(new Options.Block1(block, blockSize, block != (totalBlocks - 1)));
 
                 var response = baseResponseMessage.Clone();
@@ -78,7 +75,7 @@ namespace CoAPNet.Tests
                 client.SetNextMessageId(1);
                 using (var writer = new CoapBlockStream(client, baseRequestMessage) { BlockSize = blockSize })
                 {
-                    writer.Write(byteRange(0, totalBytes), 0, totalBytes);
+                    writer.Write(ByteRange(0, totalBytes), 0, totalBytes);
 
                     writer.Flush();
                 };
@@ -198,9 +195,6 @@ namespace CoAPNet.Tests
             // Arrange
             var mockClientEndpoint = new Mock<MockEndpoint>() { CallBase = true };
 
-            // "lambda" for generating our pseudo payload
-            byte[] byteRange(int a, int b) => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
-
             var totalBytes = (blocks * initialBlockSize) + (lastHalfblock ? initialBlockSize / 2 : 0);
             var totalBlocks = ((totalBytes - 1) / reducetoBlockSize) + 1;
             var messageId = 1;
@@ -222,7 +216,7 @@ namespace CoAPNet.Tests
             {
                 var expected = baseRequestMessage.Clone();
                 expected.Id = messageId;
-                expected.Payload = byteRange(0, blockSize);
+                expected.Payload = ByteRange(0, blockSize);
                 expected.Options.Add(new Options.Block1(0, blockSize, blockSize < totalBytes));
 
                 var response = new CoapMessage
@@ -246,7 +240,7 @@ namespace CoAPNet.Tests
 
                 var expected = baseRequestMessage.Clone();
                 expected.Id = messageId;
-                expected.Payload = byteRange(reducetoBlockSize * block, bytes);
+                expected.Payload = ByteRange(reducetoBlockSize * block, bytes);
                 expected.Options.Add(new Options.Block1(block, reducetoBlockSize, block != (totalBlocks - 1)));
 
                 var response = baseResponseMessage.Clone();
@@ -268,7 +262,7 @@ namespace CoAPNet.Tests
                 client.SetNextMessageId(1);
                 using (var writer = new CoapBlockStream(client, baseRequestMessage) { BlockSize = initialBlockSize })
                 {
-                    writer.Write(byteRange(0, totalBytes), 0, totalBytes);
+                    writer.Write(ByteRange(0, totalBytes), 0, totalBytes);
 
                     writer.Flush();
                 };
@@ -291,7 +285,6 @@ namespace CoAPNet.Tests
             var messageId = 1;
 
             // "lambda" for generating our pseudo payload
-            byte[] byteRange(int a, int b) => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
 
             int totalBytes = (blocks * blockSize) + (lastHalfblock ? blockSize / 2 : 0);
             int totalBlocks = ((totalBytes - 1) / blockSize) + 1;
@@ -320,7 +313,7 @@ namespace CoAPNet.Tests
                 var response = baseResponseMessage.Clone();
                 response.Id = messageId++;
                 response.Options.Add(new Options.Block2(block, blockSize, block != (totalBlocks - 1)));
-                response.Payload = byteRange(blockSize * block, bytes);
+                response.Payload = ByteRange(blockSize * block, bytes);
 
                 Debug.WriteLine($"Expecting: {expected}");
                 Debug.WriteLine($" Response: {response}");
@@ -344,7 +337,7 @@ namespace CoAPNet.Tests
                 var response = baseResponseMessage.Clone();
                 response.Id = messageId++;
                 response.Options.Add(new Options.Block2(block, blockSize, block != (totalBlocks - 1)));
-                response.Payload = byteRange(blockSize * block, bytes);
+                response.Payload = ByteRange(blockSize * block, bytes);
 
                 Debug.WriteLine($"Expecting: {expected}");
                 Debug.WriteLine($" Response: {response}");
@@ -357,7 +350,7 @@ namespace CoAPNet.Tests
             }
 
             var result = new byte[totalBytes];
-
+            int bytesRead;
             // Act
             using (var client = new CoapClient(mockClientEndpoint.Object))
             {
@@ -371,12 +364,18 @@ namespace CoAPNet.Tests
 
                 using (var reader = new CoapBlockStream(client, response, baseRequestMessage))
                 {
-                    reader.Read(result, 0, totalBytes);
+                    bytesRead = reader.Read(result, 0, totalBytes);
                 };
             }
 
             // Assert
+            Assert.That(bytesRead, Is.EqualTo(totalBytes), "Incorrect number of bytes read");
+            Assert.That(result, Is.EqualTo(ByteRange(0, totalBytes)), "Incorrect payload read");
+
             mockClientEndpoint.Verify();
         }
+
+        private byte[] ByteRange(int a, int b) 
+            => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
     }
 }

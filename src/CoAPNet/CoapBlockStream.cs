@@ -293,17 +293,20 @@ namespace CoAPNet
         /// <inheritdoc/>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            // TODO: implement timeout logic here
-            _readerEvent.WaitAsync(CancellationToken.None).Wait();
-
-            return _reader.Dequeue(buffer, offset, count);
+            return ReadAsync(buffer, offset, count, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            await _readerEvent.WaitAsync(cancellationToken);
+            var read = 0;
+            while (read < count && !cancellationToken.IsCancellationRequested)
+            {
+                await _readerEvent.WaitAsync(cancellationToken);
 
-            return _reader.Dequeue(buffer, offset, count);
+                read += _reader.Dequeue(buffer, offset + read, count - read);
+            }
+
+            return read;
         }
 
         /// <inheritdoc/>
