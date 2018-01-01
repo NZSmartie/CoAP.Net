@@ -247,7 +247,8 @@ namespace CoAPNet
                     }
 
                     // flag the mot recent flush has been performed
-                    _flushFinishedEvent.Set();
+                    if(_writer.Length <= BlockSize)
+                        _flushFinishedEvent.Set();
                 }
             }
             catch (Exception ex)
