@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.4;netstandard2.0;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard1.3;netstandard2.0;netcoreapp2.0</TargetFrameworks>
     <DebugType Condition="$(Configuration)=='AppVeyor'">full</DebugType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>NZSmartie.CoAPNet.Server</PackageId>
@@ -26,7 +26,7 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\CoAPNet.Server.xml</DocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.4'">
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
   </ItemGroup>
 

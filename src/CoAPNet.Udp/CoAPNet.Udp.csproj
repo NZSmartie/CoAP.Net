@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.4;netstandard2.0;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard1.3;netstandard2.0;netcoreapp2.0</TargetFrameworks>
     <PackageId>NZSmartie.CoAPNet.Udp</PackageId>
     <Version>0.3.8</Version>
     <PackageVersion>0.3.8</PackageVersion>
@@ -25,7 +25,7 @@
     <DocumentationFile>bin\$(Configuration)\$TargetFramework)\CoAPNet.Udp.xml</DocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.4'">
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
   </ItemGroup>
