@@ -1,5 +1,9 @@
  # Change Log for CoAP.Net 
  
+### v0.5.2
+
+ - [`11841803`](https://github.com/NZSmartie/CoAP.Net/commit/11841803) Perform a stable sort on CoapMessage.Options 
+
  ### v0.5.1
  
  - [`802fde24`](https://github.com/NZSmartie/CoAP.Net/commit/802fde24) Bumping netstandard down from 1.4 to 1.3
