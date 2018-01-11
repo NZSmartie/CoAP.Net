@@ -233,7 +233,7 @@ namespace CoAPNet.Tests
                 new Options.UriPath(".well-known"),
                 new Options.UriPath("core"),
                 new Options.ContentFormat(Options.ContentFormatType.ApplicationJson),
-                new Options.Accept(Options.ContentFormatType.ApplicationLinkFormat),
+                new Options.Accept(Options.ContentFormatType.ApplicationJson),
             };
 
             // Act
