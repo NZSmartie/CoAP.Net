@@ -62,8 +62,64 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="change-log-for-coapnet">Change Log for CoAP.Net</h1>
 
-<h3 id="v039">v0.3.9</h3>
+<h3 id="v051">v0.5.1</h3>
 <ul>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/802fde24"><code>802fde24</code></a> Bumping netstandard down from 1.4 to 1.3</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/aaa6239d"><code>aaa6239d</code></a> Add extension methods for reading BlockWise messages</li>
+<li><p><a href="https://github.com/NZSmartie/CoAP.Net/commit/7954c95b"><code>7954c95b</code></a> Allow reading CoapBlockStream if data is still buffered.</p>
+<h3 id="v050">v0.5.0</h3>
+</li>
+<li><p><a href="https://github.com/NZSmartie/CoAP.Net/commit/a38ad662"><code>a38ad662</code></a> Only finish flushing when there&#39;s nothing that can be immediatly written</p>
+</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/5af3fc57"><code>5af3fc57</code></a> Attempt to read as much as possible before returning</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/dedc10aa"><code>dedc10aa</code></a> Fix human-error NullReferenceException in CoapClockStream</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/a1aea35b"><code>a1aea35b</code></a> Support reading block-wise from remote endpoint</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/fbf58787"><code>fbf58787</code></a> Add Block2/Block2 metadata to CoapMessage.ToString()</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/8868be8f"><code>8868be8f</code></a> Housekeeping in Blockstream</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/69c5c2e2"><code>69c5c2e2</code></a> Document Block1/Block2.BlockNumber</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/a9e27bd5"><code>a9e27bd5</code></a> Add minimal documentation where it&#39;s missing</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/8e5f96c0"><code>8e5f96c0</code></a> Document CoapBlockStream</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/cdfe0944"><code>cdfe0944</code></a> Remove deadlock when disposing CoapBlockStream and introduve Timout</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/5ed538d0"><code>5ed538d0</code></a> Flush out the stream if there is any data</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/5fcb12fd"><code>5fcb12fd</code></a> Only attempt to restart smaller Block-Wise transfer on first block</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/ab0549b6"><code>ab0549b6</code></a> Attempt to send Block-Wise messages in smaller sizes on RequestEntittyTooLarge</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/f13b3ec8"><code>f13b3ec8</code></a> Allow advancing ByteQueue and Peeking blocks of data</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/7e0bc60e"><code>7e0bc60e</code></a> Hold onto values and decode/encode them only when needed.</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/0e7219a9"><code>0e7219a9</code></a> Exclude CoapBlockException from code coverage</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/c2b6d446"><code>c2b6d446</code></a> Support reduced block sizes in BlockWise Transfer</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/439ca4e0"><code>439ca4e0</code></a> Block on Flush and throw exceptions when writing in CoapBlockStream</li>
+<li><p><a href="https://github.com/NZSmartie/CoAP.Net/commit/461c4e4e"><code>461c4e4e</code></a> Begin support for RFC 7959 Block-Wise Transfers</p>
+<h3 id="v040">v0.4.0</h3>
+</li>
+<li><p><a href="https://github.com/NZSmartie/CoAP.Net/commit/fab984bc"><code>fab984bc</code></a> Heh, Debug.Assert gets removed in release builds...</p>
+</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/f6883b66"><code>f6883b66</code></a> Rename static method to prevent hidden overloading</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/f3019ff0"><code>f3019ff0</code></a> Improve response matching with CoapMessageIdentifier</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/768f50fa"><code>768f50fa</code></a> Better request and response matching in CoapClient</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/71cffd71"><code>71cffd71</code></a> Add minimal documentation where it&#39;s missing</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/74c4d6b0"><code>74c4d6b0</code></a> Add locks around CoapClient.Endpoint to prevent it being disposed unexpectedly</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/3a5d05cb"><code>3a5d05cb</code></a> Return a placeholder option to give the application chance at reading them</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/f9eb87d2"><code>f9eb87d2</code></a> Include CoapMessageCode in CoapException.FromCoapMessage</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/a900f1a7"><code>a900f1a7</code></a> Add Reset to AsyncAutoResetEvent</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/1c1c5c8d"><code>1c1c5c8d</code></a> Document CoapMessageCode properties</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/30ea8d24"><code>30ea8d24</code></a> Create CoapException from CoapMessage</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/30d06ee7"><code>30d06ee7</code></a> Throw a CoapEndpointException instead of InvalidOperationException</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/47d31153"><code>47d31153</code></a> Reject Confirmable Empty messages</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/c5da5f2d"><code>c5da5f2d</code></a> Ignore Acknowledge with invalid Code Class</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/7272c345"><code>7272c345</code></a> Ignore non-empty reset messages in CoapClient</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/4b1958da"><code>4b1958da</code></a> Ignore repeated messages within a set TimeSpan on CoapClient</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/ccabaab3"><code>ccabaab3</code></a> Forgot to add CoapMessageCodes back in</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/0ac5f88a"><code>0ac5f88a</code></a> Better exceptions for FromBytes</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/4436a9f3"><code>4436a9f3</code></a> Rename Serialise and Deserialise to ToBytes and FromBytes respectively</li>
+<li><p><a href="https://github.com/NZSmartie/CoAP.Net/commit/a99134c8"><code>a99134c8</code></a> Make OptionFactory a object</p>
+<h3 id="v0310">v0.3.10</h3>
+</li>
+<li><p><a href="https://github.com/NZSmartie/CoAP.Net/commit/0c6788e1"><code>0c6788e1</code></a> Give a chance to throw message exceptions after deserialising</p>
+</li>
+<li><a href="https://github.com/NZSmartie/CoAP.Net/commit/2c5ef861"><code>2c5ef861</code></a> Account for SendAsyncInternal dealing with a volatile Endpoint Property</li>
+<li><p><a href="https://github.com/NZSmartie/CoAP.Net/commit/6ed148a8"><code>6ed148a8</code></a> Use ConcurrentQueue for message queuing in async</p>
+<h3 id="v039">v0.3.9</h3>
+</li>
 <li><p><a href="https://github.com/NZSmartie/CoAP.Net/commit/4945c5b"><code>4945c5b</code></a> Perform DNS queries on hostnames in CoapUdpEndpoint</p>
 <h3 id="v038">v0.3.8</h3>
 </li>
@@ -146,7 +202,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/NZSmartie/CoAP.Net/blob/master/Changelog.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/NZSmartie/CoAP.Net/blob/v0.5.2/Changelog.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>
