@@ -166,8 +166,7 @@ namespace CoAPNet
             get { return _options; }
             set
             {
-                _options = value;
-                _options.Sort();
+                _options = value.OrderBy(o => o.OptionNumber).ToList();
             }
         }
 
@@ -244,8 +243,7 @@ namespace CoAPNet
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             var currentOptionDelta = 0;
 
-            _options.Sort();
-            foreach (var option in _options)
+            foreach (var option in _options.OrderBy(o => o.OptionNumber))
             {
                 var optionHeader = new List<byte>();
                 int optionDelta = option.OptionNumber - currentOptionDelta;

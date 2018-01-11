@@ -232,6 +232,7 @@ namespace CoAPNet.Tests
                 new Options.UriHost("example.net"),
                 new Options.UriPath(".well-known"),
                 new Options.UriPath("core"),
+                new Options.ContentFormat(Options.ContentFormatType.ApplicationJson),
                 new Options.Accept(Options.ContentFormatType.ApplicationLinkFormat),
             };
 
@@ -239,15 +240,16 @@ namespace CoAPNet.Tests
             _message = new CoapMessage
             {
                 Options = new List<CoapOption> {
-                    new Options.Accept(Options.ContentFormatType.ApplicationLinkFormat),
+                    new Options.Accept(Options.ContentFormatType.ApplicationJson),
                     new Options.UriPath(".well-known"),
                     new Options.UriPath("core"),
                     new Options.UriHost("example.net"),
+                    new Options.ContentFormat(Options.ContentFormatType.ApplicationJson),
                 }
             };
 
             // Assert
-            Assert.IsTrue(expectedOptions.SequenceEqual(_message.Options));
+            Assert.That(_message.Options, Is.EqualTo(expectedOptions));
         }
 
         [Test]

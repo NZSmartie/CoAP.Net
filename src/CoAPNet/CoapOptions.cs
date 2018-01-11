@@ -132,7 +132,7 @@ namespace CoAPNet
     /// <summary>
     /// Repressents a CoAP-Option (Much like HTTP Headers) that may be present in a <see cref="CoapMessage"/>.
     /// </summary>
-    public class CoapOption : IComparable<CoapOption>
+    public class CoapOption
     {
         private readonly int _optionNumber;
         /// <summary>
@@ -470,11 +470,6 @@ namespace CoAPNet
             }
 
             return hashcode;
-        }
-
-        int IComparable<CoapOption>.CompareTo(CoapOption other)
-        {
-            return _optionNumber - other._optionNumber;
         }
     }
 }
