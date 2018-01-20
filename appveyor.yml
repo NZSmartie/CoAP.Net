@@ -3,7 +3,7 @@ skip_tags: true
 image: Visual Studio 2017
 
 environment:
-  package_version: '0.6.0'
+  package_version: '0.6.1'
 
   COVERALLS_REPO_TOKEN:
     secure: o3Oj2doUP9AbvI5Phn28o+JHMk9W9P39yiyq1b3d96g0FoJ1loUm7PJ7GytUzxyO
