@@ -16,6 +16,7 @@
 
 using System;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -44,6 +45,7 @@ namespace CoAPNet.Udp
         private readonly ILogger<CoapUdpTransport> _logger;
 
         private Task _listenTask;
+        private readonly CancellationTokenSource _listenTaskCTS = new CancellationTokenSource();
 
         public CoapUdpTransport(CoapUdpEndPoint endPoint, ICoapHandler coapHandler, ILogger<CoapUdpTransport> logger = null)
         {
@@ -80,7 +82,14 @@ namespace CoAPNet.Udp
             _endPoint = null;
 
             endPoint.Dispose();
-            await _listenTask.ConfigureAwait(false);
+            try
+            {
+                _listenTaskCTS.Cancel();
+                await _listenTask.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            { }
+
             _listenTask = null;
         }
 
@@ -96,7 +105,7 @@ namespace CoAPNet.Udp
             {
                 while (true)
                 {
-                    var request = await _endPoint.ReceiveAsync();
+                    var request = await _endPoint.ReceiveAsync(_listenTaskCTS.Token);
                     _logger?.LogDebug(CoapUdpLoggingEvents.TransportRequestsLoop, "Received message");
 
                     _ = ProcessRequestAsync(new CoapConnectionInformation

@@ -120,20 +120,36 @@ namespace CoAPNet.Udp
             Client?.Dispose();
         }
 
-        public async Task<CoapPacket> ReceiveAsync()
+        public async Task<CoapPacket> ReceiveAsync(CancellationToken token)
         {
             if (Client == null)
                 await BindAsync();
 
-            var result = await Client.ReceiveAsync();
-            return new CoapPacket
+            try
             {
-                Payload = result.Buffer,
-                Endpoint = new CoapUdpEndPoint(result.RemoteEndPoint) {Bindable = false},
-            };
+                var tcs = new TaskCompletionSource<bool>();
+                using (token.Register(() => tcs.SetResult(false)))
+                {
+                    var receiveTask = Client.ReceiveAsync();
+                    await Task.WhenAny(receiveTask, tcs.Task);
+
+                    token.ThrowIfCancellationRequested();
+
+                    return new CoapPacket
+                    {
+                        Payload = receiveTask.Result.Buffer,
+                        Endpoint = new CoapUdpEndPoint(receiveTask.Result.RemoteEndPoint) {Bindable = false},
+                    };
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                Client.Dispose(); // Since UdpClient doesn't provide a mechanism for cancelling an async task. the safest way is to dispose the whole object
+                throw;
+            }
         }
 
-        public async Task SendAsync(CoapPacket packet)
+        public async Task SendAsync(CoapPacket packet, CancellationToken token)
         {
             if (Client == null)
                 await BindAsync();
@@ -173,14 +189,24 @@ namespace CoAPNet.Udp
                     throw new CoapUdpEndpointException($"Unsupported {nameof(CoapPacket)}.{nameof(CoapPacket.Endpoint)} type ({packet.Endpoint.GetType().FullName})");
             }
 
-            try
+            token.ThrowIfCancellationRequested();
+
+            var tcs = new TaskCompletionSource<bool>();
+            using (token.Register(() => tcs.SetResult(false)))
             {
-                await Client.SendAsync(packet.Payload, packet.Payload.Length, udpDestEndpoint.Endpoint);
+                try
+                {
+                    await Task.WhenAny(Client.SendAsync(packet.Payload, packet.Payload.Length, udpDestEndpoint.Endpoint), tcs.Task);
+                    if(token.IsCancellationRequested)
+                        Client.Dispose(); // Since UdpClient doesn't provide a mechanism for cancelling an async task. the safest way is to dispose the whole object
+                }
+                catch (SocketException se)
+                {
+                    _logger?.LogInformation($"Failed to send data. {se.GetType().FullName} (0x{se.HResult:x}): {se.Message}", se);
+                }
             }
-            catch (SocketException se)
-            {
-                _logger?.LogInformation($"Failed to send data. {se.GetType().FullName} (0x{se.HResult:x}): {se.Message}", se);
-            }
+
+            token.ThrowIfCancellationRequested();
         }
 
         public override string ToString()

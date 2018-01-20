@@ -111,6 +111,7 @@ namespace CoAPNet
 
         private readonly ConcurrentQueue<Task<CoapReceiveResult>> _receiveQueue = new ConcurrentQueue<Task<CoapReceiveResult>>();
         private Task _receiveTask = Task.CompletedTask;
+        private readonly CancellationTokenSource _receiveTaskCTS = new CancellationTokenSource();
 
         private readonly AsyncAutoResetEvent _receiveEvent = new AsyncAutoResetEvent(false);
 
@@ -208,7 +209,7 @@ namespace CoAPNet
                         if (Endpoint == null)
                             return;
 
-                        payloadTask = Endpoint.ReceiveAsync();
+                        payloadTask = Endpoint.ReceiveAsync(_receiveTaskCTS.Token);
                     }
 
                     var payload = await payloadTask;
@@ -316,6 +317,7 @@ namespace CoAPNet
                 Endpoint = null;
 
             endpoint?.Dispose();
+            _receiveTaskCTS.Cancel();
 
             if (!_receiveTask.IsCompleted && !_receiveTask.IsCanceled && !_receiveTask.IsFaulted && !_receiveTask.Wait(5000))
                 throw new CoapClientException($"Took too long to dispose of the enclosed {nameof(Endpoint)}");
@@ -491,10 +493,10 @@ namespace CoAPNet
                     {
                         Payload = message.ToBytes(),
                         Endpoint = remoteEndpoint
-                    });
+                    }, token);
             }
 
-            await Task.Run(async () => await task, token).ConfigureAwait(false);
+            await task.ConfigureAwait(false);
         }
 
         internal void SetNextMessageId(int value)

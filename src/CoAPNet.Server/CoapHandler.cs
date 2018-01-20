@@ -117,7 +117,7 @@ namespace CoAPNet.Server
                     {
                         Endpoint = connection.RemoteEndpoint,
                         Payload = result.ToBytes()
-                    });
+                    }, CancellationToken.None);
             }
         }
     }

@@ -61,7 +61,7 @@ namespace CoAPNet.Tests
                 response.Options.Add(new Options.Block1(block, blockSize, block != (totalBlocks - 1)));
 
                 mockClientEndpoint
-                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes()))))
+                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes())),It.IsAny<CancellationToken>()))
                     .Callback(() => mockClientEndpoint.Object.EnqueueReceivePacket(new CoapPacket { Payload = response.ToBytes() }))
                     .Returns(Task.CompletedTask)
                     .Verifiable($"Did not send block: {block}");
@@ -141,7 +141,7 @@ namespace CoAPNet.Tests
                 response.Options.Add(new Options.Block1(0, reducetoBlockSize, initialBlockSize < totalBytes));
 
                 mockClientEndpoint
-                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes()))))
+                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes())), It.IsAny<CancellationToken>()))
                     .Callback(() => mockClientEndpoint.Object.EnqueueReceivePacket(new CoapPacket { Payload = response.ToBytes() }))
                     .Returns(Task.CompletedTask)
                     .Verifiable($"Did not send block: 0");
@@ -162,7 +162,7 @@ namespace CoAPNet.Tests
                 response.Options.Add(new Options.Block1(block, reducetoBlockSize, block != (totalBlocks - 1)));
 
                 mockClientEndpoint
-                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes()))))
+                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes())), It.IsAny<CancellationToken>()))
                     .Callback(() => mockClientEndpoint.Object.EnqueueReceivePacket(new CoapPacket { Payload = response.ToBytes() }))
                     .Returns(Task.CompletedTask)
                     .Verifiable($"Did not send block: {block}");
@@ -227,7 +227,7 @@ namespace CoAPNet.Tests
                 };
 
                 mockClientEndpoint
-                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes()))))
+                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes())), It.IsAny<CancellationToken>()))
                     .Callback(() => mockClientEndpoint.Object.EnqueueReceivePacket(new CoapPacket { Payload = response.ToBytes() }))
                     .Returns(Task.CompletedTask)
                     .Verifiable($"Did not send blockSize ({blockSize}) attempt");
@@ -248,7 +248,7 @@ namespace CoAPNet.Tests
                 response.Options.Add(new Options.Block1(block, reducetoBlockSize, block != (totalBlocks - 1)));
 
                 mockClientEndpoint
-                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes()))))
+                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes())), It.IsAny<CancellationToken>()))
                     .Callback(() => mockClientEndpoint.Object.EnqueueReceivePacket(new CoapPacket { Payload = response.ToBytes() }))
                     .Returns(Task.CompletedTask)
                     .Verifiable($"Did not send block: {block}");
@@ -297,7 +297,7 @@ namespace CoAPNet.Tests
                 Debug.WriteLine($" Response: {response}");
 
                 mockClientEndpoint
-                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes()))))
+                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes())), It.IsAny<CancellationToken>()))
                     .Callback(() => mockClientEndpoint.Object.EnqueueReceivePacket(new CoapPacket { Payload = response.ToBytes() }))
                     .Returns(Task.CompletedTask)
                     .Verifiable($"Did not send block: {block}");
@@ -321,7 +321,7 @@ namespace CoAPNet.Tests
                 Debug.WriteLine($" Response: {response}");
 
                 mockClientEndpoint
-                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes()))))
+                    .Setup(c => c.MockSendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes())), It.IsAny<CancellationToken>()))
                     .Callback(() => mockClientEndpoint.Object.EnqueueReceivePacket(new CoapPacket { Payload = response.ToBytes() }))
                     .Returns(Task.CompletedTask)
                     .Verifiable($"Did not send block: {block}");

@@ -44,7 +44,7 @@ namespace CoAPNet.Tests
             var mockClientEndpoint = new Mock<MockEndpoint>(){CallBase = true};
 
             mockClientEndpoint
-                .Setup(c => c.MockSendAsync(It.IsAny<CoapPacket>()))
+                .Setup(c => c.MockSendAsync(It.IsAny<CoapPacket>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -59,7 +59,7 @@ namespace CoAPNet.Tests
             }
 
             // Assert
-            mockClientEndpoint.Verify(cep => cep.SendAsync(It.IsAny<CoapPacket>()));
+            mockClientEndpoint.Verify(cep => cep.SendAsync(It.IsAny<CoapPacket>(), It.IsAny<CancellationToken>()));
         }
         
         [Test]
@@ -82,7 +82,7 @@ namespace CoAPNet.Tests
             };
 
             mockClientEndpoint
-                .SetupSequence(c => c.MockReceiveAsync())
+                .SetupSequence(c => c.MockReceiveAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new CoapPacket {Payload = expected.ToBytes()}))
                 .Throws(new CoapEndpointException("disposed"));
 
@@ -100,7 +100,7 @@ namespace CoAPNet.Tests
             }
 
             // Assert
-            mockClientEndpoint.Verify(x => x.ReceiveAsync(), Times.AtLeastOnce);
+            mockClientEndpoint.Verify(x => x.ReceiveAsync(It.IsAny<CancellationToken>()), Times.AtLeastOnce);
         }
 
         [Test]
@@ -123,7 +123,7 @@ namespace CoAPNet.Tests
             };
 
             mockClientEndpoint
-                .SetupSequence(c => c.MockReceiveAsync())
+                .SetupSequence(c => c.MockReceiveAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.Delay(500).ContinueWith(t => new CoapPacket {Payload = expected.ToBytes()}))
                 .Throws(new CoapEndpointException("Endpoint closed"));
 
@@ -145,7 +145,7 @@ namespace CoAPNet.Tests
             }
 
             // Assert
-            mockClientEndpoint.Verify(x => x.ReceiveAsync(), Times.AtLeastOnce);
+            mockClientEndpoint.Verify(x => x.ReceiveAsync(It.IsAny<CancellationToken>()), Times.AtLeastOnce);
         }
 
         [Test]
@@ -162,10 +162,10 @@ namespace CoAPNet.Tests
 
             var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
             mockClientEndpoint
-                .SetupSequence(c => c.SendAsync(It.IsAny<CoapPacket>()))
+                .SetupSequence(c => c.SendAsync(It.IsAny<CoapPacket>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
             mockClientEndpoint
-                .SetupSequence(c => c.MockReceiveAsync())
+                .SetupSequence(c => c.MockReceiveAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new CoapPacket
                 {
                     Payload = new byte[] { 0x40, 0x00, 0x12, 0x34, 0xFF, 0x12, 0x34 } // "Empty" Confirmable Message with a payload
@@ -190,7 +190,7 @@ namespace CoAPNet.Tests
 
             // Assert
             mockClientEndpoint.Verify(
-                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes()))),
+                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes())), It.IsAny<CancellationToken>()),
                 Times.Exactly(1));
         }
 
@@ -212,7 +212,7 @@ namespace CoAPNet.Tests
 
             var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
             mockClientEndpoint
-                .SetupSequence(c => c.MockReceiveAsync())
+                .SetupSequence(c => c.MockReceiveAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.Delay(500).ContinueWith(_ => new CoapPacket
                 {
                     Payload = new CoapMessage
@@ -236,7 +236,7 @@ namespace CoAPNet.Tests
 
             // Assert
             mockClientEndpoint.Verify(
-                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(requestMessage.ToBytes()))),
+                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(requestMessage.ToBytes())), It.IsAny<CancellationToken>()),
                 Times.Exactly(2));
         }
 
@@ -258,7 +258,7 @@ namespace CoAPNet.Tests
 
             var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
             mockClientEndpoint
-                .SetupSequence(c => c.MockReceiveAsync())
+                .SetupSequence(c => c.MockReceiveAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.Delay(2000).ContinueWith<CoapPacket>(_ => throw new CoapEndpointException("Endpoint closed")));
 
             // Act
@@ -274,7 +274,7 @@ namespace CoAPNet.Tests
 
             // Assert
             mockClientEndpoint.Verify(
-                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(requestMessage.ToBytes()))),
+                cep => cep.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(requestMessage.ToBytes())), It.IsAny<CancellationToken>()),
                 Times.Exactly(3));
         }
 
@@ -298,7 +298,7 @@ namespace CoAPNet.Tests
             };
 
             mockClientEndpoint
-                .SetupSequence(c => c.MockReceiveAsync())
+                .SetupSequence(c => c.MockReceiveAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new CoapPacket { Payload = expected.ToBytes() }))
                 .Returns(Task.FromResult(new CoapPacket { Payload = expected.ToBytes() }))
                 .Returns(Task.FromResult(new CoapPacket { Payload = expected.ToBytes() }))
@@ -353,7 +353,7 @@ namespace CoAPNet.Tests
             };
 
             mockClientEndpoint
-                .SetupSequence(c => c.MockReceiveAsync())
+                .SetupSequence(c => c.MockReceiveAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new CoapPacket { Payload = expected.ToBytes() })) // Received
                 .Returns(Task.FromResult(new CoapPacket { Payload = expected.ToBytes() })) // Ignored (considered duplicate)
                 .Returns(Task.Delay(500).ContinueWith(_ => new CoapPacket { Payload = expected.ToBytes() })) // Received after expirey
@@ -416,7 +416,7 @@ namespace CoAPNet.Tests
             };
 
             mockClientEndpoint
-                .SetupSequence(c => c.MockReceiveAsync())
+                .SetupSequence(c => c.MockReceiveAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new CoapPacket { Payload = nonEmptyReset.ToBytes() })) // Received
                 .Throws(new CoapEndpointException("disposed"));
 
@@ -466,7 +466,7 @@ namespace CoAPNet.Tests
             };
 
             mockClientEndpoint
-                .SetupSequence(c => c.MockReceiveAsync())
+                .SetupSequence(c => c.MockReceiveAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new CoapPacket { Payload = expected.ToBytes() }))
                 .Returns(Task.Delay(2000).ContinueWith<CoapPacket>(_ => throw new CoapEndpointException("Endpoint closed")));
 
@@ -512,7 +512,7 @@ namespace CoAPNet.Tests
             };
 
             mockClientEndpoint
-                .SetupSequence(c => c.MockReceiveAsync())
+                .SetupSequence(c => c.MockReceiveAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new CoapPacket { Payload = ping.ToBytes() }))
                 .Throws(new CoapEndpointException("disposed"));
 
@@ -535,8 +535,8 @@ namespace CoAPNet.Tests
             }
 
             // Assert
-            mockClientEndpoint.Verify(x => x.ReceiveAsync(), Times.AtLeastOnce);
-            mockClientEndpoint.Verify(x => x.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes()))), Times.AtLeastOnce);
+            mockClientEndpoint.Verify(x => x.ReceiveAsync(It.IsAny<CancellationToken>()), Times.AtLeastOnce);
+            mockClientEndpoint.Verify(x => x.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expected.ToBytes())), It.IsAny<CancellationToken>()), Times.AtLeastOnce);
         }
 
         // TODO: Test Multicast Message Is Marked Multicast
@@ -562,10 +562,10 @@ namespace CoAPNet.Tests
 
             mockClientEndpoint.Setup(c => c.IsMulticast).Returns(true);
             mockClientEndpoint
-                .Setup(c => c.MockSendAsync(It.IsAny<CoapPacket>()))
+                .Setup(c => c.MockSendAsync(It.IsAny<CoapPacket>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
             mockClientEndpoint
-                .SetupSequence(c => c.MockReceiveAsync())
+                .SetupSequence(c => c.MockReceiveAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new CoapPacket{Payload = expected.ToBytes()}))
                 .Throws(new CoapEndpointException("Endpoint closed"));
 
@@ -606,7 +606,7 @@ namespace CoAPNet.Tests
             var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
             mockClientEndpoint
                 // Ensure a multicast placeholder endpoint is used.
-                .Setup(e => e.SendAsync(It.Is<CoapPacket>(p => p.Endpoint is CoapEndpoint && p.Endpoint.IsMulticast == true)))
+                .Setup(e => e.SendAsync(It.Is<CoapPacket>(p => p.Endpoint is CoapEndpoint && p.Endpoint.IsMulticast == true), It.IsAny<CancellationToken>()))
                 .CallBase()
                 .Verifiable("Message was not sent via multicast endpoint");
 
@@ -642,7 +642,7 @@ namespace CoAPNet.Tests
             // Arrange
             var mockClientEndpoint = new Mock<MockEndpoint> { CallBase = true };
             mockClientEndpoint
-                .Setup(e => e.SendAsync(It.IsAny<CoapPacket>()))
+                .Setup(e => e.SendAsync(It.IsAny<CoapPacket>(), It.IsAny<CancellationToken>()))
                 .CallBase()
                 .Verifiable("Message was not sent via multicast endpoint");
 
@@ -753,10 +753,10 @@ namespace CoAPNet.Tests
 
             mockClientEndpoint.Setup(c => c.IsMulticast).Returns(true);
             mockClientEndpoint
-                .Setup(c => c.MockSendAsync(It.IsAny<CoapPacket>()))
+                .Setup(c => c.MockSendAsync(It.IsAny<CoapPacket>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
             mockClientEndpoint
-                .SetupSequence(c => c.MockReceiveAsync())
+                .SetupSequence(c => c.MockReceiveAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new CoapPacket
                 {
                     Payload = new byte[] { 0x40, 0x00, 0x12, 0x34, 0xFF, 0x12, 0x34 } // "Empty" Confirmable Message with a payload
@@ -780,7 +780,7 @@ namespace CoAPNet.Tests
             }
 
             // Assert
-            mockClientEndpoint.Verify(x => x.SendAsync(It.IsAny<CoapPacket>()), Times.Never, "Multicast Message was responded to whenn it shouldn't");
+            mockClientEndpoint.Verify(x => x.SendAsync(It.IsAny<CoapPacket>(), It.IsAny<CancellationToken>()), Times.Never, "Multicast Message was responded to whenn it shouldn't");
         }
 
         // TODO: Test Multicast Message Error Does Not Reset
@@ -789,6 +789,27 @@ namespace CoAPNet.Tests
         public void TestMulticastMessageErrorDoesNotReset()
         {
             Assert.Inconclusive("Not Implemented");
+        }
+
+        [Test]
+        public void DisposeCoapClient_With_NonDisposableEndpoint()
+        {
+            // Arrange
+            var endpoint = new NonDisposableEndpoint();
+
+            Task receiveTask;
+            var ct = new CancellationTokenSource(MaxTaskTimeout);
+
+            // Ack
+            using (var client = new CoapClient(endpoint))
+            {
+                receiveTask = client.ReceiveAsync(ct.Token);
+
+            }
+
+            // Assert
+            Assert.ThrowsAsync<TaskCanceledException>(async () => await receiveTask);
+            Assert.That(ct.IsCancellationRequested, Is.False, "The test's safety CancellationToken timed out");
         }
     }
 }

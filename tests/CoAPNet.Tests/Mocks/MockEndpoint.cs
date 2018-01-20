@@ -41,15 +41,15 @@ namespace CoAPNet.Tests.Mocks
             _receiveEnqueuedEvent.Set();
         }
 
-        public virtual Task SendAsync(CoapPacket packet)
+        public virtual Task SendAsync(CoapPacket packet, CancellationToken token)
         {
             Debug.WriteLine($"Writing packet {{{string.Join(", ", packet.Payload)}}} {CoapMessage.CreateFromBytes(packet.Payload)}");
             return IsDisposed
                 ? throw new CoapEndpointException("Encdpoint Disposed")
-                : MockSendAsync(packet);
+                : MockSendAsync(packet, token);
         }
 
-        public virtual Task MockSendAsync(CoapPacket packet)
+        public virtual Task MockSendAsync(CoapPacket packet, CancellationToken token)
         {
             return Task.CompletedTask;
         }
@@ -64,16 +64,16 @@ namespace CoAPNet.Tests.Mocks
             _receiveEnqueuedEvent.Set();
         }
 
-        public virtual Task<CoapPacket> ReceiveAsync()
+        public virtual Task<CoapPacket> ReceiveAsync(CancellationToken token)
         {
             return IsDisposed
                 ? throw new CoapEndpointException("Encdpoint Disposed")
-                : MockReceiveAsync();
+                : MockReceiveAsync(token);
         }
 
-        public virtual async Task<CoapPacket> MockReceiveAsync()
+        public virtual async Task<CoapPacket> MockReceiveAsync(CancellationToken token)
         {
-            await _receiveEnqueuedEvent.WaitAsync(CancellationToken.None);
+            await _receiveEnqueuedEvent.WaitAsync(token);
             if (IsDisposed)
                 throw new CoapEndpointException("Encdpoint Disposed");
 

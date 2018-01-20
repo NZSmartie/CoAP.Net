@@ -16,6 +16,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -43,7 +44,7 @@ namespace CoAPNet.Tests
         {
             _endpoint = new Mock<ICoapEndpoint>();
             _endpoint.Setup(e => e.BaseUri).Returns(_baseUri);
-            _endpoint.Setup(e => e.SendAsync(It.IsAny<CoapPacket>())).Returns(Task.FromResult(0));
+            _endpoint.Setup(e => e.SendAsync(It.IsAny<CoapPacket>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(0));
         }
 
         [Test]
@@ -51,7 +52,7 @@ namespace CoAPNet.Tests
         {
             // Arrange
             _endpoint
-                .Setup(c => c.SendAsync(It.IsAny<CoapPacket>()))
+                .Setup(c => c.SendAsync(It.IsAny<CoapPacket>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(0))
                 .Verifiable();
 
@@ -171,7 +172,7 @@ namespace CoAPNet.Tests
             var expectedMessage = CoapMessage.FromException(new NotImplementedException()).ToBytes();
 
             _endpoint
-                .Setup(c => c.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage))))
+                .Setup(c => c.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage)), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(0))
                 .Verifiable();
 
@@ -200,7 +201,7 @@ namespace CoAPNet.Tests
             var expectedMessage = CoapMessage.FromException(new CoapOptionException("Unsupported critical option (45575)")).ToBytes();
 
             _endpoint
-                .Setup(c => c.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage))))
+                .Setup(c => c.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage)), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(0))
                 .Verifiable();
 
@@ -229,7 +230,7 @@ namespace CoAPNet.Tests
             var expectedMessage = CoapMessage.Create(CoapMessageCode.NotFound, $"Resouce {new Uri(_baseUri, "/test")} was not found", CoapMessageType.Acknowledgement).ToBytes();
 
             _endpoint
-                .Setup(e => e.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage))))
+                .Setup(e => e.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage)), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(0))
                 .Verifiable();
 
@@ -252,7 +253,7 @@ namespace CoAPNet.Tests
             var expectedMessage = CoapMessage.Create(CoapMessageCode.InternalServerError, "An unexpected error occured", CoapMessageType.Reset).ToBytes();
 
             _endpoint
-                .Setup(e => e.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage))))
+                .Setup(e => e.SendAsync(It.Is<CoapPacket>(p => p.Payload.SequenceEqual(expectedMessage)), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(0))
                 .Verifiable();
 
