@@ -55,9 +55,23 @@ namespace CoAPNet.Options
         public static readonly ContentFormatType ApplicationCbor = new ContentFormatType(60, "applicaiton/cbor");
 
         private readonly int _value;
-
         private readonly string _name;
 
+        /// <summary>
+        /// Gets the numeric value that represents the CoAP content format option.
+        /// </summary>
+        public int Value => _value;
+
+        /// <summary>
+        /// Gets the human-readable name of the CoAP content format option.
+        /// </summary>
+        public string Name => _name;
+
+        /// <summary>
+        /// Creates a new <see cref="ContentFormatType"/> to be used when setting the <see cref="ContentFormat"/> Option when used with <see cref="CoapMessage.Options"/>
+        /// </summary>
+        /// <param name="value">The numeric value that represents the CoAP content format option.</param>
+        /// <param name="name">The human-readable name of the CoAP content format option.</param>
         public ContentFormatType(int value, string name)
         {
             _value = value;
@@ -100,6 +114,7 @@ namespace CoAPNet.Options
 
         #endregion
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return _name;
