@@ -56,7 +56,7 @@ namespace CoAPNet
         public static bool operator ==(CoapMessageIdentifier A, CoapMessageIdentifier B)
         {
             // Only check endpoints if both are not null
-            if (A.Endpoint != null && B.Endpoint != null && A.Endpoint != B.Endpoint)
+            if (A.Endpoint != null && B.Endpoint != null && !A.Endpoint.Equals(B.Endpoint))
                 return false;
 
             if (!A.Token.SequenceEqual(B.Token))

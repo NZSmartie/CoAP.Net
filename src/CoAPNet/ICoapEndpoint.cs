@@ -94,5 +94,33 @@ namespace CoAPNet
         {
             throw new InvalidOperationException($"{nameof(CoapEndpoint)} can not be used to send and receive");
         }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if(obj is CoapEndpoint other)
+            {
+                if (!other.BaseUri.Equals(BaseUri))
+                    return false;
+                if (!other.IsMulticast.Equals(IsMulticast))
+                    return false;
+                if (!other.IsSecure.Equals(IsSecure))
+                    return false;
+                return true;
+            }
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return 1404189491;
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"[ {BaseUri.Host}{(BaseUri.IsDefaultPort ? "" : ":" + BaseUri.Port)} {(IsMulticast ? "(M) " : "")}{(IsSecure ? "(S) " : "")}]";
+        }
     }
 }

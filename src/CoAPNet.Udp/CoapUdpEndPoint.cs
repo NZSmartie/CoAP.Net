@@ -209,9 +209,35 @@ namespace CoAPNet.Udp
             token.ThrowIfCancellationRequested();
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
-            return _endpoint.ToString();
+            return $"[ udp://{_endpoint.Address}:{_endpoint.Port} {(IsMulticast ? "(M) " : "")}{(IsSecure ? "(S) " : "")}]";
         }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if(obj is CoapUdpEndPoint other)
+            {
+                if (!other._endpoint.Equals(_endpoint))
+                    return false;
+                if (!other.IsMulticast.Equals(IsMulticast))
+                    return false;
+                if (!other.IsSecure.Equals(IsSecure))
+                    return false;
+                return true;
+            }
+            return base.Equals(obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return (_endpoint.GetHashCode() ^ 963144320)
+                 ^ (IsMulticast.GetHashCode() ^ 1491585648)
+                 ^ (IsSecure.GetHashCode() ^ 1074623538);
+        }
+
     }
 }
