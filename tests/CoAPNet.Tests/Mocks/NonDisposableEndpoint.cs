@@ -45,5 +45,10 @@ namespace CoAPNet.Tests.Mocks
                 return await tcs.Task;
             
         }
+
+        public string ToString(CoapEndpointStringFormat format)
+        {
+            return $"[ {nameof(NonDisposableEndpoint)} ]";
+        }
     }
 }

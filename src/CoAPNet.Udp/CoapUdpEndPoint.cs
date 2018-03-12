@@ -211,8 +211,17 @@ namespace CoAPNet.Udp
 
         /// <inheritdoc />
         public override string ToString()
+         => ToString(CoapEndpointStringFormat.Simple);
+
+        /// <inheritdoc />
+        public string ToString(CoapEndpointStringFormat format)
         {
-            return $"[ udp://{_endpoint.Address}:{_endpoint.Port} {(IsMulticast ? "(M) " : "")}{(IsSecure ? "(S) " : "")}]";
+            if (format == CoapEndpointStringFormat.Simple)
+                return $"{_endpoint.Address}:{_endpoint.Port}";
+            if (format == CoapEndpointStringFormat.Debuggable)
+                return $"[ udp://{_endpoint.Address}:{_endpoint.Port} {(IsMulticast ? "(M) " : "")}{(IsSecure ? "(S) " : "")}]";
+
+            throw new ArgumentException(nameof(format));
         }
 
         /// <inheritdoc />

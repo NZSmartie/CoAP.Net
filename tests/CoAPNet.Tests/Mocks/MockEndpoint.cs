@@ -87,5 +87,10 @@ namespace CoAPNet.Tests.Mocks
             Debug.WriteLine($"MockEndpoint: Read packet {{{string.Join(", ", packet.Payload)}}}");
             return packet;
         }
+
+        public string ToString(CoapEndpointStringFormat format)
+        {
+            return $"[ {nameof(MockEndpoint)} ]";
+        }
     }
 }
