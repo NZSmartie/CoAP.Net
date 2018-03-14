@@ -25,7 +25,7 @@ namespace CoAPNet
         public static int DefaultBlockSize
         {
             get => _defaultBlockSize;
-            set => _defaultBlockSize = BlockBase.SupportedBlockSizes.Any(b => b.Item2 == value)
+            set => _defaultBlockSize = BlockBase.InternalSupportedBlockSizes.Any(b => b.Item2 == value)
                 ? value
                 : throw new ArgumentOutOfRangeException();
         }
@@ -75,8 +75,8 @@ namespace CoAPNet
                 if (value > _blockSize)
                     throw new ArgumentOutOfRangeException($"Can not increase blocksize from {_blockSize} to {value}");
 
-                if (BlockBase.SupportedBlockSizes.All(b => b.Item2 != value))
-                    throw new ArgumentOutOfRangeException($"Unsupported blocksize {value}. Expecting block sizes in ({string.Join(", ", Options.BlockBase.SupportedBlockSizes.Select(b => b.Item2))})");
+                if (BlockBase.InternalSupportedBlockSizes.All(b => b.Item2 != value))
+                    throw new ArgumentOutOfRangeException($"Unsupported blocksize {value}. Expecting block sizes in ({string.Join(", ", Options.BlockBase.InternalSupportedBlockSizes.Select(b => b.Item2))})");
 
                 _blockSize = value;
             }
