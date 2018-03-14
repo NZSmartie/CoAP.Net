@@ -13,9 +13,9 @@ namespace CoAPNet.Options
     /// parallel on the same resource (i.e., the "lost update" problem).
     /// <para>See section 5.10.8.1 of [RFC7252]</para>
     /// </summary>
-    public class IfMatch : CoapOption
+    public class IfMatch : CoapOpaqueOption
     {
-        public IfMatch() : base(optionNumber: CoapRegisteredOptionNumber.IfMatch, maxLength: 8, isRepeatable: true, type: OptionType.Opaque) { }
+        public IfMatch() : base(optionNumber: CoapRegisteredOptionNumber.IfMatch, maxLength: 8, isRepeatable: true) { }
     }
 
     /// <summary>
@@ -27,7 +27,7 @@ namespace CoAPNet.Options
     /// carries no value.
     /// <para>See section 5.10.8.2 of [RFC7252]</para>
     /// </summary>
-    public class IfNoneMatch : CoapOption
+    public class IfNoneMatch : CoapEmptyOption
     {
         public IfNoneMatch() : base(optionNumber: CoapRegisteredOptionNumber.IfNoneMatch) { }
     }

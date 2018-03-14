@@ -7,16 +7,16 @@ namespace CoAPNet.Options
     /// <summary>
     /// <para>See section 5.10.7 of [RFC7252]</para>
     /// </summary>
-    public class LocationPath : CoapOption
+    public class LocationPath : CoapStringOption
     {
-        public LocationPath() : base(optionNumber: CoapRegisteredOptionNumber.LocationPath, maxLength: 255, isRepeatable: true, type: OptionType.String) { }
+        public LocationPath() : base(optionNumber: CoapRegisteredOptionNumber.LocationPath, maxLength: 255, isRepeatable: true) { }
     }
 
     /// <summary>
     /// <para>See section 5.10.7 of [RFC7252]</para>
     /// </summary>
-    public class LocationQuery : CoapOption
+    public class LocationQuery : CoapStringOption
     {
-        public LocationQuery() : base(optionNumber: CoapRegisteredOptionNumber.LocationQuery, maxLength: 255, isRepeatable: true, type: OptionType.String){ }
+        public LocationQuery() : base(optionNumber: CoapRegisteredOptionNumber.LocationQuery, maxLength: 255, isRepeatable: true){ }
     }
 }

@@ -126,11 +126,11 @@ namespace CoAPNet.Options
     /// Content-Format identifier that is defined in the "CoAP Content-Formats" registry (Section 12.3 of [RFC7252]). 
     /// <para>See section 5.10.3 of [RFC7252]</para>
     /// </summary>
-    public class ContentFormat : CoapOption
+    public class ContentFormat : CoapUintOption
     {
         public ContentFormatType MediaType { get => (ContentFormatType)ValueUInt; set => ValueUInt = (uint)value; }
 
-        public ContentFormat() : base(optionNumber: CoapRegisteredOptionNumber.ContentFormat, maxLength: 2, type: OptionType.UInt)
+        public ContentFormat() : base(optionNumber: CoapRegisteredOptionNumber.ContentFormat, maxLength: 2)
         {
             MediaType = ContentFormatType.TextPlain;
         }
@@ -147,11 +147,11 @@ namespace CoAPNet.Options
     /// "CoAP Content-Formats" registry (Section 12.3 of [RFC7252]).
     /// <para>See section 5.10.4 of [RFC7252]</para>
     /// </summary>
-    public class Accept : CoapOption
+    public class Accept : CoapUintOption
     {
         public ContentFormatType MediaType { get => (ContentFormatType)ValueUInt; set => ValueUInt = (uint)value; }
 
-        public Accept() : base(optionNumber: CoapRegisteredOptionNumber.Accept, maxLength: 2, type: OptionType.UInt)
+        public Accept() : base(optionNumber: CoapRegisteredOptionNumber.Accept, maxLength: 2)
         {
             MediaType = ContentFormatType.TextPlain;
         }
@@ -173,9 +173,9 @@ namespace CoAPNet.Options
     /// Max-Age SHOULD update the value before each retransmission.  (See also Section 5.7.1. of [RFC7252])</para>
     /// <para>See section 5.10.5 of [RFC7252]</para>
     /// </summary>
-    public class MaxAge : CoapOption
+    public class MaxAge : CoapUintOption
     {
-        public MaxAge() : base(optionNumber: CoapRegisteredOptionNumber.MaxAge, maxLength: 4, type: OptionType.UInt, defaultValue: 60u)
+        public MaxAge() : base(optionNumber: CoapRegisteredOptionNumber.MaxAge, maxLength: 4, defaultValue: 60u)
         {
             ValueUInt = 0u;
         }
@@ -200,9 +200,9 @@ namespace CoAPNet.Options
     /// <para>See section 5.10.6 of [RFC7252]</para>
     /// </summary>
     /// TODO: Implement ETag request/response semantics as descripbed in section 5.10.6.1 and 5.10.6.2 of [RFC7252]
-    public class ETag : CoapOption
+    public class ETag : CoapOpaqueOption
     {
-        public ETag() : base(optionNumber: CoapRegisteredOptionNumber.ETag, minLength: 1, maxLength: 8, isRepeatable: true, type: OptionType.Opaque)
+        public ETag() : base(optionNumber: CoapRegisteredOptionNumber.ETag, minLength: 1, maxLength: 8, isRepeatable: true)
         { 
             ValueOpaque = null;
         }
@@ -222,9 +222,9 @@ namespace CoAPNet.Options
     /// able and willing to handle.
     /// <para>See section 5.10.9 of [RFC7252]</para>
     /// </summary>
-    public class Size1 : CoapOption
+    public class Size1 : CoapUintOption
     {
-        public Size1() : base(optionNumber: CoapRegisteredOptionNumber.Size1, maxLength: 4, type: OptionType.UInt, defaultValue: 0u)
+        public Size1() : base(optionNumber: CoapRegisteredOptionNumber.Size1, maxLength: 4, defaultValue: 0u)
         { }
 
         public Size1(uint value) : this()

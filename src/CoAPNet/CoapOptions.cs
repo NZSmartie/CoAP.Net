@@ -490,4 +490,39 @@ namespace CoAPNet
             return hashcode;
         }
     }
+
+    public class CoapStringOption : CoapOption
+    {
+        protected internal CoapStringOption(int optionNumber, int minLength = 0, int maxLength = 0, bool isRepeatable = false, object defaultValue = null)
+            : base(optionNumber, minLength, maxLength, isRepeatable, OptionType.String, defaultValue)
+        { }
+
+        public string Value { get => ValueString; set => ValueString = value; }
+    }
+
+    public class CoapOpaqueOption : CoapOption
+    {
+        protected internal CoapOpaqueOption(int optionNumber, int minLength = 0, int maxLength = 0, bool isRepeatable = false, object defaultValue = null)
+            : base(optionNumber, minLength, maxLength, isRepeatable, OptionType.Opaque, defaultValue)
+        { }
+
+        public byte[] Value { get => ValueOpaque; set => ValueOpaque = value; }
+    }
+
+    public class CoapUintOption : CoapOption
+    {
+        protected internal CoapUintOption(int optionNumber, int minLength = 0, int maxLength = 0, bool isRepeatable = false, object defaultValue = null)
+            : base(optionNumber, minLength, maxLength, isRepeatable: isRepeatable, type: OptionType.UInt, defaultValue: defaultValue)
+        { }
+
+        public uint Value { get => ValueUInt; set => ValueUInt = value; }
+
+    }
+
+    public class CoapEmptyOption : CoapOption
+    {
+        protected internal CoapEmptyOption(int optionNumber, bool isRepeatable = false)
+            : base(optionNumber, isRepeatable: isRepeatable, type: OptionType.Empty)
+        { }
+    }
 }

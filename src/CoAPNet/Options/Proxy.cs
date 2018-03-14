@@ -4,13 +4,13 @@ using System.Text;
 
 namespace CoAPNet.Options
 {
-    public class ProxyUri : CoapOption
+    public class ProxyUri : CoapStringOption
     {
-        public ProxyUri() : base(optionNumber: CoapRegisteredOptionNumber.ProxyUri, minLength: 1, maxLength: 1034, type: OptionType.String) { }
+        public ProxyUri() : base(optionNumber: CoapRegisteredOptionNumber.ProxyUri, minLength: 1, maxLength: 1034) { }
     }
 
-    public class ProxyScheme : CoapOption
+    public class ProxyScheme : CoapStringOption
     {
-        public ProxyScheme() : base(optionNumber: CoapRegisteredOptionNumber.ProxyScheme, minLength: 1, maxLength: 255, type: OptionType.String) { }
+        public ProxyScheme() : base(optionNumber: CoapRegisteredOptionNumber.ProxyScheme, minLength: 1, maxLength: 255) { }
     }
 }

@@ -8,7 +8,7 @@ namespace CoAPNet.Options
     /// <summary>
     /// Base class used with <see cref="Block1"/> and <see cref="Block2"/> as both sublasses share similarities.
     /// </summary>
-    public class BlockBase : CoapOption
+    public class BlockBase : CoapUintOption
     {
         internal static readonly List<Tuple<int, int>> InternalSupportedBlockSizes = new List<Tuple<int, int>>
         {
@@ -42,7 +42,7 @@ namespace CoAPNet.Options
         }
 
         internal BlockBase(int optionNumber)
-            :base (optionNumber, 0, 3, false, OptionType.UInt)
+            :base (optionNumber, 0, 3, false)
         { }
 
         private int _blockSize = 1024;
@@ -227,12 +227,12 @@ namespace CoAPNet.Options
     /// <summary>
     /// A CoAP Option (as defiend in RFC7959), represents a request for the content's size, or (as a response from the server) the final size of the content.
     /// </summary>
-    public sealed class Size2 : CoapOption
+    public sealed class Size2 : CoapUintOption
     {
         /// <summary>
         /// Creates a new Size2 CoAP Option.
         /// </summary>
-        public Size2() : base(CoapRegisteredOptionNumber.Size2, 0, 4, false, OptionType.UInt, 0u)
+        public Size2() : base(CoapRegisteredOptionNumber.Size2, 0, 4, false, 0u)
         { }
 
         /// <summary>
