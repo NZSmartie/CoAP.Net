@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Text;
 using NUnit;
 using NUnit.Framework;
@@ -24,6 +25,23 @@ namespace CoAPNet.Tests
     [TestFixture]
     public class CoapOptionsTests
     {
+        public static IEnumerable NullOptionComapreNullTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(new CoapOption(1, type: OptionType.Empty));
+                yield return new TestCaseData(new CoapOption(1, type: OptionType.Opaque));
+                yield return new TestCaseData(new CoapOption(1, type: OptionType.String));
+                yield return new TestCaseData(new CoapOption(1, type: OptionType.UInt));
+            }
+        }
+
+        [TestCaseSource(nameof(NullOptionComapreNullTestCases))]
+        public void NullOptionComapreNull(CoapOption option)
+        {
+            Assert.True(option.Equals(option));
+        }
+
         [Test]
         [Category("Options")]
         public void TestOptionHashCodesAndEquality()

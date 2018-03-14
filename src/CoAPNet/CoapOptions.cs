@@ -157,7 +157,10 @@ namespace CoAPNet
                 return $"<{GetType().Name}> ({Length} bytes)";
 
             if (_type == OptionType.String)
-                return $"<{GetType().Name}> \"({(string)_value}\"";
+                return $"<{GetType().Name}> \"{(string)_value}\"";
+
+            if (_type == OptionType.UInt && _value != null)
+                return $"<{GetType().Name}> {(uint)_value}";
 
             return $"{GetType().Name}";
         }
@@ -443,11 +446,26 @@ namespace CoAPNet
                 case OptionType.Empty:
                     return true;
                 case OptionType.UInt:
-                    return (uint)option._value == (uint)_value;
+                    if (_value is null)
+                        return option._value is null;
+
+                    if (option._value is null)
+                        return false;
+
+                    return (uint)_value == (uint)option._value;
                 case OptionType.Opaque:
-                    return ((byte[])option._value).SequenceEqual((byte[])_value);
+                    if (_value is null)
+                        return option._value is null;
+
+                    if (option._value is null)
+                        return false;
+
+                    return ((byte[])_value).SequenceEqual((byte[])option._value);
                 case OptionType.String:
-                    return ((string)option._value).Equals((string)_value, StringComparison.Ordinal);
+                    if (_value is null)
+                        return option._value is null;
+
+                    return ((string)_value).Equals((string)option._value, StringComparison.Ordinal);
                 default:
                     throw new InvalidOperationException();
             }
