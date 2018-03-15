@@ -250,6 +250,9 @@ namespace CoAPNet.Tests
 
             Assert.AreEqual(OptionType.UInt, option.Type, "Type is incorrect");
             Assert.AreEqual(0u, option.DefaultUInt, "Default value is incorrect");
+
+            Assert.AreEqual(new Options.ContentFormatType(50, "application/json"), Options.ContentFormatType.ApplicationJson, "Custom ContentFormatType doesn't match predefined Type");
+            Assert.AreEqual(new Options.ContentFormatType(50, "Name shouldn't affect Equals"), Options.ContentFormatType.ApplicationJson, "Custom ContentFormatType with invalid name doesn't match predefined Type");
         }
 
         [Test]

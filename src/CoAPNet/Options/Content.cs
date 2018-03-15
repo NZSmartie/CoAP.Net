@@ -119,6 +119,20 @@ namespace CoAPNet.Options
         {
             return _name;
         }
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            var type = obj as ContentFormatType;
+            return type != null &&
+                   _value == type._value;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return -1939223833 + _value.GetHashCode();
+        }
     }
 
     /// <summary>
