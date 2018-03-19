@@ -443,5 +443,11 @@ namespace CoAPNet.Tests
 
         private byte[] ByteRange(int a, int b) 
             => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
+
+        [Test]
+        public void SupportedBlockSizes()
+        {
+            Assert.That(BlockBase.SupportedBlockSizes, Is.EqualTo(new[] { 16, 32, 64, 128, 256, 512, 1024 }));
+        }
     }
 }
