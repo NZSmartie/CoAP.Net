@@ -4,6 +4,7 @@
     <TargetFrameworks>netstandard1.3;netstandard2.0;netcoreapp2.0</TargetFrameworks>
     <DebugType Condition="$(Configuration)=='AppVeyor'">full</DebugType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <LangVersion>latest</LangVersion>
     <PackageId>NZSmartie.CoAPNet.Server</PackageId>
     <Version>0.3.8</Version>
     <PackageVersion>0.3.8</PackageVersion>

@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <DebugType Condition="$(Configuration)=='AppVeyor'">full</DebugType>
     <Configurations>Debug;Release;AppVeyor</Configurations>
   </PropertyGroup>
