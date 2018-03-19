@@ -334,8 +334,6 @@ namespace CoAPNet
 
             _writer.Enqueue(buffer, offset, count);
             _writerEvent.Set();
-
-            // TODO: Throw exception if stream ended prematurely?
         }
 
         /// <inheritdoc/>
