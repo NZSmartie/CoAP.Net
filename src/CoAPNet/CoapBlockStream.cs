@@ -297,6 +297,7 @@ namespace CoAPNet
             return ReadAsync(buffer, offset, count, CancellationToken.None).GetAwaiter().GetResult();
         }
 
+        /// <inheritdoc/>
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             var read = 0;
@@ -318,9 +319,23 @@ namespace CoAPNet
         /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)
         {
-            // TODO: Block here while there are full blocks that can be written. Leaving only incomplete blocks to be written during Close or Dispose
+            WriteAsync(buffer, offset, count, CancellationToken.None).GetAwaiter().GetResult();
+        }
+
+        /// <inheritdoc/>
+        public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            if (_endOfStream)
+                throw new EndOfStreamException("Stream ended before all bytes were written", _caughtException);
+
+            // Lets artificailly block while the writer task has blocks to write.
+            if (_writer.Length > BlockSize)
+                await _flushFinishedEvent.WaitAsync(cancellationToken);
+
             _writer.Enqueue(buffer, offset, count);
             _writerEvent.Set();
+
+            // TODO: Throw exception if stream ended prematurely?
         }
 
         /// <inheritdoc/>
