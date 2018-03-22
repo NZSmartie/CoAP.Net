@@ -2,8 +2,7 @@
 
 ## About
 
-This library encodes and decodes CoAP protocol packets that is transport agnostic. 
-IT also provides a CoapClient and CoapServer for communicating over CoAP
+This library is a transport agnostic implementation of the Constraint Application Protocol (CoAP - RFC 7252) for .Net Standard.
 
 Since CoAP is designed for unreliable transport layers. (6LoWPAN, UDP, etc...) it made sense to not worry about the transport implementaions and allow the applicatrion to provide their own.
 
@@ -15,34 +14,26 @@ All relevant changes are logged in [Changelog.md](Changelog.md)
 
 ## Status
 
- - `CoapClient` - Simple client for communicating over the CoAP protocol
-   - [X] Send messages
-     - [ ] Resolve host names using mDNS or DNS
-     - [X] Proper multicast handling
-     - [X] Retransmit confirmable (CON) messages, throwing an exception on failure
-     - [X] Await message response for confirmable (CON) messages.
-     - [ ] Await message response for non-confirmable (NON) messages
-   - [X] Receive messages 
-     - [X] Rejects messages when 
-       - [X] Malform messages with appropiate error code.
-       - [X] Exceptions are thrown during processing
-     - [X] Ignore repeated within a set `TimeSpan`
-   - [X] Correctly parse CoAP packets
-   - [ ] DTLS support
+ - Full support for [RFC 7959 - Block-Wise Transfers in the Constrained Application Protocol (CoAP)](https://tools.ietf.org/html/rfc7959)
+ - Support for Sending and Receiving Confirmable (CON) and Non-Confirmable (NON) messagees.
+   - Retransmit confirmable messages, throwing an exception on failure
+   - Rejects malform messages with appropiate error code.
+   - Ignores repeated messages within a set `TimeSpan`
+ - Support for Sending and receiving multicast messages. 
 
- - `CoapServer` - Simple server for binding to local transports and processing requests
- 
- - `CoapHandler` - Template request handler to be used by CoapServer
-   - `CoapResourceHandler` - Example handler that specificaly serves `CoapResource`s
+ - `CoapServer` - Simple server for binding to local transports and processing requests 
+   - `CoapHandler` - Template request handler to be used by CoapServer
+     - `CoapResourceHandler` - Example handler that specificaly serves `CoapResource`s
 
 ### Todo
 
  - Create unit tests to cover as much of RFC7252 as possible.
  - Create more examples
- - Add support for [RFC 7641 - Observing Resources in the Constrained Application Protocol (CoAP)
-](https://tools.ietf.org/html/rfc7641)
- - Add support for [RFC 7390 - Group Communication for the Constrained Application Protocol (CoAP)](https://tools.ietf.org/html/rfc7390)
- - Add support for [RFC 7959 - Block-Wise Transfers in the Constrained Application Protocol (CoAP)](https://tools.ietf.org/html/rfc7959)
+ - Support DTLS over UDP
+ - Resolve host names using mDNS or DNS
+ - Await message response for non-confirmable (NON) messages
+ - Support for [RFC 7641 - Observing Resources in the Constrained Application Protocol (CoAP)](https://tools.ietf.org/html/rfc7641)
+ - Support for [RFC 7390 - Group Communication for the Constrained Application Protocol (CoAP)](https://tools.ietf.org/html/rfc7390)
 
 ## Stats
 
