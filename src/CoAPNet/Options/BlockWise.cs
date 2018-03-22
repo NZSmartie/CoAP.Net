@@ -113,28 +113,18 @@ namespace CoAPNet.Options
                 BlockNumber = 0;
                 last = 0;
             }
-            else if (data.Length == 1)
+            else if (data.Length <= 3)
             {
-                BlockNumber = (int)ValueUInt & 0x0F;
-                last = (ValueUInt & 0xF0) >> 4;
-            }
-            else if (data.Length == 2)
-            {
-                BlockNumber = (int)ValueUInt & 0x0FFF;
-                last = (ValueUInt & 0xF000) >> 12;
-            }
-            else if (data.Length == 3)
-            {
-                BlockNumber = (int)ValueUInt & 0x0FFFFF;
-                last = (ValueUInt & 0xF00000) >> 20;
+                BlockNumber = (int)(ValueUInt & 0xFFFFF0) >> 4;
+                last = ValueUInt & 0x0F;
             }
             else
             {
                 throw new CoapOptionException($"Invalid length ({data.Length}) of Block1/Block2 option");
             }
 
-            IsMoreFollowing = (last & 0x01) > 0;
-            var szx = (int)((last >> 1));
+            IsMoreFollowing = (last & 0x08) > 0;
+            var szx = (int)((last & 0x07));
             BlockSize = InternalSupportedBlockSizes.First(b => b.Item1 == szx).Item2;
         }
 
@@ -142,21 +132,10 @@ namespace CoAPNet.Options
         public override byte[] GetBytes()
         {
             var szx = InternalSupportedBlockSizes.First(b => b.Item2 == BlockSize).Item1;
-            var last = (byte)((szx & 0x07) << 5) | (IsMoreFollowing ? 0x10 : 0x00);
+            var last = (byte)((szx & 0x07) | (IsMoreFollowing ? 0x08 : 0x00));
 
-            if (BlockNumber <= 0x0F)
-            {
-                ValueUInt = (uint)(last | (BlockNumber & 0x0F));
-            }
-            else if (BlockNumber <= 0x0FFF)
-            {
-                ValueUInt = (uint)((last << 8) | (BlockNumber & 0x0FFF));
-            }
-            else if (BlockNumber <= 0x0FFFFF)
-            {
-                ValueUInt = (uint)((last << 16) | (BlockNumber & 0x0FFFFF));
-            }
-
+            ValueUInt = (uint)(last | ((BlockNumber << 4) & 0xFFFFF0));
+            
             return base.GetBytes();
         }
 

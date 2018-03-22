@@ -469,15 +469,16 @@ namespace CoAPNet.Tests
 
         [Category("[RFC7959] Section 2.2"), Category("Blocks")]
         [TestCase(0, 16, false, new byte[] { })]
-        [TestCase(1, 16, false, new byte[] { 0x01 })]
-        [TestCase(2, 32, false, new byte[] { 0x22 })]
-        [TestCase(3, 64, true, new byte[] { 0x53 })]
-        [TestCase(4095, 128, true, new byte[] { 0x7F, 0xFF })]
-        [TestCase(1048575, 256, true, new byte[] { 0x9F, 0xFF, 0xFF})]
-        [TestCase(15, 16, true, new byte[] { 0x1F })]
-        [TestCase(16, 16, true, new byte[] { 0x10, 0x10 })]
-        [TestCase(39, 16, false, new byte[] { 0, 39 })]
-        [TestCase(79, 16, false, new byte[] { 0, 79 })]
+        [TestCase(1, 16, false, new byte[] { 0x10 })]
+        [TestCase(2, 32, false, new byte[] { 0x21 })]
+        [TestCase(3, 64, true, new byte[] { 0x3A })]
+        [TestCase(4095, 128, true, new byte[] { 0xFF, 0xFB })]
+        [TestCase(1048575, 256, true, new byte[] { 0xFF, 0xFF, 0xFC})]
+        [TestCase(15, 16, true, new byte[] { 0xF8 })]
+        [TestCase(16, 16, true, new byte[] { 0x01, 0x08 })]
+        [TestCase(39, 16, false, new byte[] { 0x02, 0x70 })]
+        [TestCase(79, 16, false, new byte[] { 0x04, 0xF0 })]
+        [TestCase(0, 128, true, new byte[] { 0x0b })]
         public void TestBlockOption(int blockNumber, int blockSize, bool more, byte[] expected)
         {
             var optionToBytes = new Options.Block1(blockNumber, blockSize, more);
