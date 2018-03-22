@@ -299,15 +299,15 @@ namespace CoAPNet.Tests
 
                 client.SetNextMessageId(1);
 
-                var identifier = await client.SendAsync(baseRequestMessage, ct.Token);
+                var identifier = await client.SendAsync(baseRequest, ct.Token);
 
                 var response = await client.GetResponseAsync(identifier, ct.Token);
 
-                result = response.GetCompletedBlockWisePayload(client, baseRequestMessage);
+                result = response.GetCompletedBlockWisePayload(client, baseRequest);
             }
 
             // Assert
-            Assert.That(result, Is.EqualTo(ByteRange(0, totalBytes)), "Incorrect payload read");
+            Assert.That(result, Is.EqualTo(BlockWiseTestHelper.ByteRange(0, totalBytes)), "Incorrect payload read");
 
             mockClientEndpoint.Verify();
         }
