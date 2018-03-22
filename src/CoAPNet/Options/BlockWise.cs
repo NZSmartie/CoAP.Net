@@ -159,6 +159,24 @@ namespace CoAPNet.Options
 
             return base.GetBytes();
         }
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            if(obj is BlockBase other)
+            {
+                if (BlockNumber != other.BlockNumber)
+                    return false;
+                if (BlockSize!= other.BlockSize)
+                    return false;
+                if (IsMoreFollowing != other.IsMoreFollowing)
+                    return false;
+
+                return true;
+
+            }
+            return base.Equals(obj);
+        }
     }
 
     /// <summary>
