@@ -1,16 +1,38 @@
- # Change Log for CoAP.Net 
+# Change Log for CoAP.Net 
  
+### v0.7.0
+
+ - [`be5a77ac`](https://github.com/NZSmartie/CoAP.Net/commit/be5a77ac) Use original request in CoapBlockStreamReader
+ - [`a543c9fa`](https://github.com/NZSmartie/CoAP.Net/commit/a543c9fa) Correct the byte order in Block1/Block2 as it was backwards
+ - [`1455010b`](https://github.com/NZSmartie/CoAP.Net/commit/1455010b) Add BlockSWiseContext to share context between reading and writing blockwise operations
+ - [`7bae697b`](https://github.com/NZSmartie/CoAP.Net/commit/7bae697b) Split CoapBlockStream into a Reader and Writer and make tests more modular
+ - [`52a52e5d`](https://github.com/NZSmartie/CoAP.Net/commit/52a52e5d) Override Equal method in Block1/Block2
+ - [`48ae94c3`](https://github.com/NZSmartie/CoAP.Net/commit/48ae94c3) Split CoapBlockStream into a Reader and Writer and make tests more modular
+ - [`6b533e27`](https://github.com/NZSmartie/CoAP.Net/commit/6b533e27) Use Latest C# language (7.1)
+ - [`0bcc74b9`](https://github.com/NZSmartie/CoAP.Net/commit/0bcc74b9) Override CoapBlockStream.WriteAsync to reduce buffer size while writing on slow transports
+ - [`f46b15b8`](https://github.com/NZSmartie/CoAP.Net/commit/f46b15b8) Add Equality to ContentFormatType
+ - [`81031ae8`](https://github.com/NZSmartie/CoAP.Net/commit/81031ae8) Add baseclass for each CoapOption type to support easier type matching Options
+ - [`a88e3065`](https://github.com/NZSmartie/CoAP.Net/commit/a88e3065) Fix Null excpetions being thrown when comparing CoapOptions with null values
+ - [`fe8f8928`](https://github.com/NZSmartie/CoAP.Net/commit/fe8f8928) Expose SupportBlockSizes in Block1/2 and add documentation
+ - [`5a0b28b4`](https://github.com/NZSmartie/CoAP.Net/commit/5a0b28b4) Restore original ToString functionality and add debuggable format
+ - [`0da5483a`](https://github.com/NZSmartie/CoAP.Net/commit/0da5483a) Fix CoapMesasgeIdentifier not matching when endpoints are differnt instances.
+ - [`47f3a85a`](https://github.com/NZSmartie/CoAP.Net/commit/47f3a85a) Add Value and Name property to ContentFormatType
+
+### v0.6.0
+
+ - [`d7c9d9c4`](https://github.com/NZSmartie/CoAP.Net/commit/d7c9d9c4) Add CancellationToken argument to ICoapTransport Async methods
+
 ### v0.5.2
 
  - [`11841803`](https://github.com/NZSmartie/CoAP.Net/commit/11841803) Perform a stable sort on CoapMessage.Options 
 
- ### v0.5.1
+### v0.5.1
  
  - [`802fde24`](https://github.com/NZSmartie/CoAP.Net/commit/802fde24) Bumping netstandard down from 1.4 to 1.3
  - [`aaa6239d`](https://github.com/NZSmartie/CoAP.Net/commit/aaa6239d) Add extension methods for reading BlockWise messages
  - [`7954c95b`](https://github.com/NZSmartie/CoAP.Net/commit/7954c95b) Allow reading CoapBlockStream if data is still buffered.
 
- ### v0.5.0
+### v0.5.0
  
  - [`a38ad662`](https://github.com/NZSmartie/CoAP.Net/commit/a38ad662) Only finish flushing when there's nothing that can be immediatly written
  - [`5af3fc57`](https://github.com/NZSmartie/CoAP.Net/commit/5af3fc57) Attempt to read as much as possible before returning
@@ -32,7 +54,7 @@
  - [`439ca4e0`](https://github.com/NZSmartie/CoAP.Net/commit/439ca4e0) Block on Flush and throw exceptions when writing in CoapBlockStream
  - [`461c4e4e`](https://github.com/NZSmartie/CoAP.Net/commit/461c4e4e) Begin support for RFC 7959 Block-Wise Transfers
 
- ### v0.4.0
+### v0.4.0
 
  - [`fab984bc`](https://github.com/NZSmartie/CoAP.Net/commit/fab984bc) Heh, Debug.Assert gets removed in release builds...
  - [`f6883b66`](https://github.com/NZSmartie/CoAP.Net/commit/f6883b66) Rename static method to prevent hidden overloading
@@ -55,28 +77,28 @@
  - [`4436a9f3`](https://github.com/NZSmartie/CoAP.Net/commit/4436a9f3) Rename Serialise and Deserialise to ToBytes and FromBytes respectively
  - [`a99134c8`](https://github.com/NZSmartie/CoAP.Net/commit/a99134c8) Make OptionFactory a object
 
- ### v0.3.10
+### v0.3.10
 
  - [`0c6788e1`](https://github.com/NZSmartie/CoAP.Net/commit/0c6788e1) Give a chance to throw message exceptions after deserialising
  - [`2c5ef861`](https://github.com/NZSmartie/CoAP.Net/commit/2c5ef861) Account for SendAsyncInternal dealing with a volatile Endpoint Property
  - [`6ed148a8`](https://github.com/NZSmartie/CoAP.Net/commit/6ed148a8) Use ConcurrentQueue for message queuing in async
 
- ### v0.3.9
+### v0.3.9
 
  - [`4945c5b`](https://github.com/NZSmartie/CoAP.Net/commit/4945c5b) Perform DNS queries on hostnames in CoapUdpEndpoint
 
- ### v0.3.8
+### v0.3.8
 
  - [`c3b44ee`](https://github.com/NZSmartie/CoAP.Net/commit/c3b44ee) Default to multicast address in CoapUdpEndpoint
  - [`2f453f5`](https://github.com/NZSmartie/CoAP.Net/commit/2f453f5) Allow selectively setting Uri componetns in CoapMessage.SetUri
  - [`b8ef59a`](https://github.com/NZSmartie/CoAP.Net/commit/b8ef59a) Sending multicast CoAP messages are checked appropiately
  - [`e131344`](https://github.com/NZSmartie/CoAP.Net/commit/e131344) Replace FromUri with SetUri
 
- ### v0.3.7
+### v0.3.7
 
  - [`a2cdf94`](https://github.com/NZSmartie/CoAP.Net/commit/a2cdf94) Retarget .Net Standard 1.4 and 2.0 and export XML Doc
 
- ### v0.3.6
+### v0.3.6
 
  - [`96b59c6`](https://github.com/NZSmartie/CoAP.Net/commit/96b59c6) CoAPNet.Udp support joinging IPv4 multicast groups
  - [`a16eeb9`](https://github.com/NZSmartie/CoAP.Net/commit/a16eeb9) Improve CoRE Link-Format (de)serialising and deprecate `rev`
