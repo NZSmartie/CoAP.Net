@@ -354,6 +354,7 @@ namespace CoAPNet
                 throw new ArgumentNullException($"{nameof(context)}.{nameof(context.Response)}");
 
             var payload = Context.Response.Payload;
+            Context.Request.Payload = null;
             Context.Response.Payload = null;
 
             if (payload != null)
@@ -387,7 +388,7 @@ namespace CoAPNet
             {
                 while (!EndOfStream && !cancellationToken.IsCancellationRequested)
                 {
-                    var message = Context.Response.Clone();
+                    var message = Context.Request.Clone();
                     message.Id = 0;
 
                     // Strip out any block options
