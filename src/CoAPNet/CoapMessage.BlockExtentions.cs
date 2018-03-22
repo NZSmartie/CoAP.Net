@@ -39,7 +39,7 @@ namespace CoAPNet
 
             var memoryStream = new MemoryStream();
 
-            using (var reader = new CoapBlockStream(client, message, originalRequest))
+            using (var reader = new CoapBlockStreamReader(client, message, originalRequest))
                 reader.CopyTo(memoryStream);
 
             return memoryStream.ToArray();
