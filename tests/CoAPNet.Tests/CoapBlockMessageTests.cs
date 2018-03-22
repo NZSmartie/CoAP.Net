@@ -288,7 +288,7 @@ namespace CoAPNet.Tests
 
             var mockClientEndpoint = new Mock<MockBlockwiseEndpoint>(baseResponse, blockSize, totalBytes) { CallBase = true };
 
-            helper.AssertReadResponseCorrespondance(mockClientEndpoint)
+            helper.AssertReadResponseCorrespondance(mockClientEndpoint, 1)
                   .AssertInitialRequest(mockClientEndpoint);
 
             byte[] result;
@@ -312,8 +312,63 @@ namespace CoAPNet.Tests
             mockClientEndpoint.Verify();
         }
 
-        private byte[] ByteRange(int a, int b) 
-            => Enumerable.Range(a, b).Select(i => Convert.ToByte(i % (byte.MaxValue + 1))).ToArray();
+        [Test]
+        [Category("[RFC7959] Section 2.5"), Category("Blocks")]
+        public async Task Write_BlockWiseCoapMessage_ReadResponse()
+        {
+            int blockSize = 128;
+
+            // Arrange
+            var totalBytes = 1234;
+            var totalBlocks = ((totalBytes - 1) / blockSize) + 1;
+
+            var baseRequestMessage = new CoapMessage
+            {
+                Code = CoapMessageCode.Post,
+                Type = CoapMessageType.Confirmable,
+            };
+
+            var baseResponseMessage = new CoapMessage
+            {
+                Code = CoapMessageCode.Continue,
+                Type = CoapMessageType.Acknowledgement,
+            };
+
+            var mockClientEndpoint = new Mock<MockBlockwiseEndpoint>(baseResponseMessage, blockSize, totalBytes) { CallBase = true };
+            mockClientEndpoint.Object.FinalResponse = new CoapMessage
+            {
+                Code = CoapMessageCode.Changed,
+                Type = CoapMessageType.Acknowledgement,
+            };
+
+            var result = new byte[totalBytes];
+            int bytesRead;
+
+            // Act
+            using (var client = new CoapClient(mockClientEndpoint.Object))
+            {
+                var ct = new CancellationTokenSource(MaxTaskTimeout);
+
+                var context = baseRequestMessage.CreateBlockWiseContext(client);
+
+                using (var writer = new CoapBlockStreamWriter(context) { BlockSize = blockSize })
+                {
+                    writer.Write(BlockWiseTestHelper.ByteRange(0, totalBytes), 0, totalBytes);
+                    writer.Flush();
+                };
+
+                using (var reader = new CoapBlockStreamReader(context))
+                {
+                    bytesRead = reader.Read(result, 0, totalBytes);
+                };
+            }
+
+            // Assert
+            Assert.That(bytesRead, Is.EqualTo(totalBytes), "Incorrect number of bytes read");
+            Assert.That(result, Is.EqualTo(BlockWiseTestHelper.ByteRange(0, totalBytes)), "Incorrect payload read");
+
+            mockClientEndpoint.Verify();
+        }
 
         [Test]
         public void SupportedBlockSizes()

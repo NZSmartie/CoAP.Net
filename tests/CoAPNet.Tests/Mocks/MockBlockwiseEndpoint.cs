@@ -75,6 +75,13 @@ namespace CoAPNet.Tests.Mocks
                     response = block.IsMoreFollowing 
                         ? BaseResponse.Clone() 
                         : FinalResponse.Clone();
+
+                    if (!block.IsMoreFollowing)
+                    {
+                        response.Options.Add(new Options.Block2(0, BlockSize, TotalBytes > BlockSize ));
+                        response.Payload = ByteRange(0, BlockSize);
+                    }
+
                     response.Options.Add(new Options.Block1(block.BlockNumber, block.BlockSize, block.IsMoreFollowing));
                     response.Code = CoapMessageCode.Continue;
                 }
@@ -87,9 +94,7 @@ namespace CoAPNet.Tests.Mocks
                     to = from + BlockSize;
                 }
 
-                response = to < TotalBytes
-                        ? BaseResponse.Clone()
-                        : FinalResponse.Clone();
+                response = FinalResponse.Clone();
 
                 response.Options.Add(new Block2(blockNumber, BlockSize, to < TotalBytes));
                 response.Payload = ByteRange(from, to);

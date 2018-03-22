@@ -29,7 +29,6 @@ namespace CoAPNet
 
         protected int BlockSizeInternal = DefaultBlockSize;
 
-        protected readonly CoapClient Client;
         protected readonly ICoapEndpoint Endpoint;
 
         protected Exception CaughtException;
@@ -38,10 +37,9 @@ namespace CoAPNet
 
         protected readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
 
-        protected readonly CoapMessage BaseMessage;
+        public readonly CoapBlockWiseContext Context;
 
         protected bool EndOfStream;
-
 
         /// <summary>
         /// Gets or sets the maximum amount of time spent writing to <see cref="CoapClient"/> during <see cref="Dispose(bool)"/>
@@ -69,16 +67,11 @@ namespace CoAPNet
             }
         }
 
-        protected CoapBlockStream(CoapClient client, CoapMessage baseMessage, ICoapEndpoint endpoint = null)
+        protected CoapBlockStream(CoapBlockWiseContext context, ICoapEndpoint endpoint = null)
         {
-            Client = client ?? throw new ArgumentNullException(nameof(client));
+            Context = context ?? throw new ArgumentNullException(nameof(context));
+
             Endpoint = endpoint;
-
-            BaseMessage = baseMessage?.Clone()
-                           ?? throw new ArgumentNullException(nameof(baseMessage));
-
-            // Strip out any block options
-            BaseMessage.Options = BaseMessage.Options.Where(o => o is Block1 == false && o is Block2 == false).ToList();
         }
 
         /// <summary>
@@ -126,10 +119,14 @@ namespace CoAPNet
         /// <param name="baseMessage"></param>
         /// <param name="endpoint"></param>
         public CoapBlockStreamWriter(CoapClient client, CoapMessage baseMessage, ICoapEndpoint endpoint = null)
-            : base(client, baseMessage, endpoint)
+            : this(baseMessage.CreateBlockWiseContext(client), endpoint)
+        { }
+
+        public CoapBlockStreamWriter(CoapBlockWiseContext context, ICoapEndpoint endpoint = null)
+            : base(context, endpoint)
         {
-            if (!BaseMessage.Code.IsRequest())
-                throw new InvalidOperationException($"Can not create a {nameof(CoapBlockStreamWriter)} with a {nameof(baseMessage)}.{nameof(baseMessage.Type)} of {baseMessage.Type}");
+            if (!Context.Request.Code.IsRequest())
+                throw new InvalidOperationException($"Can not create a {nameof(CoapBlockStreamWriter)} with a {nameof(context)}.{nameof(context.Request)}.{nameof(CoapMessage.Type)} of {context.Request.Type}");
 
             _writerTask = WriteBlocksAsync();
         }
@@ -137,17 +134,16 @@ namespace CoAPNet
         private async Task WriteBlocksAsync()
         {
             var token = CancellationTokenSource.Token;
-            CoapMessageIdentifier lastMessageId = default;
 
             try
             {
-                while (!token.IsCancellationRequested && !EndOfStream)
+                while (!token.IsCancellationRequested)
                 {
                     await _writerEvent.WaitAsync(token);
 
                     while (_writer.Length > BlockSize || (EndOfStream && _writer.Length > 0))
                     {
-                        var message = BaseMessage.Clone();
+                        var message = Context.Request.Clone();
 
                         // Reset the message Id so it's set by CoapClient
                         message.Id = 0;
@@ -157,10 +153,13 @@ namespace CoAPNet
                         message.Payload = new byte[_writer.Length < BlockSizeInternal ? _writer.Length : BlockSizeInternal];
                         _writer.Peek(message.Payload, 0, BlockSizeInternal);
 
-                        lastMessageId = await Client.SendAsync(message, token);
+                        Context.MessageId = await Context.Client.SendAsync(message, token);
 
                         // Keep the response in the queue in case the Applciation needs it. 
-                        var result = await Client.GetResponseAsync(lastMessageId, token);
+                        var result = await Context.Client.GetResponseAsync(Context.MessageId, token);
+
+                        if (EndOfStream)
+                            Context.Response = result;
 
                         if (result.Code.IsSuccess())
                         {
@@ -191,6 +190,7 @@ namespace CoAPNet
                                 continue;
                             }
 
+                            Context.Response = result;
                             throw new CoapBlockException($"Failed to send block ({_writeBlockNumber}) to remote endpoint", CoapException.FromCoapMessage(result), result.Code);
                         }
                     }
@@ -198,6 +198,9 @@ namespace CoAPNet
                     // flag the mot recent flush has been performed
                     if(_writer.Length <= BlockSize)
                         FlushFinishedEvent.Set();
+
+                    if (EndOfStream)
+                        break;
                 }
             }
             catch (Exception ex)
@@ -285,6 +288,8 @@ namespace CoAPNet
                     {
                         ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
                     }
+
+                    ThrowExceptionIfCaught();
                 }
             }
 
@@ -332,44 +337,67 @@ namespace CoAPNet
         public override bool CanWrite => false;
 
         /// <summary>
-        /// Create a new <see cref="CoapBlockStreamWriter"/> using <paramref name="client"/> to read and write blocks of data. <paramref name="baseMessage"/> is required to base blocked messages off of.
+        /// Create a new <see cref="CoapBlockStreamWriter"/> using <paramref name="client"/> to read and write blocks of data. <paramref name="response"/> is required to base blocked messages off of.
         /// </summary>
         /// <param name="client"></param>
-        /// <param name="baseMessage"></param>
-        /// <param name="requestMessage"></param>
+        /// <param name="response"></param>
+        /// <param name="request"></param>
         /// <param name="endpoint"></param>
-        public CoapBlockStreamReader(CoapClient client, CoapMessage baseMessage, CoapMessage requestMessage, ICoapEndpoint endpoint = null)
-            : base(client, baseMessage, endpoint)
+        public CoapBlockStreamReader(CoapClient client, CoapMessage respose, CoapMessage request, ICoapEndpoint endpoint = null)
+            : this(request.CreateBlockWiseContext(client, respose), endpoint)
+        { }
+
+        public CoapBlockStreamReader(CoapBlockWiseContext context, ICoapEndpoint endpoint = null)
+            : base(context, endpoint)
         {
-            var block2 = baseMessage.Options.Get<Block2>();
-            _readBlockNumber = block2.BlockNumber;
+            if (context.Response == null)
+                throw new ArgumentNullException($"{nameof(context)}.{nameof(context.Response)}");
 
-            BlockSizeInternal = block2.BlockSize;
-            EndOfStream = !block2.IsMoreFollowing;
+            var payload = Context.Response.Payload;
+            Context.Response.Payload = null;
 
-            var payload = baseMessage.Payload;
-            _reader.Enqueue(payload, 0, payload.Length);
-            _readBlockNumber += payload.Length / BlockSizeInternal;
-            _readerTask = ReadBlocksAsync();
+            if (payload != null)
+                _reader.Enqueue(payload, 0, payload.Length);
+
+            var block2 = Context.Response.Options.Get<Block2>();
+            if(block2 != null)
+            {
+                _readBlockNumber = block2.BlockNumber;
+
+                BlockSizeInternal = block2.BlockSize;
+                EndOfStream = !block2.IsMoreFollowing;
+
+                if (payload != null)
+                    _readBlockNumber += payload.Length / BlockSizeInternal;
+
+                _readerTask = ReadBlocksAsync();
+            }
+            else
+            {
+                EndOfStream = true;
+                _readerTask = Task.CompletedTask;
+            }
         }
 
         private async Task ReadBlocksAsync()
         {
             var cancellationToken = CancellationTokenSource.Token;
-            CoapMessageIdentifier lastMessageId = default;
 
             try
             {
                 while (!EndOfStream && !cancellationToken.IsCancellationRequested)
                 {
-                    var message = BaseMessage.Clone();
+                    var message = Context.Response.Clone();
                     message.Id = 0;
+
+                    // Strip out any block options
+                    message.Options.RemoveAll(o => o is Block1 || o is Block2);
 
                     message.Options.Add(new Block2(_readBlockNumber, BlockSizeInternal));
 
-                    lastMessageId = await Client.SendAsync(message, Endpoint, cancellationToken);
+                    Context.MessageId = await Context.Client.SendAsync(message, Endpoint, cancellationToken);
 
-                    var response = await Client.GetResponseAsync(lastMessageId, cancellationToken);
+                    var response = await Context.Client.GetResponseAsync(Context.MessageId, cancellationToken);
 
                     if (!response.Code.IsSuccess())
                         throw new CoapBlockException("Error occured while reading blocks from remote endpoint",
@@ -386,7 +414,10 @@ namespace CoAPNet
                     _readerEvent.Set();
 
                     if (!response.Options.Get<Block2>().IsMoreFollowing)
+                    {
                         EndOfStream = true;
+                        Context.Response = response;
+                    }
                 }
             }
             catch (Exception ex)
