@@ -363,7 +363,7 @@ namespace CoAPNet
                     
                 }
                 if (dataLen == 13)
-                    dataLen = data[i++ + 1];
+                    dataLen = data[i++ + 1] + 13;
                 else if (dataLen == 14)
                 {
                     dataLen = data[i++ + 1] << 8;
