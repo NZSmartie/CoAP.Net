@@ -3,7 +3,6 @@ using System.Linq;
 
 namespace CoAPNet.Utils
 {
-    // TODO: This helper class will be redundant in .Net Core 2.0 through sub-classing HttpStyleUriParser and adding CoAP defaults.
     /// <summary>
     /// Extensions for easily managing CoAP related resources.
     /// </summary>
@@ -23,6 +22,11 @@ namespace CoAPNet.Utils
         /// <returns></returns>
         public static int Compare(Uri uri1, Uri uri2, UriComponents partsToCompare, UriFormat compareFormat, StringComparison comparisonType)
         {
+#if !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5
+            CoapStyleUriParser.Register();
+
+            return Uri.Compare(uri1, uri2, partsToCompare, compareFormat, comparisonType);
+#else
             // Setup Default ports before performing comparasons.
             if (_schemes.Contains(uri1.Scheme.ToLower()) && uri1.Port == -1)
                 uri1 = new UriBuilder(uri1)
@@ -41,6 +45,7 @@ namespace CoAPNet.Utils
                 }.Uri;
 
             return Uri.Compare(uri1, uri2, partsToCompare, compareFormat, comparisonType);
+#endif
         }
     }
 }
