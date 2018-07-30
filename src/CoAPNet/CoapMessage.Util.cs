@@ -91,9 +91,19 @@ namespace CoAPNet
         /// Returns a new deep-clone of this <see cref="CoapMessage"/>.
         /// </summary>
         /// <returns></returns>
-        public CoapMessage Clone()
+        public CoapMessage Clone(bool withPayload = false)
         {
-            return CreateFromBytes(ToBytes(), IsMulticast);
+            return new CoapMessage
+            {
+                _version = _version, // future proofing just in case?
+                Id = Id,
+                Type = Type,
+                Code = Code,
+                _token = _token.Clone() as byte[],
+                _options = new System.Collections.Generic.List<CoapOption>(_options),
+                IsMulticast = IsMulticast,
+                Payload = withPayload ? Payload.Clone() as byte[] : null,
+            };
         }
     }
 }
