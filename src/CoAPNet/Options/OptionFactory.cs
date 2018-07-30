@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Collections.Generic;
+using System.IO;
 
 namespace CoAPNet.Options
 {
@@ -107,6 +108,29 @@ namespace CoAPNet.Options
 
             if (data != null)
                 option.FromBytes(data);
+
+            return option;
+        }
+
+        public CoapOption Create(int number, Stream stream, int length)
+        {
+            CoapOption option;
+            // Let the exception get thrown if index is out of range
+            if (_options.TryGetValue(number, out var type))
+            {
+                option = (CoapOption)Activator.CreateInstance(type);
+            }
+            else
+            {
+                // Critial option must be registered as they're esssential for understanding the message
+                if (number % 2 == 1)
+                    throw new CoapOptionException($"Unsupported critical option ({number})", new ArgumentOutOfRangeException(nameof(number)));
+
+                // Return a placeholder option to give the application chance at reading them
+                option = new CoapOption(number, type: OptionType.Opaque);
+            }
+
+            option.Decode(stream, length);
 
             return option;
         }

@@ -17,7 +17,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
+using System.Text;
 using CoAPNet.Options;
 
 namespace CoAPNet
@@ -205,38 +207,44 @@ namespace CoAPNet
         /// Serialises the message into bytes, ready to be encrypted or transported to the destination endpoint.
         /// </summary>
         /// <returns></returns>
+        [Obsolete]
         public byte[] ToBytes()
         {
-            var result = new List<byte>();
+            using (var ms = new MemoryStream())
+            {
+                Encode(ms);
+                return ms.ToArray();
+            }
+        }
+
+        public void Encode(Stream stream)
+        {
             byte optCode = 0;
 
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             // |Ver| T |  TKL  |      Code     |           Message ID          |
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             var type = (byte)Type;
-            result.Add((byte)(0x40 | ((type << 4) & 0x30) | _token.Length)); // Ver | T | TKL
+            stream.WriteByte((byte)(0x40 | ((type << 4) & 0x30) | (Code == CoapMessageCode.None ? 0 : _token.Length))); // Ver | T | TKL
 
             // +-+-+-+-+-+-+-+-+
             // |class|  detail | (See section 5.2 of [RFC7252])
             // +-+-+-+-+-+-+-+-+
             optCode = (byte)(Code.Class << 5); // Class
             optCode |= (byte)Code.Detail;      // Detail
-            result.Add(optCode); // Code
+            stream.WriteByte(optCode); // Code
 
-            result.Add((byte)((Id >> 8) & 0xFF)); // Message ID (upper byte)
-            result.Add((byte)(Id & 0xFF));        // Message ID (lower byte)
+            stream.WriteByte((byte)((Id >> 8) & 0xFF)); // Message ID (upper byte)
+            stream.WriteByte((byte)(Id & 0xFF));        // Message ID (lower byte)
 
             // Empty messages must only contain a 4 byte header.
             if (Code == CoapMessageCode.None)
-            {
-                result[0] &= 0xF0; // Zero out the token length in case the application layer set one
-                return result.ToArray();
-            }
+                return;
 
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             // | Token (if any, TKL bytes) ...
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-            result.AddRange(_token);
+            stream.Write(_token, 0, _token.Length);
 
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             // | Options (if any) ...
@@ -270,28 +278,28 @@ namespace CoAPNet
                 optionDelta = option.Length;
                 if (optionDelta >= 269)
                 {
-                    result.Add((byte)(optCode | 0x0E));
+                    stream.WriteByte((byte)(optCode | 0x0E));
                     optionDelta -= 269;
 
-                    result.AddRange(optionHeader);
-                    result.Add((byte)((optionDelta & 0xFF00u) >> 8));
-                    result.Add((byte)(optionDelta & 0xFFu));
+                    stream.Write(optionHeader.ToArray(), 0, optionHeader.Count);
+                    stream.WriteByte((byte)((optionDelta & 0xFF00u) >> 8));
+                    stream.WriteByte((byte)(optionDelta & 0xFFu));
                 }
                 else if (optionDelta >= 13)
                 {
-                    result.Add((byte)(optCode | 0x0D));
+                    stream.WriteByte((byte)(optCode | 0x0D));
                     optionDelta -= 13;
 
-                    result.AddRange(optionHeader);
-                    result.Add((byte)(optionDelta & 0xFFu));
+                    stream.Write(optionHeader.ToArray(), 0, optionHeader.Count);
+                    stream.WriteByte((byte)(optionDelta & 0xFFu));
                 }
                 else
                 {
-                    result.Add((byte)(optCode | optionDelta));
-                    result.AddRange(optionHeader);
+                    stream.WriteByte((byte)(optCode | optionDelta));
+                    stream.Write(optionHeader.ToArray(), 0, optionHeader.Count);
                 }
 
-                result.AddRange(option.GetBytes());
+                option.Encode(stream);
             }
 
             // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -300,11 +308,10 @@ namespace CoAPNet
 
             if (Payload != null && Payload.Length > 0)
             {
-                result.Add(0xFF); // Payload marker
-                result.AddRange(Payload);
+                // TODO: Write a Pyload stream, do not hold a byte array.
+                stream.WriteByte(0xFF); // Payload marker
+                stream.Write(Payload, 0, Payload.Length);
             }
-
-            return result.ToArray();
         }
 
         /// <summary>
@@ -313,67 +320,79 @@ namespace CoAPNet
         /// <remarks>
         /// The header and options will be read as much as possible to help diagnose problems when an <see cref="CoapException"/> is thrown.
         /// </remarks>
-        /// <param name="data"></param>
-        public void FromBytes(byte[] data)
+        /// <param name="input"></param>
+        [Obsolete]
+        public void FromBytes(in byte[] input)
         {
-            if (data == null)
-                throw new ArgumentNullException(nameof(data));
-            if (data.Length < 4)
-                throw new CoapMessageFormatException("Message must be at least 4 bytes long");
-            if ((data[0] & 0xC0) != 0x40)
-                throw new CoapMessageFormatException($"Unexpected CoAP version ({data[0] & 0xC0:D}). Only verison 1 is supported");
+            using (var ms = new MemoryStream(input))
+                Decode(ms);
+        }
 
-            var offset = 4;
+        public void Decode(Stream stream)
+        {
+            //if (data.Length < 4)
+            //    throw new CoapMessageFormatException("Message must be at least 4 bytes long");
 
-            Type = (CoapMessageType)((data[0] & 0x30) >> 4);
+            var type = stream.ReadByte();
 
-            Code = new CoapMessageCode(((data[1] & 0xE0) >> 5), data[1] & 0x1F);
+            if ((type & 0xC0) != 0x40)
+                throw new CoapMessageFormatException($"Unexpected CoAP version ({type & 0xC0:D}). Only verison 1 is supported");
 
-            Id = (ushort)((data[2] << 8) | (data[3]));
+            // Allocate a byte array for the token
+            _token = new byte[type & 0x0F];
+
+            Type = (CoapMessageType)((type & 0x30) >> 4);
+
+            type = stream.ReadByte();
+            Code = new CoapMessageCode(((type & 0xE0) >> 5), type & 0x1F);
+
+            Id = (ushort)((stream.ReadByte() << 8) | (stream.ReadByte()));
 
             // Don't process any further if this is a "empty" message
-            if (Code == CoapMessageCode.None && data.Length > 4)
+            if (Code == CoapMessageCode.None && stream.ReadByte() != -1)
                 throw new CoapMessageFormatException("Empty message must be 4 bytes long");
 
-            offset += data[0] & 0x0F;
-            if ((data[0] & 0x0F) > 0)
-                _token = data.Skip(4).Take(data[0] & 0x0F).ToArray();
+            if (_token.Length > 0)
+                stream.Read(_token, 0, _token.Length);
 
             // Catch all the CoapOptionExceptions and throw them after all the options have been parsed.
             var badOptions = new List<CoapOptionException>();
             var optionDelta = 0;
-            for(var i = offset; i<data.Length; i++)
+            do
             {
-                // check for payload marker
-                if (data[i] == 0xFF)
-                {
-                    Payload = data.Skip(i + 1).ToArray();
-                    break;
-                }
+                type = stream.ReadByte();
 
-                var optCode = (data[i] & 0xF0) >> 4;
-                var dataLen = (data[i] & 0x0F);
+                // check for payload marker
+                if (type == 0xFF || type < 0)
+                    break;
+
+                var optCode = (type & 0xF0) >> 4;
+                var dataLen = (type & 0x0F);
 
                 if (optCode == 13)
-                    optCode = data[i++ + 1] + 13;
+                {
+                    optCode = stream.ReadByte() + 13;
+                }
                 else if (optCode == 14)
                 {
-                    optCode = data[i++ + 1] << 8;
-                    optCode |= data[i++ + 1] + 269;
-                    
+                    optCode = stream.ReadByte() << 8;
+                    optCode |= stream.ReadByte() + 269;
+
                 }
                 if (dataLen == 13)
-                    dataLen = data[i++ + 1] + 13;
+                {
+
+                    dataLen = stream.ReadByte() + 13;
+                }
                 else if (dataLen == 14)
                 {
-                    dataLen = data[i++ + 1] << 8;
-                    dataLen |= data[i++ + 1] + 269;
+                    dataLen = stream.ReadByte() << 8;
+                    dataLen |= stream.ReadByte() + 269;
                 }
 
                 try
                 {
-                    var option = OptionFactory.Create(optCode + optionDelta,
-                        data.Skip(i + 1).Take(dataLen).ToArray());
+                    var option = OptionFactory.Create(optCode + optionDelta, stream, dataLen);
                     if (option != null)
                         Options.Add(option);
                 }
@@ -382,9 +401,8 @@ namespace CoAPNet
                     badOptions.Add(ex);
                 }
 
-                i += dataLen;
                 optionDelta += optCode;
-            }
+            } while (stream.CanRead);
 
             // Performing this check after parsing the options to allow the chance of reading the message token
             if (Coap.ReservedMessageCodeClasses.Contains(Code.Class))
@@ -395,6 +413,14 @@ namespace CoAPNet
 
             if (badOptions.Count > 1)
                 throw new AggregateException(badOptions);
+
+            // TODO: remove this step?
+            using (var ms = new MemoryStream())
+            {
+                stream.CopyTo(ms);
+                Payload = ms.ToArray();
+            }
+            
         }
 
         /// <summary>
@@ -492,10 +518,11 @@ namespace CoAPNet
         /// <returns></returns>
         public Uri GetUri()
         {
-            var uri = new UriBuilder();
-
-            uri.Scheme = "coap";
-            uri.Host = _options.Get<Options.UriHost>()?.ValueString ?? "localhost";
+            var uri = new UriBuilder
+            {
+                Scheme = "coap",
+                Host = _options.Get<Options.UriHost>()?.ValueString ?? "localhost"
+            };
 
             var port = _options.Get<Options.UriPort>()?.ValueUInt ?? Coap.Port;
             if (port != Coap.Port)
@@ -506,10 +533,10 @@ namespace CoAPNet
                     uri.Port = (int)port;
             }
 
-            uri.Path = "/" + string.Join("/", _options.GetAll<Options.UriPath>().Select(p => p.ValueString));
+            uri.Path = $"/{string.Join("/", _options.GetAll<UriPath>().Select(p => p.ValueString))}";
 
             if(_options.Contains<Options.UriQuery>())
-                uri.Query = "?" + string.Join("&", _options.GetAll<Options.UriQuery>().Select(q => q.ValueString));
+                uri.Query = $"?{string.Join(" & ", _options.GetAll<UriQuery>().Select(q => q.ValueString))}";
 
             return uri.Uri;
         }
@@ -520,20 +547,26 @@ namespace CoAPNet
         /// <returns></returns>
         public override string ToString()
         {
-            var result = Type == CoapMessageType.Acknowledgement ? "ACK" :
-                         Type == CoapMessageType.Confirmable     ? "CON" :
-                         Type == CoapMessageType.NonConfirmable  ? "NON" : "RST";
+            var result = new StringBuilder(Type == CoapMessageType.Acknowledgement ? "ACK" :
+                                           Type == CoapMessageType.Confirmable     ? "CON" :
+                                           Type == CoapMessageType.NonConfirmable  ? "NON" : "RST");
 
-            result += $", MID:{Id}, {Code}";
+            result.Append($", MID:{Id}, {Code}");
 
             if (Options.Any(o => o.OptionNumber == CoapRegisteredOptionNumber.UriPath))
-                result += ", /" + Options.Where(o => o.OptionNumber == CoapRegisteredOptionNumber.UriPath).Select(o => o.ValueString).Aggregate((a, b) => a + "/" + b);
+                result.Append(", /").Append(Options.Where(o => o.OptionNumber == CoapRegisteredOptionNumber.UriPath).Select(o => o.ValueString).Aggregate((a, b) => a + "/" + b));
 
-            var block = Options.Get<Options.Block2>() ?? Options.Get<Options.Block1>() as BlockBase;
-            if (block != null)
-                result += $", {(block is Block1 ? "1" : "2")}:{block.BlockNumber}/{(block.IsMoreFollowing ? "1" : "0")}/{block.BlockSize}";
+            // TODO: These lines shouldn't be here. Somehow extend CoapMEssage.ToString()?
+            var block1 = Options.Get<Options.Block1>();
+            if (block1 != null)
+                result.Append($", 1:{block1.BlockNumber}/{(block1.IsMoreFollowing ? "1" : "0")}/{block1.BlockSize}");
 
-            return result;
+            // TODO: These lines shouldn't be here. Somehow extend CoapMEssage.ToString()?
+            var block2 = Options.Get<Options.Block2>();
+            if (block2 != null)
+                result.Append($", 2:{block2.BlockNumber}/{(block2.IsMoreFollowing ? "1" : "0")}/{block2.BlockSize}");
+
+            return result.ToString();
         }
     }
 }

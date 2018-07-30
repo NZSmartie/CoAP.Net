@@ -19,6 +19,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Linq;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace CoAPNet
 {
@@ -343,6 +345,7 @@ namespace CoAPNet
         /// Gets the <see cref="byte"/>[] representation of this <see cref="CoapOption"/>
         /// </summary>
         /// <returns></returns>
+        [Obsolete]
         public virtual byte[] GetBytes()
         {
             if (_type == OptionType.Empty)
@@ -370,10 +373,42 @@ namespace CoAPNet
             return data;
         }
 
+        public virtual void Encode(Stream stream)
+        {
+            if (_type == OptionType.Empty)
+                return;
+
+            if (Length < _minLength || Length > _maxLength)
+                throw new CoapOptionException($"Invalid option length ({Length}). Must be between {_minLength} and {_maxLength} bytes");
+
+            if (_type == OptionType.Opaque)
+            {
+                stream.Write((byte[])_value, 0, ((byte[])_value).Length);
+            }
+            else if (_type == OptionType.String)
+            {
+                using (var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true))
+                    writer.Write((string)_value);
+            }
+            else
+            {
+                uint value = (uint)_value;
+                if (Length == 4)
+                    stream.WriteByte((byte)((value & 0xFF000000u) >> 24));
+                if (Length >= 3)
+                    stream.WriteByte((byte)((value & 0xFF0000u) >> 16));
+                if (Length >= 2)
+                    stream.WriteByte((byte)((value & 0xFF00u) >> 8));
+                if (Length >= 1)
+                    stream.WriteByte((byte)(value & 0xFFu));
+            }
+        }
+
         /// <summary>
         /// Decodes a <see cref="byte"/>[] into this <see cref="CoapOption"/>
         /// </summary>
         /// <param name="data"></param>
+        [Obsolete]
         public virtual void FromBytes(byte[] data)
         {
             if (_type == OptionType.Empty)
@@ -408,6 +443,47 @@ namespace CoAPNet
                 value |= (uint)(data[i++] << 8);
             if (data.Length >= 1)
                 value |= data[i++];
+            ValueUInt = value;
+        }
+
+        public virtual void Decode(Stream stream, int length)
+        {
+            if (_type == OptionType.Empty)
+            {
+                if (length > 0)
+                    throw new InvalidCastException("Empty option does not accept any data");
+                return;
+            }
+
+            if (length < _minLength || length > _maxLength)
+                throw new CoapOptionException($"Invalid option length ({length}). Must be between {_minLength} and {_maxLength} bytes");
+
+            if (_type == OptionType.Opaque)
+            {
+                ValueOpaque = new byte[length];
+                stream.Read(ValueOpaque, 0, length);
+                return;
+            }
+
+            if (_type == OptionType.String)
+            {
+                // TODO: Figure out how to avoid allocating a byte array when reading a string from the stream.
+                var data = new byte[length];
+                stream.Read(data, 0, length);
+                ValueString = Encoding.UTF8.GetString(data);
+                return;
+            }
+
+            uint value = 0;
+            if (length == 4)
+                value = (uint)(stream.ReadByte() << 24);
+            if (length >= 3)
+                value |= (uint)(stream.ReadByte() << 16);
+            if (length >= 2)
+                value |= (uint)(stream.ReadByte() << 8);
+            if (length >= 1)
+                value += (uint)stream.ReadByte();
+
             ValueUInt = value;
         }
 

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace CoAPNet.Options
 {
@@ -102,25 +103,25 @@ namespace CoAPNet.Options
             }
         }
 
-        /// <inheritdoc/>
-        public override void FromBytes(byte[] data)
+        public override void Decode(Stream stream, int length)
         {
-            base.FromBytes(data);
+            base.Decode(stream, length);
+
             uint last;
 
-            if (data.Length == 0)
+            if (length == 0)
             {
                 BlockNumber = 0;
                 last = 0;
             }
-            else if (data.Length <= 3)
+            else if (length <= 3)
             {
                 BlockNumber = (int)(ValueUInt & 0xFFFFF0) >> 4;
                 last = ValueUInt & 0x0F;
             }
             else
             {
-                throw new CoapOptionException($"Invalid length ({data.Length}) of Block1/Block2 option");
+                throw new CoapOptionException($"Invalid length ({length}) of Block1/Block2 option");
             }
 
             IsMoreFollowing = (last & 0x08) > 0;
@@ -129,14 +130,30 @@ namespace CoAPNet.Options
         }
 
         /// <inheritdoc/>
+        public override void FromBytes(byte[] data)
+        {
+            Decode(new MemoryStream(data), data.Length);
+        }
+
+        /// <inheritdoc/>
+        [Obsolete]
         public override byte[] GetBytes()
+        {
+            using (var ms = new MemoryStream())
+            {
+                Encode(ms);
+                return ms.ToArray();
+            }
+        }
+
+        public override void Encode(Stream stream)
         {
             var szx = InternalSupportedBlockSizes.First(b => b.Item2 == BlockSize).Item1;
             var last = (byte)((szx & 0x07) | (IsMoreFollowing ? 0x08 : 0x00));
 
             ValueUInt = (uint)(last | ((BlockNumber << 4) & 0xFFFFF0));
-            
-            return base.GetBytes();
+
+            base.Encode(stream);
         }
 
         /// <inheritdoc/>
