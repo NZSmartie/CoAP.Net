@@ -72,7 +72,7 @@ namespace CoAPNet
 
         private int _messageId;
 
-        private readonly ConcurrentQueue<Tuple<DateTime, ICoapEndpoint, CoapMessage>> _recentMessages = new ConcurrentQueue<Tuple<DateTime, ICoapEndpoint, CoapMessage>>();
+        private readonly Queue<Tuple<DateTime, ICoapEndpoint, CoapMessage>> _recentMessages = new Queue<Tuple<DateTime, ICoapEndpoint, CoapMessage>>();
 
         // TODO: Test this default value. would only a few seconds be enough?
         /// <summary>
@@ -213,6 +213,7 @@ namespace CoAPNet
                     }
 
                     var payload = await payloadTask;
+                    var receivedAt = DateTime.Now;
 
                     var message = new CoapMessage { IsMulticast = isMulticast };
                     try
@@ -234,7 +235,6 @@ namespace CoAPNet
                         if (IsRepeated(payload.Endpoint, message.Id))
                             continue;
 
-                        _recentMessages.Enqueue(Tuple.Create(DateTime.Now, payload.Endpoint, message));
                     }
                     catch (CoapMessageFormatException)
                     {
@@ -254,10 +254,15 @@ namespace CoAPNet
                         throw;
                     }
 
-                    var messageId = message.GetIdentifier(payload.Endpoint);
+                    lock (_recentMessages)
+                    {
+                        var messageId = message.GetIdentifier(payload.Endpoint);
 
-                    if (_messageResponses.ContainsKey(messageId))
-                        _messageResponses[messageId].TrySetResult(message);
+                        if (_messageResponses.ContainsKey(messageId))
+                            _messageResponses[messageId].TrySetResult(message);
+
+                        _recentMessages.Enqueue(Tuple.Create(receivedAt, payload.Endpoint, message));
+                    }
 
                     _receiveQueue.Enqueue(Task.FromResult(new CoapReceiveResult(payload.Endpoint, message)));
                     _receiveEvent.Set();
@@ -290,17 +295,19 @@ namespace CoAPNet
         {
             var clearBefore = DateTime.Now.Subtract(MessageCacheTimeSpan);
 
-            // Clear out expired messageIds
-            while (_recentMessages.Count > 0)
+            lock (_recentMessages)
             {
-                if(_recentMessages.TryPeek(out var p) && p.Item1 < clearBefore)
-                    _recentMessages.TryDequeue(out _);
-                else
-                    break;
-            }
+                // Clear out expired messageIds
+                while (_recentMessages.Count > 0)
+                {
+                    if(_recentMessages.Peek().Item1 >= clearBefore)
+                        break;
+                    _recentMessages.Dequeue();
+                }
 
-            if (_recentMessages.Any(r => r.Item3.Id == messageId && r.Item2 == endpoint))
-                return true;
+                if (_recentMessages.Any(r => r.Item3.Id == messageId && r.Item2 == endpoint))
+                    return true;
+            }
 
             return false;
         }
@@ -358,8 +365,9 @@ namespace CoAPNet
                 throw new CoapClientException($"The current message id ({messageId}) is not pending a due response");
 
             if (responseTask.Task.IsCompleted)
-                return _recentMessages.FirstOrDefault(m => m.Item3.GetIdentifier() == messageId)?.Item3
-                    ?? throw new CoapClientException($"No recent message found for {messageId}. This may happen when {nameof(MessageCacheTimeSpan)} is too short");
+                lock(_recentMessages)
+                    return _recentMessages.FirstOrDefault(m => m.Item3.GetIdentifier() == messageId)?.Item3
+                        ?? throw new CoapClientException($"No recent message found for {messageId}. This may happen when {nameof(MessageCacheTimeSpan)} is too short");
 
             if (Endpoint == null)
                 throw new CoapEndpointException($"{nameof(CoapClient)} has an invalid {nameof(Endpoint)}");
