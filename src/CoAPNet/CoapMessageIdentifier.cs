@@ -62,6 +62,9 @@ namespace CoAPNet
             if (!A.Token.SequenceEqual(B.Token))
                 return false;
 
+            if (A.IsRequest && B.IsRequest)
+                return A.Id == B.Id;
+
             // Only check the ID on a piggypacked response. Reponses that arrive after a an Acknowledge have a new ID
             if (((A.IsRequest && B.MessageType == CoapMessageType.Acknowledgement) ||
                  (B.IsRequest && A.MessageType == CoapMessageType.Acknowledgement)) && 
