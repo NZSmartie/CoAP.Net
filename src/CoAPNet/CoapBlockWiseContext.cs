@@ -34,10 +34,10 @@ namespace CoAPNet
             Client = client
                 ?? throw new ArgumentNullException(nameof(client));
 
-            Request = request?.Clone()
+            Request = request?.Clone(true)
                 ?? throw new ArgumentNullException(nameof(request));
 
-            Response = response?.Clone();
+            Response = response?.Clone(true);
         }
     }
 }

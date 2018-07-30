@@ -102,7 +102,7 @@ namespace CoAPNet
                 _token = _token.Clone() as byte[],
                 _options = new System.Collections.Generic.List<CoapOption>(_options),
                 IsMulticast = IsMulticast,
-                Payload = withPayload ? Payload.Clone() as byte[] : null,
+                Payload = withPayload ? Payload?.Clone() as byte[] : null,
             };
         }
     }
