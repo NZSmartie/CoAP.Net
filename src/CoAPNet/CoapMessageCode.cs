@@ -22,24 +22,24 @@ namespace CoAPNet
     /// Response Codes
     /// <para>See section 5.9 of [RFC7252] and section 12.1 of [RFC7252]</para>
     /// </summary>
-    public class CoapMessageCode
+    public readonly struct CoapMessageCode
     {
         /// <summary>
         /// The code class that disguinshes between a request, success, client error or server error.
         /// </summary>
-        public int Class { get; }
+        public readonly int Class;
 
         /// <summary>
         /// Detail of the message code. See <see cref="CoapMessageCode"/> public methods for existing codes.
         /// </summary>
-        public int Detail { get; }
+        public readonly int Detail;
 
         /// <summary>
         /// Initalise a new CoapMessage Code with a code-class and detail value to encode in a <see cref="CoapMessage"/>
         /// </summary>
         /// <param name="codeClass">A supported code-class. See <see cref="CoapMessageCodeClass"/></param>
         /// <param name="detail"></param>
-        public CoapMessageCode(int codeClass, int detail)
+        public CoapMessageCode(in int codeClass, in int detail)
         {
             Class = codeClass;
             Detail = detail;
@@ -50,7 +50,7 @@ namespace CoAPNet
         /// </summary>
         /// <param name="codeClass">A supported code-class.</param>
         /// <param name="detail"></param>
-        public CoapMessageCode(CoapMessageCodeClass codeClass, int detail)
+        public CoapMessageCode(in CoapMessageCodeClass codeClass, in int detail)
         {
             Class = (int)codeClass;
             Detail = detail;
@@ -83,10 +83,10 @@ namespace CoAPNet
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            var code = obj as CoapMessageCode;
-            return code != null &&
-                   Class == code.Class &&
-                   Detail == code.Detail;
+            if (obj is CoapMessageCode code)
+                return Class == code.Class &&
+                       Detail == code.Detail;
+            return false;
         }
 
         /// <inheritdoc />
@@ -104,10 +104,8 @@ namespace CoAPNet
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static bool operator ==(CoapMessageCode a, CoapMessageCode b)
+        public static bool operator ==(in CoapMessageCode a, in CoapMessageCode b)
         {
-            if (a is null || b is null)
-                return a is null && b is null;
             return a.Class == b.Class && a.Detail == b.Detail;
         }
 
@@ -119,8 +117,6 @@ namespace CoAPNet
         /// <returns></returns>
         public static bool operator !=(CoapMessageCode a, CoapMessageCode b)
         {
-            if(a is null || b is null)
-                return !(a is null) || !(b is null);
             return a.Class != b.Class || a.Detail != b.Detail;
         }
 

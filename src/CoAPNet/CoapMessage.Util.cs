@@ -12,7 +12,7 @@ namespace CoAPNet
         /// <param name="payload"></param>
         /// <param name="isMulticast">Indicates if this message was received from a multicast endpoint.</param>
         /// <returns></returns>
-        public static CoapMessage CreateFromBytes(byte[] payload, bool isMulticast = false)
+        public static CoapMessage CreateFromBytes(in byte[] payload, bool isMulticast = false)
         {
             var message = new CoapMessage(isMulticast);
             message.FromBytes(payload);

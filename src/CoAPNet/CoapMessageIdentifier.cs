@@ -39,7 +39,7 @@ namespace CoAPNet
                 Array.Copy(message.Token, Token, message.Token.Length);
         }
 
-        public CoapMessageIdentifier(int id, CoapMessageType messageType, byte[] token = null, ICoapEndpoint endpoint = null, bool isRequest = false)
+        public CoapMessageIdentifier(int id, CoapMessageType messageType, in byte[] token = null, ICoapEndpoint endpoint = null, bool isRequest = false)
         {
             Id = id;
             MessageType = messageType;
@@ -53,7 +53,7 @@ namespace CoAPNet
                 Array.Copy(token, Token, token.Length);
         }
 
-        public static bool operator ==(CoapMessageIdentifier A, CoapMessageIdentifier B)
+        public static bool operator ==(in CoapMessageIdentifier A, in CoapMessageIdentifier B)
         {
             // Only check endpoints if both are not null
             if (A.Endpoint != null && B.Endpoint != null && !A.Endpoint.Equals(B.Endpoint))
@@ -82,12 +82,12 @@ namespace CoAPNet
                 Endpoint == null ? "null" : Endpoint.ToString());
         }
 
-        public static bool operator !=(CoapMessageIdentifier A, CoapMessageIdentifier B)
+        public static bool operator !=(in CoapMessageIdentifier A, in CoapMessageIdentifier B)
         {
             return !(A == B);
         }
 
-        public bool Equals(CoapMessageIdentifier other)
+        public bool Equals(in CoapMessageIdentifier other)
         {
             // See operator == (...) above
             return this == other;
