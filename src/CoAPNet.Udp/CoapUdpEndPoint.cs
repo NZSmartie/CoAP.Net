@@ -61,7 +61,7 @@ namespace CoAPNet.Udp
         }
 
         public CoapUdpEndPoint(int port = 0, ILogger<CoapUdpEndPoint> logger = null)
-            : this(new IPEndPoint(IPAddress.Any, port), logger)
+            : this(new IPEndPoint(IPAddress.IPv6Any, port), logger)
         { }
 
         public CoapUdpEndPoint(IPAddress address, int port = 0, ILogger<CoapUdpEndPoint> logger = null)
@@ -94,7 +94,9 @@ namespace CoAPNet.Udp
                 throw new InvalidOperationException("Can not bind to remote endpoint");
 
 
-            Client = new UdpClient(_endpoint) { EnableBroadcast = true };
+            Client = new UdpClient(AddressFamily.InterNetworkV6) { EnableBroadcast = true };
+            Client.Client.DualMode = true;
+            Client.Client.Bind(_endpoint);
 
             if (JoinMulticast)
             {
