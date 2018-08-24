@@ -23,7 +23,7 @@ namespace CoAPDevices
 
             try
             {
-                myServer.BindTo(new CoapUdpEndPoint(IPAddress.Any, Coap.Port) { JoinMulticast = true });
+                myServer.BindTo(new CoapUdpEndPoint(Coap.Port) { JoinMulticast = true });
 
                 myServer.StartAsync(myHandler, CancellationToken.None).GetAwaiter().GetResult();
 
@@ -61,6 +61,8 @@ namespace CoAPDevices
 
         public override CoapMessage Get(CoapMessage request)
         {
+            Console.WriteLine($"Got request: {request}");
+
             return new CoapMessage
             {
                 Code = CoapMessageCode.Content,
