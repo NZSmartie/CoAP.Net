@@ -51,13 +51,14 @@ namespace CoAPDevices
             }
             catch (Exception ex)
             {
-                if(!(ex is TaskCanceledException))
-                {
-                    Console.WriteLine($"Exception caught: {ex}");
+                // Canceled tasks are expected, safe to ignore.
+                if (ex is TaskCanceledException)
+                    return;
 
-                    Console.WriteLine($"Press <Enter> to exit");
-                    Console.Read();
-                }
+                Console.WriteLine($"Exception caught: {ex}");
+
+                Console.WriteLine($"Press <Enter> to exit");
+                Console.Read();
             }
             finally
             {
