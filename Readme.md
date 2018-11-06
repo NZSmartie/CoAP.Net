@@ -42,116 +42,16 @@ All relevant changes are logged in [Changelog.md](Changelog.md)
 
 ## Examples
 
-### Client Example
+### [SimpleServer](samples/SimpleServer/Program.cs)
 
-```C#
-using System;
-using System.Text;
-using System.Threading.Tasks;
-using CoAPNet;
-using CoAPNet.Udp;
+Starts a CoAP server listening on all network interfaces and listens for multicast requests.
 
-namespace CoAPDevices
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
+### [SimpleClient](samples/SimpleClient/Program.cs)
 
-            Task.Run(async () =>
-            {
-                // Create a new client using a UDP endpoint (defaults to 0.0.0.0 with any available port number)
-                var client = new CoapClient(new CoapUdpEndPoint());
+Sends a GET `/hello` request to localhost and prints the response resource.
 
-                var messageId = await client.GetAsync("coap://127.0.0.1/hello");
+> Note: Run SimpleServer and then run SimpleClient to see both in action
 
-                var response = await client.GetResponseAsync(messageId);
+### [Multicast Discovery](samples/Multicast/Program.cs)
 
-                Console.WriteLine("got a response");
-                Console.WriteLine(Encoding.UTF8.GetString(response.Payload));
-            }).GetAwaiter().GetResult();
-
-            Console.WriteLine("Press <Enter> to exit");
-            Console.ReadLine();
-
-        }
-    }
-}
-```
-
-### Server example
-
-```C#
-using System;
-using System.Net;
-using System.Text;
-using System.Threading;
-using CoAPNet;
-using CoAPNet.Options;
-using CoAPNet.Udp;
-
-namespace CoAPDevices
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            var failed = false;
-
-            var myHandler = new CoapResourceHandler();
-
-            myHandler.Resources.Add(new HelloResource("/hello"));
-
-            var myServer = new CoapServer(new CoapUdpTransportFactory());
-
-            try
-            {
-                myServer.BindTo(new CoapUdpEndPoint(IPAddress.Loopback, Coap.Port));
-                myServer.BindTo(new CoapUdpEndPoint(IPAddress.IPv6Loopback, Coap.Port));
-
-                myServer.StartAsync(myHandler, CancellationToken.None).GetAwaiter().GetResult();
-
-                Console.WriteLine("Server Started!");
-
-                Console.WriteLine("Press <Enter> to exit");
-                Console.ReadLine();
-            }
-            catch (Exception ex)
-            {
-                failed = true;
-                Console.WriteLine($"{ex.GetType().Name} occured: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
-            }
-            finally
-            {
-                Console.WriteLine("Shutting Down Server");
-                myServer.StopAsync(CancellationToken.None).GetAwaiter().GetResult();
-            }
-
-            if (failed)
-                Console.ReadLine();
-        }
-    }
-
-    public class HelloResource : CoapResource
-    {
-        public HelloResource(string uri) : base(uri)
-        {
-            Metadata.InterfaceDescription.Add("read");
-
-            Metadata.ResourceTypes.Add("message");
-            Metadata.Title = "Hello World";
-        }
-
-        public override CoapMessage Get(CoapMessage request)
-        {
-            return new CoapMessage
-            {
-                Code = CoapMessageCode.Content,
-                Options = {new ContentFormat(ContentFormatType.TextPlain)},
-                Payload = Encoding.UTF8.GetBytes("Hello World!")
-            };
-        }
-    }
-}
-```
+Will send a multicast GET `/.well-known/core` request every minute and prints responses received.
