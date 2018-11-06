@@ -218,10 +218,14 @@ namespace CoAPNet.Udp
         /// <inheritdoc />
         public string ToString(CoapEndpointStringFormat format)
         {
+            var address = _endpoint.Address.AddressFamily == AddressFamily.InterNetworkV6
+                ? $"[{_endpoint.Address}]"
+                : $"{_endpoint.Address}";
+
             if (format == CoapEndpointStringFormat.Simple)
-                return $"{_endpoint.Address}:{_endpoint.Port}";
+                return $"{address}:{_endpoint.Port}";
             if (format == CoapEndpointStringFormat.Debuggable)
-                return $"[ udp://{_endpoint.Address}:{_endpoint.Port} {(IsMulticast ? "(M) " : "")}{(IsSecure ? "(S) " : "")}]";
+                return $"[ udp://{address}:{_endpoint.Port} {(IsMulticast ? "(M) " : "")}{(IsSecure ? "(S) " : "")}]";
 
             throw new ArgumentException(nameof(format));
         }
