@@ -796,20 +796,53 @@ namespace CoAPNet.Tests
         {
             // Arrange
             var endpoint = new NonDisposableEndpoint();
+            var client = new CoapClient(endpoint);
 
             Task receiveTask;
             var ct = new CancellationTokenSource(MaxTaskTimeout);
 
             // Ack
-            using (var client = new CoapClient(endpoint))
-            {
-                receiveTask = client.ReceiveAsync(ct.Token);
-
-            }
+            receiveTask = client.ReceiveAsync(ct.Token);
+            client.Dispose();
 
             // Assert
-            Assert.ThrowsAsync<TaskCanceledException>(async () => await receiveTask);
+            Assert.ThrowsAsync<CoapEndpointException>(async () => await receiveTask, $"{nameof(CoapClient.ReceiveAsync)} did not throw an {nameof(CoapEndpointException)} when {nameof(CoapClient)} was disposed.");
             Assert.That(ct.IsCancellationRequested, Is.False, "The test's safety CancellationToken timed out");
+        }
+
+        [Test]
+        public void CancelReceiveAsync()
+        {
+            // Arrange
+            var endpoint = new NonDisposableEndpoint();
+
+            var safetyCt = new CancellationTokenSource(MaxTaskTimeout);
+            var testCt = new CancellationTokenSource(MaxTaskTimeout / 2);
+            Task receiveTask1;
+            Task receiveTask2;
+            Task receiveTask3;
+
+            // Ack
+            using (var client = new CoapClient(endpoint))
+            {
+                receiveTask1 = client.ReceiveAsync(testCt.Token);
+                receiveTask2 = client.ReceiveAsync(testCt.Token);
+                receiveTask3 = client.ReceiveAsync(testCt.Token);
+
+                Task.Run(() =>
+                {
+                    // Assert
+                    Assert.ThrowsAsync<TaskCanceledException>(
+                        async () => await receiveTask1, $"{nameof(CoapClient.ReceiveAsync)} did not throw an {nameof(CoapEndpointException)} when {nameof(CoapClient)} was disposed.");
+                    Assert.ThrowsAsync<TaskCanceledException>(
+                        async () => await receiveTask2, $"{nameof(CoapClient.ReceiveAsync)} did not throw an {nameof(CoapEndpointException)} when {nameof(CoapClient)} was disposed.");
+                    Assert.ThrowsAsync<TaskCanceledException>(
+                        async () => await receiveTask3, $"{nameof(CoapClient.ReceiveAsync)} did not throw an {nameof(CoapEndpointException)} when {nameof(CoapClient)} was disposed.");
+                }, safetyCt.Token).Wait();
+            }
+
+            Assert.That(testCt.IsCancellationRequested, Is.True, "The test's CancellationToken should have timed out.");
+            Assert.That(safetyCt.IsCancellationRequested, Is.False, "The test's safety CancellationToken timed out");
         }
     }
 }
