@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -122,20 +123,30 @@ namespace CoAPNet.Udp
             Client?.Dispose();
         }
 
+        private Queue<Task<UdpReceiveResult>> _receiveTasks = new Queue<Task<UdpReceiveResult>>();
+
         public async Task<CoapPacket> ReceiveAsync(CancellationToken token)
         {
             if (Client == null)
                 await BindAsync();
 
+            Task<UdpReceiveResult> receiveTask;
+            lock (_receiveTasks)
+                receiveTask = _receiveTasks.Count > 0
+                    ? _receiveTasks.Dequeue()
+                    : receiveTask = Client.ReceiveAsync();
+
             try
             {
+                // The receiveTask can not be canceled, so use another task that can monitor when the CancelationToken is canceled.
                 var tcs = new TaskCompletionSource<bool>();
                 using (token.Register(() => tcs.SetResult(false)))
                 {
-                    var receiveTask = Client.ReceiveAsync();
                     await Task.WhenAny(receiveTask, tcs.Task);
 
-                    token.ThrowIfCancellationRequested();
+                    // Return a result if we have it already, there are no more async operations left.
+                    if(!receiveTask.IsCompleted)
+                        token.ThrowIfCancellationRequested();
 
                     return new CoapPacket
                     {
@@ -146,7 +157,10 @@ namespace CoAPNet.Udp
             }
             catch (OperationCanceledException)
             {
-                Client.Dispose(); // Since UdpClient doesn't provide a mechanism for cancelling an async task. the safest way is to dispose the whole object
+                // The task may still complete later, if we lose it, then the packet is lost
+                lock (_receiveTasks)
+                    _receiveTasks.Enqueue(receiveTask);
+
                 throw;
             }
         }
