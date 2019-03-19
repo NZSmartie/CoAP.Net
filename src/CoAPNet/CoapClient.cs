@@ -153,9 +153,7 @@ namespace CoAPNet
                 }
             }
             if (resultTask != null)
-                return resultTask.IsCanceled
-                    ? null
-                    : await resultTask;
+                return await resultTask;
             
             if (Endpoint == null)
                 throw new CoapEndpointException($"{nameof(CoapClient)} does not have a valid endpoint");
@@ -164,16 +162,13 @@ namespace CoAPNet
 
             do
             {
+                token.ThrowIfCancellationRequested();
+                    
                 await _receiveEvent.WaitAsync(token);
 
-                if (token.IsCancellationRequested)
-                    return null;
-
-                if (_receiveQueue.TryDequeue(out resultTask))
-                    break;
-            } while (true);
+            } while (!_receiveQueue.TryDequeue(out resultTask));
             
-
+            // Task sould already be in the completed,cancelled or error'd state.
             return await resultTask;
         }
 
@@ -199,20 +194,16 @@ namespace CoAPNet
         private async Task ReceiveAsyncInternal()
         {
             var isMulticast = Endpoint?.IsMulticast ?? false;
+            var cancellationToken = _receiveTaskCTS.Token;
             try
             {
                 while (true)
                 {
-                    Task<CoapPacket> payloadTask;
-                    lock (this)
-                    {
-                        if (Endpoint == null)
-                            return;
+                    var endpoint = Endpoint;
+                    if (endpoint == null)
+                        throw new CoapEndpointException("Endpoint is disposed");
 
-                        payloadTask = Endpoint.ReceiveAsync(_receiveTaskCTS.Token);
-                    }
-
-                    var payload = await payloadTask;
+                    var payload = await endpoint.ReceiveAsync(cancellationToken);
                     var receivedAt = DateTime.Now;
 
                     var message = new CoapMessage { IsMulticast = isMulticast };
@@ -273,9 +264,7 @@ namespace CoAPNet
                 if (ex is CoapEndpointException)
                 {
                     var endpoint = Endpoint;
-
-                    lock (this)
-                        Endpoint = null;
+                    Endpoint = null;
                     
                     endpoint?.Dispose();
 
@@ -319,15 +308,19 @@ namespace CoAPNet
         public void Dispose()
         {
             var endpoint = Endpoint;
-
-            lock (this)
+            try
+            {
                 Endpoint = null;
 
-            endpoint?.Dispose();
-            _receiveTaskCTS.Cancel();
+                _receiveTaskCTS.Cancel();
 
-            if (!_receiveTask.IsCompleted && !_receiveTask.IsCanceled && !_receiveTask.IsFaulted && !_receiveTask.Wait(5000))
-                throw new CoapClientException($"Took too long to dispose of the enclosed {nameof(Endpoint)}");
+                if (!_receiveTask.Wait(5000) && !_receiveTask.IsCompleted && !_receiveTask.IsCanceled && !_receiveTask.IsFaulted)
+                    throw new CoapClientException($"Took too long to dispose of the enclosed {nameof(Endpoint)}");
+            }
+            finally
+            {
+                endpoint?.Dispose();
+            }
         }
 
         /// <summary>
