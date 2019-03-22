@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using NUnit;
 using NUnit.Framework;
 using System.IO;
+using System.Collections;
 
 namespace CoAPNet.Tests
 {
@@ -187,6 +188,103 @@ namespace CoAPNet.Tests
                     0x64, 0x45, 0x42, 0x42, 0xde, 0xad, 0xbe, 0xef, 0xE0, 0xFF, 0xFE, 0xff, 0x68, 0x65, 0x6c, 0x6c, 0x6f
                 }));
             });
+        }
+
+        private class TestOpaqueCoapOption : CoapOption
+        {
+            public TestOpaqueCoapOption() : base(4242, maxLength: ushort.MaxValue, type: OptionType.Opaque) { }
+        }
+
+        public static IEnumerable MessageDecodeOptionsTestCases
+        {
+            get {
+                yield return new TestCaseData( new byte[] { 0x40, 0x01, 0x00, 0x00, 0x10 })
+                    .Returns(new CoapOption(1))
+                    .SetName("TestMessageDecodeOptions(Option number 1)");
+                yield return new TestCaseData( new byte[] { 0x40, 0x01, 0x00, 0x00, 0xD0, 0x6F })
+                    .Returns(new CoapOption(124))
+                    .SetName("TestMessageDecodeOptions(Option number 124)");
+                yield return new TestCaseData( new byte[] { 0x40, 0x01, 0x00, 0x00, 0xE0, 0xA9, 0x9D })
+                    .Returns(new CoapOption(43690))
+                    .SetName("TestMessageDecodeOptions(Option number 43690)");
+
+                var bytes = Enumerable.Range(0, 8).Select(x => (byte)(x & 0xFF)).ToArray();
+                yield return new TestCaseData( new byte[] { 0x40, 0x01, 0x00, 0x00, 0xE8, 0x0F, 0x85 }.Concat(bytes).ToArray())
+                    .Returns(new TestOpaqueCoapOption { ValueOpaque = bytes })
+                    .SetName("TestMessageDecodeOptions(Option content with 8 bytes)");
+
+                bytes = Enumerable.Range(0, byte.MaxValue).Select(x => (byte)(x & 0xFF)).ToArray();
+                yield return new TestCaseData(new byte[] { 0x40, 0x01, 0x00, 0x00, 0xED, 0x0F, 0x85, 0xF2 }.Concat(bytes).ToArray())
+                    .Returns(new TestOpaqueCoapOption { ValueOpaque = bytes })
+                    .SetName("TestMessageDecodeOptions(Option content with 255 bytes)");
+
+                bytes = Enumerable.Range(0, ushort.MaxValue).Select(x => (byte)(x & 0xFF)).ToArray();
+                yield return new TestCaseData(new byte[] { 0x40, 0x01, 0x00, 0x00, 0xEE, 0x0F, 0x85, 0xFE, 0xF2 }.Concat(bytes).ToArray())
+                    .Returns(new TestOpaqueCoapOption { ValueOpaque = bytes })
+                    .SetName("TestMessageDecodeOptions(Option content with 65,535 bytes)");
+            }
+        }
+
+        [TestCaseSource(nameof(MessageDecodeOptionsTestCases))]
+        [Category("Decode")]
+        public CoapOption TestMessageDecodeOptions(byte[] messageData)
+        {
+            _message.OptionFactory = new Options.OptionFactory();
+            _message.OptionFactory.Register<TestOpaqueCoapOption>();
+
+            using (var reader = new MemoryStream(messageData))
+                _message.Decode(reader);
+
+            return _message.Options.Single();
+        }
+
+        public static IEnumerable MessageEncodeOptionsTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(new CoapOption(1))
+                    .Returns(new byte[] { 0x40, 0x01, 0x00, 0x00, 0x10 })
+                    .SetName("TestMessageEncodeOptions(Option number 1)");
+                yield return new TestCaseData(new CoapOption(124))
+                    .Returns(new byte[] { 0x40, 0x01, 0x00, 0x00, 0xD0, 0x6F })
+                    .SetName("TestMessageEncodeOptions(Option number 124)");
+                yield return new TestCaseData(new CoapOption(43690))
+                    .Returns(new byte[] { 0x40, 0x01, 0x00, 0x00, 0xE0, 0xA9, 0x9D })
+                    .SetName("TestMessageEncodeOptions(Option number 43690)");
+
+                var bytes = Enumerable.Range(0, 8).Select(x => (byte)(x & 0xFF)).ToArray();
+                yield return new TestCaseData(new TestOpaqueCoapOption { ValueOpaque = bytes })
+                    .Returns(new byte[] { 0x40, 0x01, 0x00, 0x00, 0xE8, 0x0F, 0x85 }.Concat(bytes).ToArray())
+                    .SetName("TestMessageEncodeOptions(Option content with 8 bytes)");
+
+                bytes = Enumerable.Range(0, byte.MaxValue).Select(x => (byte)(x & 0xFF)).ToArray();
+                yield return new TestCaseData(new TestOpaqueCoapOption { ValueOpaque = bytes })
+                    .Returns(new byte[] { 0x40, 0x01, 0x00, 0x00, 0xED, 0x0F, 0x85, 0xF2 }.Concat(bytes).ToArray())
+                    .SetName("TestMessageEncodeOptions(Option content with 255 bytes)");
+
+                bytes = Enumerable.Range(0, ushort.MaxValue).Select(x => (byte)(x & 0xFF)).ToArray();
+                yield return new TestCaseData(new TestOpaqueCoapOption { ValueOpaque = bytes })
+                    .Returns(new byte[] { 0x40, 0x01, 0x00, 0x00, 0xEE, 0x0F, 0x85, 0xFE, 0xF2 }.Concat(bytes).ToArray())
+                    .SetName("TestMessageEncodeOptions(Option content with 65,535 bytes)");
+            }
+        }
+
+        [TestCaseSource(nameof(MessageEncodeOptionsTestCases))]
+        [Category("Encode")]
+        public byte[] TestMessageEncodeOptions(CoapOption option)
+        {
+            _message.OptionFactory = new Options.OptionFactory();
+            _message.OptionFactory.Register<TestOpaqueCoapOption>();
+
+            _message.Code = CoapMessageCode.Get;
+            _message.Type = CoapMessageType.Confirmable;
+            _message.Id = 0;
+            _message.Options.Add(option);
+            using (var writer = new MemoryStream())
+            {
+                _message.Encode(writer);
+                return writer.ToArray();
+            }
         }
 
         [Test]
