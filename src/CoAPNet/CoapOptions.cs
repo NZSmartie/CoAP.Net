@@ -153,16 +153,16 @@ namespace CoAPNet
         public override string ToString()
         {
             if (_type == OptionType.Empty)
-                return $"<{GetType().Name}> (empty)";
+                return $"<{GetType().Name}:{OptionNumber}> (empty)";
 
             if (_type == OptionType.Opaque)
-                return $"<{GetType().Name}> ({Length} bytes)";
+                return $"<{GetType().Name}:{OptionNumber}> ({Length} bytes)";
 
             if (_type == OptionType.String)
-                return $"<{GetType().Name}> \"{(string)_value}\"";
+                return $"<{GetType().Name}:{OptionNumber}> \"{(string)_value}\"";
 
             if (_type == OptionType.UInt && _value != null)
-                return $"<{GetType().Name}> {(uint)_value}";
+                return $"<{GetType().Name}:{OptionNumber}> {(uint)_value}";
 
             return $"{GetType().Name}";
         }
@@ -498,6 +498,19 @@ namespace CoAPNet
         /// <param name="defaultValue"></param>
         protected internal CoapOption(int optionNumber, int minLength = 0, int maxLength = 0, bool isRepeatable = false, OptionType type = OptionType.Empty, object defaultValue = null)
         {
+            if (optionNumber > ushort.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(optionNumber), $"option number can not be greater than a 16bit unsigned value ({ushort.MaxValue})");
+
+            if (minLength < 0)
+                throw new ArgumentOutOfRangeException(nameof(minLength), $"option length can not be less than 0");
+
+            if (maxLength > ushort.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(maxLength), $"option length can not be greater than a 16bit unsigned value ({ushort.MaxValue})");
+
+            if(maxLength < minLength)
+                throw new ArgumentException(nameof(maxLength), $"option max length can not be less than the min length");
+
+
             _optionNumber = optionNumber;
             _type = type;
             _minLength = minLength;
