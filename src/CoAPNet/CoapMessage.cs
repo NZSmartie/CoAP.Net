@@ -376,7 +376,8 @@ namespace CoAPNet
                 else if (optCode == 14)
                 {
                     optCode = stream.ReadByte() << 8;
-                    optCode |= stream.ReadByte() + 269;
+                    optCode |= stream.ReadByte();
+                    optCode += 269;
 
                 }
                 if (dataLen == 13)
@@ -387,7 +388,8 @@ namespace CoAPNet
                 else if (dataLen == 14)
                 {
                     dataLen = stream.ReadByte() << 8;
-                    dataLen |= stream.ReadByte() + 269;
+                    dataLen |= stream.ReadByte();
+                    dataLen += 269;
                 }
 
                 try
