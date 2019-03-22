@@ -210,7 +210,7 @@ namespace CoAPNet.Tests
                 .Setup(r => r.Get(It.IsAny<CoapMessage>()))
                 .Throws(new NotImplementedException());
 
-            var request = new CoapMessage {Code = CoapMessageCode.Get, Options = {new CoapOption(111111)}};
+            var request = new CoapMessage {Code = CoapMessageCode.Get, Options = {new CoapOption(45575) }};
             request.SetUri(new Uri(_baseUri, "/test"));
 
             // Act
