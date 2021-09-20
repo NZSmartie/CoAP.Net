@@ -6,6 +6,9 @@ using Org.BouncyCastle.Crypto.Tls;
 
 namespace CoAPNet.Dtls.Client
 {
+    /// <summary>
+    /// ported over from https://github.com/bcgit/bc-java/blob/master/tls/src/main/java/org/bouncycastle/tls/UDPTransport.java
+    /// </summary>
     public class UdpDatagramTransport : DatagramTransport
     {
         private const int MIN_IP_OVERHEAD = 20;

@@ -39,7 +39,7 @@ namespace CoAPNet.Dtls.Server
 
         public async Task SendAsync(CoapPacket packet, CancellationToken token)
         {
-            //packet has the CoapDtlsClientEndPoint which we have to respond to.
+            //packet has the CoapDtlsServerClientEndPoint which we have to respond to.
             await packet.Endpoint.SendAsync(packet, token);
         }
 

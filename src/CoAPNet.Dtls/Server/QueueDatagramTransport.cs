@@ -6,6 +6,10 @@ using Org.BouncyCastle.Crypto.Tls;
 
 namespace CoAPNet.Dtls.Server
 {
+    /// <summary>
+    /// We need this because the server can't bind to a single endpoint on the server port, so we have to receive packets from all
+    /// endpoints and pass them to the corresponsing "connection" / transport by the remote endpoint.
+    /// </summary>
     internal class QueueDatagramTransport : DatagramTransport
     {
         private readonly int _receiveLimit;

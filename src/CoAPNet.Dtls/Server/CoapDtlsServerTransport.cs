@@ -104,12 +104,14 @@ namespace CoAPNet.Dtls.Server
                         throw;
                     }
 
+                    // if there is an existing session, we pass the datagram to the session.
                     if (_sessions.TryGetValue(data.RemoteEndPoint, out CoapDtlsServerClientEndPoint session))
                     {
                         session.EnqueueDatagram(data.Buffer);
                         continue;
                     }
 
+                    // if there isn't an existing session for this remote endpoint, we start a new one and pass the first datagram to the session
                     var transport = new QueueDatagramTransport(NetworkMtu, bytes => _sendQueue.Add(new UdpSendPacket(bytes, data.RemoteEndPoint)));
                     session = new CoapDtlsServerClientEndPoint(data.RemoteEndPoint, transport, DateTime.UtcNow);
                     session.EnqueueDatagram(data.Buffer);
