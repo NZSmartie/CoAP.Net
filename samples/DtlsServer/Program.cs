@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using CoAPNet.Dtls.Server;
 using Org.BouncyCastle.Crypto.Tls;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 
 namespace CoAPDevices
 {
@@ -36,14 +38,13 @@ namespace CoAPDevices
             // Register a /hello resource.
             myHandler.Resources.Add(new HelloResource("/hello"));
 
-            var loggerFactory = new LoggerFactory();
-            loggerFactory.AddConsole(false);
+            var loggerFactory = LoggerFactory.Create(x => x.AddConsole());
 
             // Create a new Dtls transport factory.
             var myTransportFactory = new CoapDtlsServerTransportFactory(loggerFactory, new ExampleDtlsServerFactory());
 
             // Create a new CoapServer using DTLS as it's base transport
-            var myServer = new CoapServer(myTransportFactory);
+            var myServer = new CoapServer(myTransportFactory, loggerFactory.CreateLogger<CoapServer>());
 
             try
             {
