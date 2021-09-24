@@ -1,42 +1,38 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard1.3;netstandard2.0</TargetFrameworks>
-    <PackageId>NZSmartie.CoAPNet.Udp</PackageId>
-    <LangVersion>latest</LangVersion>
-    <Version>0.3.8</Version>
-    <PackageVersion>0.3.8</PackageVersion>
-    <Authors>Roman Vaughan</Authors>
-    <Company>NZSmartie</Company>
-    <Description>UDP Socket implementation for NZSmartie.CoAPNet</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <IncludeSource>True</IncludeSource>
-    <IncludeSymbols>True</IncludeSymbols>
-    <PackageProjectUrl>https://github.com/NZSmartie/CoAP.Net</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/NZSmartie/CoAP.Net</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>CoAP IoT sensors devices hardware network protocol udp socket</PackageTags>
-    <PackageReleaseNotes>See https://github.com/NZSmartie/CoAP.Net/tree/master/Changelog.md</PackageReleaseNotes>
-    <Configurations>Debug;Release;AppVeyor</Configurations>
-    <Copyright>Copyright © Roman Vaughan 2017</Copyright>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/NZSmartie/CoAP.Net/master/LICENSE</PackageLicenseUrl>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0</TargetFrameworks>
+        <PackageId>NZSmartie.CoAPNet.Udp</PackageId>
+        <LangVersion>latest</LangVersion>
+        <Version>0.3.8</Version>
+        <PackageVersion>0.3.8</PackageVersion>
+        <Authors>Roman Vaughan</Authors>
+        <Company>NZSmartie</Company>
+        <Description>UDP Socket implementation for NZSmartie.CoAPNet</Description>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <IncludeSource>True</IncludeSource>
+        <IncludeSymbols>True</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageProjectUrl>https://github.com/NZSmartie/CoAP.Net</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/NZSmartie/CoAP.Net</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>CoAP IoT sensors devices hardware network protocol udp socket</PackageTags>
+        <PackageReleaseNotes>See https://github.com/NZSmartie/CoAP.Net/tree/master/Changelog.md</PackageReleaseNotes>
+        <Configurations>Debug;Release;AppVeyor</Configurations>
+        <Copyright>Copyright © Roman Vaughan 2017</Copyright>
+        <PackageLicenseUrl>https://raw.githubusercontent.com/NZSmartie/CoAP.Net/master/LICENSE</PackageLicenseUrl>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\CoAPNet.Udp.xml</DocumentationFile>
-  </PropertyGroup>
+    <PropertyGroup>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\CoAPNet.Udp.xml</DocumentationFile>
+    </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
-    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\CoAPNet\CoAPNet.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\CoAPNet\CoAPNet.csproj" />
+    </ItemGroup>
 
 </Project>

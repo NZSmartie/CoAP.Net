@@ -1,42 +1,39 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard1.3;netstandard2.0</TargetFrameworks>
-    <DebugType Condition="$(Configuration)=='AppVeyor'">full</DebugType>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <LangVersion>latest</LangVersion>
-    <PackageId>NZSmartie.CoAPNet.Server</PackageId>
-    <Version>0.3.8</Version>
-    <PackageVersion>0.3.8</PackageVersion>
-    <Authors>Roman Vaughan</Authors>
-    <Company>NZSmartie</Company>
-    <Description>Server and handler implementation for NZSmartie.CoAPNet</Description>
-    <PackageProjectUrl>https://github.com/NZSmartie/CoAP.Net</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/NZSmartie/CoAP.Net</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>CoAP IoT sensors devices hardware network protocol</PackageTags>
-    <IncludeSource>True</IncludeSource>
-    <IncludeSymbols>True</IncludeSymbols>
-    <PackageReleaseNotes>See https://github.com/NZSmartie/CoAP.Net/tree/master/Changelog.md</PackageReleaseNotes>
-    <Configurations>Debug;Release;AppVeyor</Configurations>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/NZSmartie/CoAP.Net/master/LICENSE</PackageLicenseUrl>
-    <Copyright>Copyright © Roman Vaughan 2017</Copyright>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0</TargetFrameworks>
+        <DebugType Condition="$(Configuration)=='AppVeyor'">full</DebugType>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <LangVersion>latest</LangVersion>
+        <PackageId>NZSmartie.CoAPNet.Server</PackageId>
+        <Version>0.3.8</Version>
+        <PackageVersion>0.3.8</PackageVersion>
+        <Authors>Roman Vaughan</Authors>
+        <Company>NZSmartie</Company>
+        <Description>Server and handler implementation for NZSmartie.CoAPNet</Description>
+        <PackageProjectUrl>https://github.com/NZSmartie/CoAP.Net</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/NZSmartie/CoAP.Net</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>CoAP IoT sensors devices hardware network protocol</PackageTags>
+        <IncludeSource>True</IncludeSource>
+        <IncludeSymbols>True</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageReleaseNotes>See https://github.com/NZSmartie/CoAP.Net/tree/master/Changelog.md</PackageReleaseNotes>
+        <Configurations>Debug;Release;AppVeyor</Configurations>
+        <PackageLicenseUrl>https://raw.githubusercontent.com/NZSmartie/CoAP.Net/master/LICENSE</PackageLicenseUrl>
+        <Copyright>Copyright © Roman Vaughan 2017</Copyright>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\CoAPNet.Server.xml</DocumentationFile>
-  </PropertyGroup>
+    <PropertyGroup>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\CoAPNet.Server.xml</DocumentationFile>
+    </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\CoAPNet\CoAPNet.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\CoAPNet\CoAPNet.csproj" />
+    </ItemGroup>
 
 </Project>
