@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Org.BouncyCastle.Crypto.Tls;
+using Org.BouncyCastle.Tls;
 using Org.BouncyCastle.Security;
 
 namespace CoAPNet.Dtls.Client
@@ -82,7 +82,7 @@ namespace CoAPNet.Dtls.Client
 
                 var udpClient = new UdpClient(Server, Port);
 
-                var dtlsClientProtocol = new DtlsClientProtocol(new SecureRandom());
+                var dtlsClientProtocol = new DtlsClientProtocol();
                 _datagramTransport = dtlsClientProtocol.Connect(_tlsClient, new UdpDatagramTransport(udpClient, NetworkMtu));
                 _isConnected = true;
             }

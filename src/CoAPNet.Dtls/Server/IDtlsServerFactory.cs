@@ -1,4 +1,4 @@
-﻿using Org.BouncyCastle.Crypto.Tls;
+﻿using Org.BouncyCastle.Tls;
 
 namespace CoAPNet.Dtls.Server
 {

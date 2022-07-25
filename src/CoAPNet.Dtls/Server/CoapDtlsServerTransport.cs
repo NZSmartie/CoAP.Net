@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CoAPNet.Dtls.Server.Statistics;
 using Microsoft.Extensions.Logging;
-using Org.BouncyCastle.Crypto.Tls;
+using Org.BouncyCastle.Tls;
 using Org.BouncyCastle.Security;
 
 namespace CoAPNet.Dtls.Server
@@ -35,9 +35,7 @@ namespace CoAPNet.Dtls.Server
             _tlsServerFactory = tlsServerFactory ?? throw new ArgumentNullException(nameof(tlsServerFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-            SecureRandom random = new SecureRandom();
-
-            _serverProtocol = new DtlsServerProtocol(random);
+            _serverProtocol = new DtlsServerProtocol();
 
             _sessions = new ConcurrentDictionary<IPEndPoint, CoapDtlsServerClientEndPoint>();
         }
