@@ -7,10 +7,10 @@ using CoAPNet.Options;
 using CoAPNet.Server;
 using System.Threading.Tasks;
 using CoAPNet.Dtls.Server;
-using Org.BouncyCastle.Crypto.Tls;
+using Org.BouncyCastle.Tls;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Options;
+using Org.BouncyCastle.Tls.Crypto.Impl.BC;
+using Org.BouncyCastle.Security;
 
 namespace CoAPDevices
 {
@@ -82,7 +82,7 @@ namespace CoAPDevices
         private readonly ExamplePskIdentityManager pskIdentityManager;
 
         public ExamplePskDtlsServer(ExamplePskIdentityManager pskIdentityManager)
-            : base(pskIdentityManager)
+            : base(new BcTlsCrypto(new SecureRandom()), pskIdentityManager)
         {
             this.pskIdentityManager = pskIdentityManager;
         }
@@ -97,8 +97,10 @@ namespace CoAPDevices
             return this.pskIdentityManager.GetIdentity();
         }
 
-        protected override ProtocolVersion MinimumVersion => ProtocolVersion.DTLSv10;
-        protected override ProtocolVersion MaximumVersion => ProtocolVersion.DTLSv12;
+        public override ProtocolVersion[] GetProtocolVersions()
+        {
+            return ProtocolVersion.DTLSv12.DownTo(ProtocolVersion.DTLSv10);
+        }
     }
 
     public class ExamplePskIdentityManager : TlsPskIdentityManager

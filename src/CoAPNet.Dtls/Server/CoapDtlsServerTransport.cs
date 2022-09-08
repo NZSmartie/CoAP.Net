@@ -8,8 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CoAPNet.Dtls.Server.Statistics;
 using Microsoft.Extensions.Logging;
-using Org.BouncyCastle.Crypto.Tls;
-using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Tls;
 
 namespace CoAPNet.Dtls.Server
 {
@@ -35,9 +34,7 @@ namespace CoAPNet.Dtls.Server
             _tlsServerFactory = tlsServerFactory ?? throw new ArgumentNullException(nameof(tlsServerFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-            SecureRandom random = new SecureRandom();
-
-            _serverProtocol = new DtlsServerProtocol(random);
+            _serverProtocol = new DtlsServerProtocol();
 
             _sessions = new ConcurrentDictionary<IPEndPoint, CoapDtlsServerClientEndPoint>();
         }
@@ -200,18 +197,17 @@ namespace CoAPNet.Dtls.Server
                         _logger.LogDebug("CoAP request from {EndPoint} handled!", session.EndPoint);
                     }
                 }
-                catch (OperationCanceledException)
+                catch (Exception ex) when (IsCanceledException(ex))
                 {
+                    _logger.LogDebug(ex, "Session was canceled");
                 }
-                catch (DtlsConnectionClosedException)
+                catch (TlsTimeoutException timeoutEx)
                 {
+                    _logger.LogWarning(timeoutEx, "Timeout while handling session");
                 }
                 catch (TlsFatalAlert tlsAlert)
                 {
-                    if (!(tlsAlert.InnerException is DtlsConnectionClosedException) && tlsAlert.AlertDescription != AlertDescription.user_canceled)
-                    {
-                        _logger.LogWarning(tlsAlert, "TLS Error");
-                    }
+                    _logger.LogWarning(tlsAlert, "TLS Error");
                 }
                 catch (Exception ex)
                 {
@@ -223,6 +219,13 @@ namespace CoAPNet.Dtls.Server
                     _sessions.TryRemove(session.EndPoint, out _);
                 }
             }
+        }
+
+        private bool IsCanceledException(Exception ex)
+        {
+            return ex is OperationCanceledException ||
+                ex is DtlsConnectionClosedException ||
+                (ex is TlsFatalAlert tlsAlert && (tlsAlert.InnerException is DtlsConnectionClosedException || tlsAlert.AlertDescription == AlertDescription.user_canceled));
         }
 
         private async Task HandleCleanup()
