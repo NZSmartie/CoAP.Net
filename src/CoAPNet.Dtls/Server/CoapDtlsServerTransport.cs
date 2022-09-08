@@ -198,18 +198,17 @@ namespace CoAPNet.Dtls.Server
                         _logger.LogDebug("CoAP request from {EndPoint} handled!", session.EndPoint);
                     }
                 }
-                catch (OperationCanceledException)
+                catch (Exception ex) when (IsCanceledException(ex))
                 {
+                    _logger.LogInformation(ex, "Session was canceled");
                 }
-                catch (DtlsConnectionClosedException)
+                catch (TlsTimeoutException timeoutEx)
                 {
+                    _logger.LogWarning(timeoutEx, "Timeout while handling session");
                 }
                 catch (TlsFatalAlert tlsAlert)
                 {
-                    if (!(tlsAlert.InnerException is DtlsConnectionClosedException) && tlsAlert.AlertDescription != AlertDescription.user_canceled)
-                    {
-                        _logger.LogWarning(tlsAlert, "TLS Error");
-                    }
+                    _logger.LogWarning(tlsAlert, "TLS Error");
                 }
                 catch (Exception ex)
                 {
@@ -221,6 +220,13 @@ namespace CoAPNet.Dtls.Server
                     _sessions.TryRemove(session.EndPoint, out _);
                 }
             }
+        }
+
+        private bool IsCanceledException(Exception ex)
+        {
+            return ex is OperationCanceledException ||
+                ex is DtlsConnectionClosedException ||
+                (ex is TlsFatalAlert tlsAlert && (tlsAlert.InnerException is DtlsConnectionClosedException || tlsAlert.AlertDescription == AlertDescription.user_canceled));
         }
 
         private async Task HandleCleanup()
