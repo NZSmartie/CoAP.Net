@@ -102,8 +102,7 @@ namespace CoAPNet.Dtls.Server
 
         public void EnqueueDatagram(byte[] datagram)
         {
-            if (!IsClosed)
-                _udpTransport.ReceiveQueue.Add(datagram);
+            _udpTransport.EnqueueReceived(datagram);
             LastReceivedTime = DateTime.UtcNow;
         }
     }
