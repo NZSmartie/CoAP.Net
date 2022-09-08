@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using CoAPNet.Dtls.Server.Statistics;
 using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Tls;
-using Org.BouncyCastle.Security;
 
 namespace CoAPNet.Dtls.Server
 {
@@ -200,7 +199,7 @@ namespace CoAPNet.Dtls.Server
                 }
                 catch (Exception ex) when (IsCanceledException(ex))
                 {
-                    _logger.LogInformation(ex, "Session was canceled");
+                    _logger.LogDebug(ex, "Session was canceled");
                 }
                 catch (TlsTimeoutException timeoutEx)
                 {
