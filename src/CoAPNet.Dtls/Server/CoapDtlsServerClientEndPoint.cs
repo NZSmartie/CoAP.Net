@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Org.BouncyCastle.Crypto.Tls;
+using Org.BouncyCastle.Tls;
 
 namespace CoAPNet.Dtls.Server
 {
@@ -29,7 +30,7 @@ namespace CoAPNet.Dtls.Server
 
         public IPEndPoint EndPoint { get; }
         public Uri BaseUri { get; }
-        public string ConnectionInfo { get; private set; }
+        public IReadOnlyDictionary<string, object> ConnectionInfo { get; private set; }
 
         public bool IsSecure => true;
 
@@ -102,8 +103,7 @@ namespace CoAPNet.Dtls.Server
 
         public void EnqueueDatagram(byte[] datagram)
         {
-            if (!IsClosed)
-                _udpTransport.ReceiveQueue.Add(datagram);
+            _udpTransport.EnqueueReceived(datagram);
             LastReceivedTime = DateTime.UtcNow;
         }
     }
