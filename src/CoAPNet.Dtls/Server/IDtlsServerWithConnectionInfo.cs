@@ -1,4 +1,5 @@
 ﻿using Org.BouncyCastle.Tls;
+using System.Collections.Generic;
 
 namespace CoAPNet.Dtls.Server
 {
@@ -12,6 +13,6 @@ namespace CoAPNet.Dtls.Server
         /// Get the connection information for the connection handled by this TLS server.
         /// </summary>
         /// <returns>Information about this connection that should be logged once the connection is established.</returns>
-        string GetConnectionInfo();
+        IReadOnlyDictionary<string, object> GetConnectionInfo();
     }
 }

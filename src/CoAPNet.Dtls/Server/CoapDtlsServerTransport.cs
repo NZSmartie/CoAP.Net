@@ -173,28 +173,24 @@ namespace CoAPNet.Dtls.Server
 
                     session.Accept(_serverProtocol, server);
 
-                    if (session.ConnectionInfo != null)
-                    {
-                        _logger.LogInformation("New TLS connection from {EndPoint}, Server Info: {ServerInfo}", session.EndPoint, session.ConnectionInfo);
-                    }
-                    else
+                    using (session.ConnectionInfo != null ? _logger.BeginScope(session.ConnectionInfo) : null)
                     {
                         _logger.LogInformation("New TLS connection from {EndPoint}", session.EndPoint);
-                    }
 
-                    var connectionInfo = new CoapDtlsConnectionInformation
-                    {
-                        LocalEndpoint = _endPoint,
-                        RemoteEndpoint = session,
-                        TlsServer = server
-                    };
+                        var connectionInfo = new CoapDtlsConnectionInformation
+                        {
+                            LocalEndpoint = _endPoint,
+                            RemoteEndpoint = session,
+                            TlsServer = server
+                        };
 
-                    while (!session.IsClosed && !_cts.IsCancellationRequested)
-                    {
-                        var packet = await session.ReceiveAsync(_cts.Token);
-                        _logger.LogDebug("Handling CoAP Packet from {EndPoint}", session.EndPoint);
-                        await _coapHandler.ProcessRequestAsync(connectionInfo, packet.Payload);
-                        _logger.LogDebug("CoAP request from {EndPoint} handled!", session.EndPoint);
+                        while (!session.IsClosed && !_cts.IsCancellationRequested)
+                        {
+                            var packet = await session.ReceiveAsync(_cts.Token);
+                            _logger.LogDebug("Handling CoAP Packet from {EndPoint}", session.EndPoint);
+                            await _coapHandler.ProcessRequestAsync(connectionInfo, packet.Payload);
+                            _logger.LogDebug("CoAP request from {EndPoint} handled!", session.EndPoint);
+                        }
                     }
                 }
                 catch (Exception ex) when (IsCanceledException(ex))
