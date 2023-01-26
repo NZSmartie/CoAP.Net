@@ -4,8 +4,8 @@
         <TargetFrameworks>netstandard2.0</TargetFrameworks>
         <PackageId>NZSmartie.CoAPNet.Udp</PackageId>
         <LangVersion>latest</LangVersion>
-        <Version>0.3.8</Version>
-        <PackageVersion>0.3.8</PackageVersion>
+        <Version>0.10.5-cid</Version>
+        <PackageVersion>0.10.5-cid</PackageVersion>
         <Authors>Roman Vaughan</Authors>
         <Company>NZSmartie</Company>
         <Description>UDP Socket implementation for NZSmartie.CoAPNet</Description>
