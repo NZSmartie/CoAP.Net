@@ -15,8 +15,8 @@ namespace CoAPNet.Dtls.Server
     internal class CoapDtlsServerTransport : ICoapTransport
     {
         private const int NetworkMtu = 1500;
-        private static readonly TimeSpan _sessionTimeout = TimeSpan.FromMinutes(15);
 
+        private readonly TimeSpan _sessionTimeout;
         private readonly CoapDtlsServerEndPoint _endPoint;
         private readonly ICoapHandler _coapHandler;
         private readonly IDtlsServerFactory _tlsServerFactory;
@@ -30,12 +30,18 @@ namespace CoAPNet.Dtls.Server
         private UdpClient _socket;
         private int connectionIdLength = 0;
 
-        public CoapDtlsServerTransport(CoapDtlsServerEndPoint endPoint, ICoapHandler coapHandler, IDtlsServerFactory tlsServerFactory, ILoggerFactory loggerFactory)
+        public CoapDtlsServerTransport(
+            CoapDtlsServerEndPoint endPoint,
+            ICoapHandler coapHandler,
+            IDtlsServerFactory tlsServerFactory,
+            ILoggerFactory loggerFactory,
+            TimeSpan sessionTimeout)
         {
             _endPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
             _coapHandler = coapHandler ?? throw new ArgumentNullException(nameof(coapHandler));
             _tlsServerFactory = tlsServerFactory ?? throw new ArgumentNullException(nameof(tlsServerFactory));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _sessionTimeout = sessionTimeout;
             _logger = loggerFactory.CreateLogger<CoapDtlsServerTransport>();
 
             _serverProtocol = new DtlsServerProtocol();
