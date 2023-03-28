@@ -26,7 +26,7 @@ namespace CoAPNet.Dtls.Server
             if (_transport != null)
                 throw new InvalidOperationException("CoAP transport may only be created once!");
 
-            _transport = new CoapDtlsServerTransport(serverEndpoint, handler, _tlsServerFactory, _loggerFactory.CreateLogger<CoapDtlsServerTransport>());
+            _transport = new CoapDtlsServerTransport(serverEndpoint, handler, _tlsServerFactory, _loggerFactory);
             return _transport;
         }
 

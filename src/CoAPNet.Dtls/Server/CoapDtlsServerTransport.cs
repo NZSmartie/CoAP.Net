@@ -20,19 +20,23 @@ namespace CoAPNet.Dtls.Server
         private readonly CoapDtlsServerEndPoint _endPoint;
         private readonly ICoapHandler _coapHandler;
         private readonly IDtlsServerFactory _tlsServerFactory;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<CoapDtlsServerTransport> _logger;
         private readonly DtlsServerProtocol _serverProtocol;
         private readonly ConcurrentDictionary<IPEndPoint, CoapDtlsServerClientEndPoint> _sessions;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-        private UdpClient _socket;
         private readonly BlockingCollection<UdpSendPacket> _sendQueue = new BlockingCollection<UdpSendPacket>();
 
-        public CoapDtlsServerTransport(CoapDtlsServerEndPoint endPoint, ICoapHandler coapHandler, IDtlsServerFactory tlsServerFactory, ILogger<CoapDtlsServerTransport> logger)
+        private UdpClient _socket;
+        private int connectionIdLength = 0;
+
+        public CoapDtlsServerTransport(CoapDtlsServerEndPoint endPoint, ICoapHandler coapHandler, IDtlsServerFactory tlsServerFactory, ILoggerFactory loggerFactory)
         {
             _endPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
             _coapHandler = coapHandler ?? throw new ArgumentNullException(nameof(coapHandler));
             _tlsServerFactory = tlsServerFactory ?? throw new ArgumentNullException(nameof(tlsServerFactory));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _logger = loggerFactory.CreateLogger<CoapDtlsServerTransport>();
 
             _serverProtocol = new DtlsServerProtocol();
 
@@ -102,16 +106,15 @@ namespace CoAPNet.Dtls.Server
                     }
 
                     // if there is an existing session, we pass the datagram to the session.
-                    if (_sessions.TryGetValue(data.RemoteEndPoint, out CoapDtlsServerClientEndPoint session))
+                    if (TryFindSession(data, out var session))
                     {
-                        session.EnqueueDatagram(data.Buffer);
+                        session.EnqueueDatagram(data.Buffer, data.RemoteEndPoint);
                         continue;
                     }
 
                     // if there isn't an existing session for this remote endpoint, we start a new one and pass the first datagram to the session
-                    var transport = new QueueDatagramTransport(NetworkMtu, bytes => _sendQueue.Add(new UdpSendPacket(bytes, data.RemoteEndPoint)));
-                    session = new CoapDtlsServerClientEndPoint(data.RemoteEndPoint, transport, DateTime.UtcNow);
-                    session.EnqueueDatagram(data.Buffer);
+                    session = new CoapDtlsServerClientEndPoint(_loggerFactory.CreateLogger<CoapDtlsServerClientEndPoint>(), data.RemoteEndPoint, NetworkMtu, packet => _sendQueue.Add(packet), DateTime.UtcNow);
+                    session.EnqueueDatagram(data.Buffer, data.RemoteEndPoint);
 
                     _sessions.TryAdd(data.RemoteEndPoint, session);
                     try
@@ -133,6 +136,34 @@ namespace CoAPNet.Dtls.Server
                     _logger.LogError(ex, "Error while handling incoming datagrams");
                 }
             }
+        }
+
+        private bool TryFindSession(UdpReceiveResult data, out CoapDtlsServerClientEndPoint session)
+        {
+            if (_sessions.TryGetValue(data.RemoteEndPoint, out session))
+            {
+                return true;
+            }
+
+            if (connectionIdLength > 0)
+            {
+                var contentType = data.Buffer[0];
+
+                if (contentType == ContentType.tls12_cid)
+                {
+                    var cid = new byte[connectionIdLength];
+                    Array.Copy(data.Buffer, 11, cid, 0, connectionIdLength);
+
+                    var sessionByCid = _sessions.Values.FirstOrDefault(x => cid.SequenceEqual(x.ConnectionId));
+                    if (sessionByCid != null)
+                    {
+                        session = sessionByCid;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         private async Task HandleOutgoing()
@@ -172,6 +203,11 @@ namespace CoAPNet.Dtls.Server
                     var server = _tlsServerFactory.Create();
 
                     session.Accept(_serverProtocol, server);
+
+                    if (session.ConnectionId != null)
+                    {
+                        SetConnectionIdLength(session.ConnectionId.Length);
+                    }
 
                     using (session.ConnectionInfo != null ? _logger.BeginScope(session.ConnectionInfo) : null)
                     {
@@ -214,6 +250,18 @@ namespace CoAPNet.Dtls.Server
                     _logger.LogInformation("Connection from {EndPoint} closed", session.EndPoint);
                     _sessions.TryRemove(session.EndPoint, out _);
                 }
+            }
+        }
+
+        private void SetConnectionIdLength(int sessionCidLength)
+        {
+            if (sessionCidLength != connectionIdLength)
+            {
+                if (connectionIdLength != 0)
+                {
+                    throw new InvalidOperationException("Connection IDs must have constant length!");
+                }
+                connectionIdLength = sessionCidLength;
             }
         }
 

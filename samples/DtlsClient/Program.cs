@@ -84,6 +84,11 @@ namespace CoAPDevices
             {
                 return ProtocolVersion.DTLSv12.DownTo(ProtocolVersion.DTLSv10);
             }
+
+            protected override byte[] GetNewConnectionID()
+            {
+                return Array.Empty<byte>();
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Tls;
 
 namespace CoAPNet.Dtls.Server
@@ -11,11 +12,14 @@ namespace CoAPNet.Dtls.Server
     internal class CoapDtlsServerClientEndPoint : ICoapEndpoint
     {
         private readonly QueueDatagramTransport _udpTransport;
-
+        private readonly ILogger<CoapDtlsServerClientEndPoint> _logger;
         private DtlsTransport _dtlsTransport;
 
-        public CoapDtlsServerClientEndPoint(IPEndPoint endPoint, QueueDatagramTransport udpTransport, DateTime sessionStartTime)
+        public CoapDtlsServerClientEndPoint(ILogger<CoapDtlsServerClientEndPoint> logger, IPEndPoint endPoint, int networkMtu, Action<UdpSendPacket> sendAction, DateTime sessionStartTime)
         {
+            _logger = logger;
+            EndPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
+
             BaseUri = new UriBuilder()
             {
                 Scheme = "coaps://",
@@ -23,12 +27,32 @@ namespace CoAPNet.Dtls.Server
                 Port = endPoint.Port
             }.Uri;
 
-            EndPoint = endPoint;
-            _udpTransport = udpTransport;
+            _udpTransport = new QueueDatagramTransport(networkMtu, bytes => sendAction(new UdpSendPacket(bytes, EndPoint)), ep => ProposeNewEndPoint(ep));
             SessionStartTime = sessionStartTime;
         }
 
-        public IPEndPoint EndPoint { get; }
+        private void ProposeNewEndPoint(IPEndPoint ep)
+        {
+            if (!ep.Equals(EndPoint) && !ep.Equals(PendingEndPoint))
+            {
+                _logger.LogDebug("Proposal for replacing Endpoint {EndPoint} with {NewEndPoint}", EndPoint, PendingEndPoint);
+                PendingEndPoint = ep;
+            }
+        }
+
+        private void ConfirmNewEndPoint()
+        {
+            if (PendingEndPoint != null)
+            {
+                _logger.LogInformation("Replacing Endpoint {EndPoint} with {NewEndPoint}", EndPoint, PendingEndPoint);
+                EndPoint = PendingEndPoint;
+                PendingEndPoint = null;
+            }
+        }
+
+        public IPEndPoint EndPoint { get; private set; }
+        public IPEndPoint PendingEndPoint { get; private set; }
+
         public Uri BaseUri { get; }
         public IReadOnlyDictionary<string, object> ConnectionInfo { get; private set; }
 
@@ -39,6 +63,7 @@ namespace CoAPNet.Dtls.Server
         public DateTime SessionStartTime { get; }
         public DateTime LastReceivedTime { get; private set; }
         public bool IsClosed { get; private set; }
+        public byte[] ConnectionId { get; private set; }
 
         public void Dispose()
         {
@@ -58,8 +83,7 @@ namespace CoAPNet.Dtls.Server
                 // we can't cancel waiting for a packet (BouncyCastle doesn't support this), so there will be a bit of delay between cancelling and actually stopping trying to receive.
                 // there is a wait timeout of 5000ms to close the CoapEndPoint, this has to be less than that.
                 // also, we use a long running task here so we don't block the calling thread till we're done waiting, but start a new one and yield instead
-                int received = await Task.Factory.StartNew(() => _dtlsTransport.Receive(buffer, 0, bufLen, 4000), TaskCreationOptions.LongRunning);
-
+                int received = await Task.Factory.StartNew(() => _dtlsTransport.Receive(buffer, 0, bufLen, 4000, ConfirmNewEndPoint), TaskCreationOptions.LongRunning);
                 if (received > 0)
                 {
                     return await Task.FromResult(new CoapPacket
@@ -94,6 +118,11 @@ namespace CoAPNet.Dtls.Server
         {
             _dtlsTransport = serverProtocol.Accept(server, _udpTransport);
 
+            if (server is IDtlsServerWithConnectionId serverWithCid)
+            {
+                ConnectionId = serverWithCid.GetConnectionId();
+            }
+
             if (server is IDtlsServerWithConnectionInfo serverWithInfo)
             {
                 var serverInfo = serverWithInfo.GetConnectionInfo();
@@ -101,9 +130,9 @@ namespace CoAPNet.Dtls.Server
             }
         }
 
-        public void EnqueueDatagram(byte[] datagram)
+        public void EnqueueDatagram(byte[] datagram, IPEndPoint endPoint)
         {
-            _udpTransport.EnqueueReceived(datagram);
+            _udpTransport.EnqueueReceived(datagram, endPoint);
             LastReceivedTime = DateTime.UtcNow;
         }
     }

@@ -28,7 +28,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="BouncyCastle.Cryptography" Version="2.1.0-beta.71.gc1c6d9bcca" />
+      <PackageReference Include="BouncyCastle.Cryptography" Version="2.2.0-beta.83.g94f960a0ab" />
     </ItemGroup>
 
     <ItemGroup>
