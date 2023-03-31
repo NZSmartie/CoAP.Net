@@ -41,7 +41,7 @@ namespace CoAPDevices
             var loggerFactory = LoggerFactory.Create(x => x.AddConsole());
 
             // Create a new Dtls transport factory.
-            var myTransportFactory = new CoapDtlsServerTransportFactory(loggerFactory, new ExampleDtlsServerFactory());
+            var myTransportFactory = new CoapDtlsServerTransportFactory(loggerFactory, new ExampleDtlsServerFactory(), TimeSpan.FromHours(24));
 
             // Create a new CoapServer using DTLS as it's base transport
             var myServer = new CoapServer(myTransportFactory, loggerFactory.CreateLogger<CoapServer>());

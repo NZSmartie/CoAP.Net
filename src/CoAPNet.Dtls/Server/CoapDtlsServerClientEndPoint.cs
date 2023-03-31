@@ -12,14 +12,18 @@ namespace CoAPNet.Dtls.Server
     internal class CoapDtlsServerClientEndPoint : ICoapEndpoint
     {
         private readonly QueueDatagramTransport _udpTransport;
-        private readonly ILogger<CoapDtlsServerClientEndPoint> _logger;
+        private readonly Action<IPEndPoint, IPEndPoint> _replaceEndpointAction;
         private DtlsTransport _dtlsTransport;
 
-        public CoapDtlsServerClientEndPoint(ILogger<CoapDtlsServerClientEndPoint> logger, IPEndPoint endPoint, int networkMtu, Action<UdpSendPacket> sendAction, DateTime sessionStartTime)
+        public CoapDtlsServerClientEndPoint(
+            IPEndPoint endPoint,
+            int networkMtu,
+            Action<UdpSendPacket> sendAction,
+            Action<IPEndPoint, IPEndPoint> replaceEndpointAction,
+            DateTime sessionStartTime)
         {
-            _logger = logger;
             EndPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
-
+            _replaceEndpointAction = replaceEndpointAction;
             BaseUri = new UriBuilder()
             {
                 Scheme = "coaps://",
@@ -33,9 +37,8 @@ namespace CoAPNet.Dtls.Server
 
         private void ProposeNewEndPoint(IPEndPoint ep)
         {
-            if (!ep.Equals(EndPoint) && !ep.Equals(PendingEndPoint))
+            if (!ep.Equals(EndPoint))
             {
-                _logger.LogDebug("Proposal for replacing Endpoint {EndPoint} with {NewEndPoint}", EndPoint, PendingEndPoint);
                 PendingEndPoint = ep;
             }
         }
@@ -44,8 +47,9 @@ namespace CoAPNet.Dtls.Server
         {
             if (PendingEndPoint != null)
             {
-                _logger.LogInformation("Replacing Endpoint {EndPoint} with {NewEndPoint}", EndPoint, PendingEndPoint);
+                var oldEndPoint = EndPoint;
                 EndPoint = PendingEndPoint;
+                _replaceEndpointAction(oldEndPoint, PendingEndPoint);
                 PendingEndPoint = null;
             }
         }
