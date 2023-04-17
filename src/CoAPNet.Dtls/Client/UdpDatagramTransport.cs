@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using Org.BouncyCastle.Crypto.Tls;
+using Org.BouncyCastle.Tls;
 
 namespace CoAPNet.Dtls.Client
 {

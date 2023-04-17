@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
-using Org.BouncyCastle.Crypto.Tls;
+using Org.BouncyCastle.Tls;
 
 namespace CoAPNet.Dtls.Server
 {
@@ -16,6 +16,7 @@ namespace CoAPNet.Dtls.Server
         private readonly int _sendLimit;
         private readonly Action<byte[]> _sendCallback;
         private readonly CancellationTokenSource _cts;
+        private BlockingCollection<byte[]> _receiveQueue;
 
         private const int MIN_IP_OVERHEAD = 20;
         private const int MAX_IP_OVERHEAD = MIN_IP_OVERHEAD + 64;
@@ -27,20 +28,21 @@ namespace CoAPNet.Dtls.Server
             _sendLimit = mtu - MAX_IP_OVERHEAD - UDP_OVERHEAD;
             _sendCallback = sendCallback ?? throw new ArgumentNullException(nameof(sendCallback));
             _cts = new CancellationTokenSource();
+            _receiveQueue = new BlockingCollection<byte[]>();
         }
 
-        public BlockingCollection<byte[]> ReceiveQueue { get; internal set; } = new BlockingCollection<byte[]>();
         public bool IsClosed { get; private set; }
         public ReaderWriterLockSlim CloseLock { get; } = new ReaderWriterLockSlim();
 
         public void Close()
         {
+            // Cancel this before locking so the lock gets released ASAP
             _cts.Cancel();
 
             CloseLock.EnterWriteLock();
             IsClosed = true;
+            _receiveQueue.Dispose();
             CloseLock.ExitWriteLock();
-            ReceiveQueue.Dispose();
         }
 
         public int GetReceiveLimit()
@@ -53,6 +55,21 @@ namespace CoAPNet.Dtls.Server
             return _sendLimit;
         }
 
+        public void EnqueueReceived(byte[] datagram)
+        {
+            try
+            {
+                CloseLock.EnterReadLock();
+                if (IsClosed)
+                    return;
+                _receiveQueue.Add(datagram);
+            }
+            finally
+            {
+                CloseLock.ExitReadLock();
+            }
+        }
+
         public int Receive(byte[] buf, int off, int len, int waitMillis)
         {
             try
@@ -61,7 +78,7 @@ namespace CoAPNet.Dtls.Server
                 if (IsClosed)
                     throw new DtlsConnectionClosedException();
 
-                var success = ReceiveQueue.TryTake(out var data, waitMillis, _cts.Token);
+                var success = _receiveQueue.TryTake(out var data, waitMillis, _cts.Token);
                 if (!success)
                     return -1; // DO NOT return 0. This will disable the wait timeout effectively for the caller and any abort logic will by bypassed!
                 var readLen = Math.Min(len, data.Length);

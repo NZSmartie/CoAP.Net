@@ -4,7 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using CoAPNet;
 using CoAPNet.Dtls.Client;
-using Org.BouncyCastle.Crypto.Tls;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Tls;
+using Org.BouncyCastle.Tls.Crypto;
+using Org.BouncyCastle.Tls.Crypto.Impl.BC;
 
 namespace CoAPDevices
 {
@@ -15,7 +18,6 @@ namespace CoAPDevices
             var host = "localhost";
             var port = Coap.PortDTLS;
             var identity = new BasicTlsPskIdentity("user", Encoding.UTF8.GetBytes("password"));
-
 
             // Create a new client using a DTLS endpoint with the remote host and Identity
             var client = new CoapClient(new CoapDtlsClientEndPoint(host, port, new ExamplePskDtlsClient(identity)));
@@ -69,26 +71,18 @@ namespace CoAPDevices
         public class ExamplePskDtlsClient : PskTlsClient
         {
             public ExamplePskDtlsClient(TlsPskIdentity pskIdentity)
-                : base(pskIdentity)
+                : base(new BcTlsCrypto(new SecureRandom()), pskIdentity)
             {
             }
-
-            public ExamplePskDtlsClient(TlsCipherFactory cipherFactory, TlsPskIdentity pskIdentity)
-                : base(cipherFactory, pskIdentity)
-            {
-            }
-
-            public ExamplePskDtlsClient(TlsCipherFactory cipherFactory, TlsDHVerifier dhVerifier, TlsPskIdentity pskIdentity)
-                : base(cipherFactory, dhVerifier, pskIdentity)
-            {
-            }
-
-            public override ProtocolVersion MinimumVersion => ProtocolVersion.DTLSv10;
-            public override ProtocolVersion ClientVersion => ProtocolVersion.DTLSv12;
 
             public override int GetHandshakeTimeoutMillis()
             {
                 return 30000;
+            }
+
+            public override ProtocolVersion[] GetProtocolVersions()
+            {
+                return ProtocolVersion.DTLSv12.DownTo(ProtocolVersion.DTLSv10);
             }
         }
     }
