@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using Org.BouncyCastle.Tls;
 
@@ -15,20 +16,22 @@ namespace CoAPNet.Dtls.Server
         private readonly int _receiveLimit;
         private readonly int _sendLimit;
         private readonly Action<byte[]> _sendCallback;
+        private readonly Action<IPEndPoint> _receiveCallback;
         private readonly CancellationTokenSource _cts;
-        private BlockingCollection<byte[]> _receiveQueue;
+        private readonly BlockingCollection<(byte[] Data, IPEndPoint EndPoint)> _receiveQueue;
 
         private const int MIN_IP_OVERHEAD = 20;
         private const int MAX_IP_OVERHEAD = MIN_IP_OVERHEAD + 64;
         private const int UDP_OVERHEAD = 8;
 
-        public QueueDatagramTransport(int mtu, Action<byte[]> sendCallback)
+        public QueueDatagramTransport(int mtu, Action<byte[]> sendCallback, Action<IPEndPoint> receiveCallback)
         {
             _receiveLimit = mtu - MIN_IP_OVERHEAD - UDP_OVERHEAD;
             _sendLimit = mtu - MAX_IP_OVERHEAD - UDP_OVERHEAD;
             _sendCallback = sendCallback ?? throw new ArgumentNullException(nameof(sendCallback));
+            _receiveCallback = receiveCallback ?? throw new ArgumentNullException(nameof(receiveCallback));
             _cts = new CancellationTokenSource();
-            _receiveQueue = new BlockingCollection<byte[]>();
+            _receiveQueue = new BlockingCollection<(byte[] Data, IPEndPoint EndPoint)>();
         }
 
         public bool IsClosed { get; private set; }
@@ -55,14 +58,14 @@ namespace CoAPNet.Dtls.Server
             return _sendLimit;
         }
 
-        public void EnqueueReceived(byte[] datagram)
+        public void EnqueueReceived(byte[] datagram, IPEndPoint endPoint)
         {
             try
             {
                 CloseLock.EnterReadLock();
                 if (IsClosed)
                     return;
-                _receiveQueue.Add(datagram);
+                _receiveQueue.Add((datagram, endPoint));
             }
             finally
             {
@@ -78,9 +81,13 @@ namespace CoAPNet.Dtls.Server
                 if (IsClosed)
                     throw new DtlsConnectionClosedException();
 
-                var success = _receiveQueue.TryTake(out var data, waitMillis, _cts.Token);
+                var success = _receiveQueue.TryTake(out var item, waitMillis, _cts.Token);
                 if (!success)
                     return -1; // DO NOT return 0. This will disable the wait timeout effectively for the caller and any abort logic will by bypassed!
+
+                _receiveCallback(item.EndPoint);
+
+                var data = item.Data;
                 var readLen = Math.Min(len, data.Length);
                 Array.Copy(data, 0, buf, off, readLen);
                 return readLen;

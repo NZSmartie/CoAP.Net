@@ -77,14 +77,29 @@ namespace CoAPDevices
         }
     }
 
-    public class ExamplePskDtlsServer : PskTlsServer
+    public class ExamplePskDtlsServer : PskTlsServer, IDtlsServerWithConnectionId
     {
         private readonly ExamplePskIdentityManager pskIdentityManager;
+        private byte[] connectionId;
 
         public ExamplePskDtlsServer(ExamplePskIdentityManager pskIdentityManager)
             : base(new BcTlsCrypto(new SecureRandom()), pskIdentityManager)
         {
             this.pskIdentityManager = pskIdentityManager;
+            this.connectionId = null;
+        }
+
+        public byte[] GetConnectionId()
+        {
+            return connectionId;
+        }
+
+        protected override byte[] GetNewConnectionID()
+        {
+            if (connectionId != null)
+                throw new InvalidOperationException("cannot reuse DtlsServer");
+            connectionId = Guid.NewGuid().ToByteArray();
+            return connectionId;
         }
 
         public override int GetHandshakeTimeoutMillis()

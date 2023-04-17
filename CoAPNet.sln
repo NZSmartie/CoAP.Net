@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31624.102
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoAPNet", "src\CoAPNet\CoAPNet.csproj", "{0D43122B-4D99-41B1-B855-5D780F85464A}"
 EndProject
@@ -63,6 +63,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DtlsClient", "samples\DtlsClient\DtlsClient.csproj", "{7679FA51-5E9A-483B-AF37-0BDE056BC032}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DtlsServer", "samples\DtlsServer\DtlsServer.csproj", "{E74DBD08-0437-408C-BDE8-C26075CB9BE6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DtlsServerConnectionId", "samples\DtlsServerConnectionId\DtlsServerConnectionId.csproj", "{8736CFA3-2528-48F8-83DE-810E2397F9CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -288,6 +290,24 @@ Global
 		{E74DBD08-0437-408C-BDE8-C26075CB9BE6}.Release|x64.Build.0 = Release|Any CPU
 		{E74DBD08-0437-408C-BDE8-C26075CB9BE6}.Release|x86.ActiveCfg = Release|Any CPU
 		{E74DBD08-0437-408C-BDE8-C26075CB9BE6}.Release|x86.Build.0 = Release|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.AppVeyor|Any CPU.ActiveCfg = Debug|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.AppVeyor|Any CPU.Build.0 = Debug|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.AppVeyor|x64.ActiveCfg = Debug|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.AppVeyor|x64.Build.0 = Debug|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.AppVeyor|x86.ActiveCfg = Debug|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.AppVeyor|x86.Build.0 = Debug|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.Debug|x64.Build.0 = Debug|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.Debug|x86.Build.0 = Debug|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.Release|x64.ActiveCfg = Release|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.Release|x64.Build.0 = Release|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.Release|x86.ActiveCfg = Release|Any CPU
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -304,6 +324,7 @@ Global
 		{94FDF3D6-4248-4C28-893C-4C323CD84586} = {52B2CE1E-A7E7-4680-A8A5-77D57FC85BAC}
 		{7679FA51-5E9A-483B-AF37-0BDE056BC032} = {D0A55628-C828-46C9-8D7F-9459A3D7E842}
 		{E74DBD08-0437-408C-BDE8-C26075CB9BE6} = {D0A55628-C828-46C9-8D7F-9459A3D7E842}
+		{8736CFA3-2528-48F8-83DE-810E2397F9CF} = {D0A55628-C828-46C9-8D7F-9459A3D7E842}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B787D906-3CA5-478D-BCE3-E8B7556B55B8}
