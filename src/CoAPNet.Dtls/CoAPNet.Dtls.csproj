@@ -4,8 +4,8 @@
         <TargetFrameworks>netstandard2.0</TargetFrameworks>
         <PackageId>NZSmartie.CoAPNet.Dtls</PackageId>
         <LangVersion>latest</LangVersion>
-        <Version>0.10.6-cid</Version>
-        <PackageVersion>0.10.6-cid</PackageVersion>
+        <Version>0.11.0</Version>
+        <PackageVersion>0.11.0</PackageVersion>
         <Authors>Roman Vaughan</Authors>
         <Company>NZSmartie</Company>
         <Description>UDP DTLS implementation for NZSmartie.CoAPNet</Description>
