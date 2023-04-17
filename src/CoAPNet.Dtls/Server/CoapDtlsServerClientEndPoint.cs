@@ -43,9 +43,9 @@ namespace CoAPNet.Dtls.Server
             }
         }
 
-        private void ConfirmNewEndPoint()
+        private void RecordCallback(DtlsRecordFlags recordFlags)
         {
-            if (PendingEndPoint != null)
+            if (PendingEndPoint != null && recordFlags.HasFlag(DtlsRecordFlags.IsNewest) && recordFlags.HasFlag(DtlsRecordFlags.UsesConnectionID))
             {
                 var oldEndPoint = EndPoint;
                 EndPoint = PendingEndPoint;
@@ -87,7 +87,7 @@ namespace CoAPNet.Dtls.Server
                 // we can't cancel waiting for a packet (BouncyCastle doesn't support this), so there will be a bit of delay between cancelling and actually stopping trying to receive.
                 // there is a wait timeout of 5000ms to close the CoapEndPoint, this has to be less than that.
                 // also, we use a long running task here so we don't block the calling thread till we're done waiting, but start a new one and yield instead
-                int received = await Task.Factory.StartNew(() => _dtlsTransport.Receive(buffer, 0, bufLen, 4000, ConfirmNewEndPoint), TaskCreationOptions.LongRunning);
+                int received = await Task.Factory.StartNew(() => _dtlsTransport.Receive(buffer, 0, bufLen, 4000, RecordCallback), TaskCreationOptions.LongRunning);
                 if (received > 0)
                 {
                     return await Task.FromResult(new CoapPacket
