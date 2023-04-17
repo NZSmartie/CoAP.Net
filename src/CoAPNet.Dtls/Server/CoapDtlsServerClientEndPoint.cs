@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -29,7 +30,7 @@ namespace CoAPNet.Dtls.Server
 
         public IPEndPoint EndPoint { get; }
         public Uri BaseUri { get; }
-        public string ConnectionInfo { get; private set; }
+        public IReadOnlyDictionary<string, object> ConnectionInfo { get; private set; }
 
         public bool IsSecure => true;
 
