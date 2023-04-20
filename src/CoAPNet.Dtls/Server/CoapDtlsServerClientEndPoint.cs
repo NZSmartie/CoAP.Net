@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Tls;
 
 namespace CoAPNet.Dtls.Server

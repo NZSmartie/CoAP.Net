@@ -29,6 +29,13 @@ namespace CoAPNet.Dtls.Server
         private UdpClient _socket;
         private int? connectionIdLength;
 
+        private int _handshakeSuccessCount = 0;
+        private int _handshakeErrorCount = 0;
+        private int _packetsReceivedSessionUnknown = 0;
+        private int _packetsReceivedSessionByEp = 0;
+        private int _packetsReceivedSessionByCid = 0;
+        private int _packetsSent = 0;
+
         public CoapDtlsServerTransport(
             CoapDtlsServerEndPoint endPoint,
             ICoapHandler coapHandler,
@@ -57,7 +64,13 @@ namespace CoAPNet.Dtls.Server
                     ConnectionInfo = x.ConnectionInfo,
                     LastReceivedTime = x.LastReceivedTime,
                     SessionStartTime = x.SessionStartTime
-                }).ToList()
+                }).ToList(),
+                HandshakeSuccessCount = (uint)_handshakeSuccessCount,
+                HandshakeErrorCount = (uint)_handshakeErrorCount,
+                PacketsReceivedSessionUnknown = (uint)_packetsReceivedSessionUnknown,
+                PacketsReceivedSessionByEp = (uint)_packetsReceivedSessionByEp,
+                PacketsReceivedSessionByCid = (uint)_packetsReceivedSessionByCid,
+                PacketsSent = (uint)_packetsSent
             };
         }
 
@@ -109,8 +122,23 @@ namespace CoAPNet.Dtls.Server
                         throw;
                     }
 
+                    var packetSessionType = TryFindSession(data, out var session);
+
+                    switch (packetSessionType)
+                    {
+                        case PacketSessionType.ByEndPoint:
+                            Interlocked.Increment(ref _packetsReceivedSessionByEp);
+                            break;
+                        case PacketSessionType.ByConnectionId:
+                            Interlocked.Increment(ref _packetsReceivedSessionByCid);
+                            break;
+                        default:
+                            Interlocked.Increment(ref _packetsReceivedSessionUnknown);
+                            break;
+                    }
+
                     // if there is an existing session, we pass the datagram to the session.
-                    if (TryFindSession(data, out var session))
+                    if (packetSessionType == PacketSessionType.ByEndPoint || packetSessionType == PacketSessionType.ByConnectionId)
                     {
                         session.EnqueueDatagram(data.Buffer, data.RemoteEndPoint);
                         continue;
@@ -147,11 +175,11 @@ namespace CoAPNet.Dtls.Server
             }
         }
 
-        private bool TryFindSession(UdpReceiveResult data, out CoapDtlsServerClientEndPoint session)
+        private PacketSessionType TryFindSession(UdpReceiveResult data, out CoapDtlsServerClientEndPoint session)
         {
             if (_sessions.TryGetValue(data.RemoteEndPoint, out session))
             {
-                return true;
+                return PacketSessionType.ByEndPoint;
             }
 
             if (connectionIdLength.HasValue)
@@ -170,7 +198,7 @@ namespace CoAPNet.Dtls.Server
                         {
                             _logger.LogDebug("Found session by connection id. {OldEndPoint} -> {NewEndPoint}", sessionByCid.EndPoint, data.RemoteEndPoint);
                             session = sessionByCid;
-                            return true;
+                            return PacketSessionType.ByConnectionId;
                         }
                     }
                 }
@@ -180,7 +208,7 @@ namespace CoAPNet.Dtls.Server
                 }
             }
 
-            return false;
+            return PacketSessionType.None;
         }
 
         private void ReplaceSessionEndpoint(IPEndPoint oldEndPoint, IPEndPoint newEndPoint)
@@ -206,6 +234,7 @@ namespace CoAPNet.Dtls.Server
                 try
                 {
                     _sendQueue.TryTake(out UdpSendPacket toSend, Timeout.Infinite, _cts.Token);
+                    Interlocked.Increment(ref _packetsSent);
 
                     await _socket.SendAsync(toSend.Payload, toSend.Payload.Length, toSend.TargetEndPoint);
                     _logger.LogDebug("Sent DTLS Packet to {EndPoint}", toSend.TargetEndPoint);
@@ -235,7 +264,16 @@ namespace CoAPNet.Dtls.Server
 
                     var server = _tlsServerFactory.Create();
 
-                    session.Accept(_serverProtocol, server);
+                    try
+                    {
+                        session.Accept(_serverProtocol, server);
+                        Interlocked.Increment(ref _handshakeSuccessCount);
+                    }
+                    catch (Exception)
+                    {
+                        Interlocked.Increment(ref _handshakeErrorCount);
+                        throw;
+                    }
 
                     if (session.ConnectionId != null)
                     {
@@ -358,6 +396,13 @@ namespace CoAPNet.Dtls.Server
 
             _cts.Cancel();
             return Task.CompletedTask;
+        }
+
+        private enum PacketSessionType
+        {
+            None = 0,
+            ByEndPoint,
+            ByConnectionId
         }
     }
 }
