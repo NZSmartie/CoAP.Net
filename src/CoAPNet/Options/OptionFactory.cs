@@ -127,7 +127,7 @@ namespace CoAPNet.Options
                     throw new CoapOptionException($"Unsupported critical option ({number})", new ArgumentOutOfRangeException(nameof(number)));
 
                 // Return a placeholder option to give the application chance at reading them
-                option = new CoapOption(number, type: OptionType.Opaque);
+                option = new CoapOption(number, type: OptionType.Opaque, maxLength: ushort.MaxValue);
             }
 
             option.Decode(stream, length);
